@@ -1,0 +1,2607 @@
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+
+<!-- Perplexity Computer Attribution — SEO Meta Tags -->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R.E.A.L. SmartScan — AI Deal Engine</title>
+  <meta name="description" content="Scan any product. Get the best deal. Embedded savings, BNPL, and resale — all in one intelligent engine.">
+
+  <!-- Fonts -->
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800,900&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── DESIGN TOKENS ──────────────────────────────────────────────────── */
+    :root {
+      --text-xs:   clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
+      --text-sm:   clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
+      --text-base: clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
+      --text-lg:   clamp(1.125rem, 1rem    + 0.75vw, 1.5rem);
+      --text-xl:   clamp(1.5rem,   1.2rem  + 1.25vw, 2.25rem);
+      --text-2xl:  clamp(2rem,     1.2rem  + 2.5vw,  3.5rem);
+
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem;
+      --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem;
+      --space-8: 2rem; --space-10: 2.5rem; --space-12: 3rem;
+      --space-16: 4rem; --space-20: 5rem;
+
+      --radius-sm: 0.375rem; --radius-md: 0.5rem;
+      --radius-lg: 0.75rem; --radius-xl: 1rem;
+      --radius-full: 9999px;
+
+      --transition-fast: 140ms cubic-bezier(0.16, 1, 0.3, 1);
+      --transition-med:  220ms cubic-bezier(0.16, 1, 0.3, 1);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.35);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.45);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.6);
+      --shadow-glow: 0 0 30px rgba(0, 220, 130, 0.15);
+
+      --font-display: 'Cabinet Grotesk', 'Helvetica Neue', sans-serif;
+      --font-body: 'Satoshi', 'Inter', sans-serif;
+
+      --content-narrow: 640px;
+      --content-default: 960px;
+      --content-wide: 1200px;
+    }
+
+    /* ─── DARK MODE (primary) ────────────────────────────────────────────── */
+    [data-theme="dark"], :root {
+      --color-bg:             #0a0c0f;
+      --color-surface:        #111318;
+      --color-surface-2:      #161a20;
+      --color-surface-3:      #1c2028;
+      --color-border:         #252b34;
+      --color-border-bright:  #2e3848;
+      --color-divider:        #1e242d;
+
+      --color-text:           #e8eaf0;
+      --color-text-muted:     #8a91a0;
+      --color-text-faint:     #4a5160;
+      --color-text-inverse:   #0a0c0f;
+
+      /* Accent — electric emerald/mint (savings/money feel) */
+      --color-primary:        #00dc82;
+      --color-primary-hover:  #00f08e;
+      --color-primary-active: #00c472;
+      --color-primary-dim:    rgba(0, 220, 130, 0.12);
+      --color-primary-text:   #0a0c0f;
+
+      /* Secondary — sky blue (trust, finance) */
+      --color-blue:           #3b9eff;
+      --color-blue-dim:       rgba(59, 158, 255, 0.12);
+
+      /* Gold — premium/savings highlight */
+      --color-gold:           #f5c842;
+      --color-gold-dim:       rgba(245, 200, 66, 0.12);
+
+      /* Danger/warning */
+      --color-error:          #ff5c7a;
+      --color-warning:        #ff9f4a;
+      --color-success:        #00dc82;
+    }
+
+    [data-theme="light"] {
+      --color-bg:             #f4f6fa;
+      --color-surface:        #ffffff;
+      --color-surface-2:      #f8f9fc;
+      --color-surface-3:      #eef1f7;
+      --color-border:         #d8dde8;
+      --color-border-bright:  #c8d0e0;
+      --color-divider:        #e4e8f0;
+
+      --color-text:           #0f1318;
+      --color-text-muted:     #5a6274;
+      --color-text-faint:     #9aa0b0;
+      --color-text-inverse:   #ffffff;
+
+      --color-primary:        #00a860;
+      --color-primary-hover:  #008f50;
+      --color-primary-active: #007544;
+      --color-primary-dim:    rgba(0, 168, 96, 0.10);
+      --color-primary-text:   #ffffff;
+
+      --color-blue:           #1a7fe8;
+      --color-blue-dim:       rgba(26, 127, 232, 0.10);
+      --color-gold:           #c8960a;
+      --color-gold-dim:       rgba(200, 150, 10, 0.10);
+      --color-error:          #e0244e;
+      --color-warning:        #d4720a;
+      --color-success:        #008f50;
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.14);
+      --shadow-glow: 0 0 24px rgba(0, 168, 96, 0.15);
+    }
+
+    /* ─── BASE ───────────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      scroll-behavior: smooth;
+      scroll-padding-top: var(--space-16);
+    }
+    body {
+      min-height: 100dvh;
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    img, svg { display: block; max-width: 100%; }
+    input, button, select { font: inherit; color: inherit; }
+    h1,h2,h3,h4,h5,h6 { text-wrap: balance; line-height: 1.15; font-family: var(--font-display); }
+    p { text-wrap: pretty; }
+    button { cursor: pointer; background: none; border: none; }
+    a { color: inherit; text-decoration: none; }
+
+    :focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 3px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* ─── SCROLLBAR ──────────────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--color-surface); }
+    ::-webkit-scrollbar-thumb { background: var(--color-border-bright); border-radius: var(--radius-full); }
+
+    /* ─── LAYOUT ─────────────────────────────────────────────────────────── */
+    .app-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      grid-template-rows: 60px 1fr;
+      min-height: 100vh;
+      grid-template-areas:
+        "topbar topbar"
+        "sidebar main";
+    }
+
+    /* ─── TOPBAR ─────────────────────────────────────────────────────────── */
+    .topbar {
+      grid-area: topbar;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-6);
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--color-primary);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo-icon svg { color: var(--color-primary-text); }
+    .logo-wordmark {
+      font-family: var(--font-display);
+      font-size: var(--text-sm);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .logo-wordmark span {
+      display: block;
+      font-size: var(--text-xs);
+      font-weight: 500;
+      color: var(--color-text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .tier-badge {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .tier-badge.free {
+      background: var(--color-surface-3);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+    }
+    .tier-badge.pro {
+      background: linear-gradient(135deg, rgba(245,200,66,0.15), rgba(255,159,74,0.1));
+      border: 1px solid rgba(245,200,66,0.3);
+      color: var(--color-gold);
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-muted);
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+    .icon-btn:hover {
+      background: var(--color-surface-3);
+      color: var(--color-text);
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, var(--color-primary), var(--color-blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-xs);
+      font-weight: 700;
+      color: var(--color-primary-text);
+    }
+
+    /* ─── SIDEBAR ────────────────────────────────────────────────────────── */
+    .sidebar {
+      grid-area: sidebar;
+      background: var(--color-surface);
+      border-right: 1px solid var(--color-border);
+      padding: var(--space-4) var(--space-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+      position: sticky;
+      top: 60px;
+      height: calc(100vh - 60px);
+      overflow-y: auto;
+    }
+
+    .nav-section-label {
+      font-size: var(--text-xs);
+      font-weight: 600;
+      color: var(--color-text-faint);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: var(--space-3) var(--space-3) var(--space-2);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      position: relative;
+    }
+    .nav-item:hover {
+      background: var(--color-surface-3);
+      color: var(--color-text);
+    }
+    .nav-item.active {
+      background: var(--color-primary-dim);
+      color: var(--color-primary);
+    }
+    .nav-item.active svg { color: var(--color-primary); }
+    .nav-item svg { flex-shrink: 0; color: var(--color-text-faint); }
+
+    .nav-badge {
+      margin-left: auto;
+      font-size: var(--text-xs);
+      font-weight: 700;
+      background: var(--color-primary-dim);
+      color: var(--color-primary);
+      padding: 2px 7px;
+      border-radius: var(--radius-full);
+    }
+    .nav-badge.gold {
+      background: var(--color-gold-dim);
+      color: var(--color-gold);
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-divider);
+    }
+
+    /* ─── MAIN ───────────────────────────────────────────────────────────── */
+    .main {
+      grid-area: main;
+      overflow-y: auto;
+      height: calc(100vh - 60px);
+    }
+
+    /* ─── PAGE (generic) ─────────────────────────────────────────────────── */
+    .page {
+      display: none;
+      padding: var(--space-8) var(--space-8) var(--space-20);
+      max-width: var(--content-wide);
+    }
+    .page.active { display: block; }
+
+    .page-header {
+      margin-bottom: var(--space-8);
+    }
+    .page-title {
+      font-size: var(--text-xl);
+      font-weight: 900;
+      color: var(--color-text);
+      letter-spacing: -0.03em;
+    }
+    .page-subtitle {
+      font-size: var(--text-base);
+      color: var(--color-text-muted);
+      margin-top: var(--space-2);
+    }
+
+    /* ─── CARDS ──────────────────────────────────────────────────────────── */
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+    }
+    .card-sm {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4) var(--space-5);
+    }
+
+    /* ─── SCANNER PAGE ───────────────────────────────────────────────────── */
+    #page-scan .scan-hero {
+      background: linear-gradient(135deg,
+        var(--color-surface) 0%,
+        var(--color-surface-3) 100%);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-10) var(--space-12);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: var(--space-8);
+    }
+    #page-scan .scan-hero::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-blue), transparent);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      opacity: 0.4;
+    }
+    #page-scan .scan-hero-eyebrow {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      margin-bottom: var(--space-3);
+    }
+    #page-scan .scan-hero h1 {
+      font-size: var(--text-xl);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      margin-bottom: var(--space-3);
+    }
+    #page-scan .scan-hero p {
+      font-size: var(--text-base);
+      color: var(--color-text-muted);
+      max-width: 460px;
+      margin: 0 auto var(--space-8);
+    }
+
+    .scan-input-row {
+      display: flex;
+      gap: var(--space-3);
+      max-width: 580px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .scan-input-wrap {
+      flex: 1;
+      position: relative;
+    }
+    .scan-input {
+      width: 100%;
+      background: var(--color-surface-3);
+      border: 1.5px solid var(--color-border-bright);
+      border-radius: var(--radius-xl);
+      padding: var(--space-4) var(--space-5) var(--space-4) var(--space-12);
+      font-size: var(--text-sm);
+      color: var(--color-text);
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+      outline: none;
+    }
+    .scan-input::placeholder { color: var(--color-text-faint); }
+    .scan-input:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-primary-dim);
+    }
+    .scan-input-icon {
+      position: absolute;
+      left: var(--space-4);
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-faint);
+      pointer-events: none;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-4) var(--space-6);
+      background: var(--color-primary);
+      color: var(--color-primary-text);
+      border-radius: var(--radius-xl);
+      font-size: var(--text-sm);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+      box-shadow: 0 2px 12px var(--color-primary-dim);
+    }
+    .btn-primary:hover {
+      background: var(--color-primary-hover);
+      box-shadow: var(--shadow-glow);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-5);
+      background: var(--color-surface-3);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      transition: all var(--transition-fast);
+    }
+    .btn-secondary:hover {
+      background: var(--color-surface-2);
+      border-color: var(--color-border-bright);
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-4);
+      color: var(--color-text-muted);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      transition: all var(--transition-fast);
+    }
+    .btn-ghost:hover { background: var(--color-surface-3); color: var(--color-text); }
+
+    /* Quick-scan category chips */
+    .quick-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      justify-content: center;
+      margin-top: var(--space-5);
+    }
+    .quick-chip {
+      padding: var(--space-1) var(--space-4);
+      background: var(--color-surface-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: 500;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .quick-chip:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: var(--color-primary-dim);
+    }
+
+    /* Loading animation */
+    .scan-loading {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-10);
+    }
+    .scan-loading.show { display: flex; }
+    .scan-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--color-border);
+      border-top-color: var(--color-primary);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .scan-loading-text {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    /* Results area */
+    .scan-results { display: none; }
+    .scan-results.show { display: block; }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-5);
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+    .results-title {
+      font-size: var(--text-lg);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .results-meta {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.7)} }
+
+    /* Deal cards grid */
+    .deals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: var(--space-4);
+      margin-bottom: var(--space-8);
+    }
+
+    .deal-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: all var(--transition-med);
+      cursor: pointer;
+      position: relative;
+    }
+    .deal-card:hover {
+      border-color: var(--color-border-bright);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .deal-card.featured {
+      border-color: rgba(0,220,130,0.3);
+      box-shadow: 0 0 0 1px rgba(0,220,130,0.15), var(--shadow-sm);
+    }
+    .deal-card.featured::after {
+      content: 'BEST DEAL';
+      position: absolute;
+      top: var(--space-3);
+      right: var(--space-3);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: var(--color-primary-text);
+      background: var(--color-primary);
+      padding: 3px 7px;
+      border-radius: var(--radius-full);
+    }
+    .deal-card.sponsored::after {
+      content: 'SPONSORED';
+      background: var(--color-gold);
+      color: #0a0c0f;
+    }
+
+    .deal-card-img {
+      width: 100%;
+      height: 160px;
+      background: var(--color-surface-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .deal-card-img-bg {
+      position: absolute;
+      inset: 0;
+      opacity: 0.06;
+      background: radial-gradient(circle at 50% 30%, var(--color-primary), transparent 70%);
+    }
+
+    .deal-card-body {
+      padding: var(--space-4) var(--space-5);
+    }
+
+    .deal-card-retailer {
+      font-size: var(--text-xs);
+      font-weight: 600;
+      color: var(--color-text-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: var(--space-1);
+    }
+    .deal-card-name {
+      font-size: var(--text-base);
+      font-weight: 700;
+      margin-bottom: var(--space-3);
+      line-height: 1.3;
+      color: var(--color-text);
+    }
+
+    .deal-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+      flex-wrap: wrap;
+    }
+    .deal-price-shown {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: 900;
+      color: var(--color-text);
+      letter-spacing: -0.03em;
+    }
+    .deal-price-original {
+      font-size: var(--text-sm);
+      color: var(--color-text-faint);
+      text-decoration: line-through;
+    }
+    .deal-savings-badge {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      color: var(--color-primary);
+      background: var(--color-primary-dim);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+    }
+
+    .deal-meta-row {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-4);
+    }
+    .deal-tag {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      background: var(--color-surface-3);
+      border: 1px solid var(--color-border);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+    }
+    .deal-tag.green { color: var(--color-primary); background: var(--color-primary-dim); border-color: transparent; }
+    .deal-tag.blue { color: var(--color-blue); background: var(--color-blue-dim); border-color: transparent; }
+    .deal-tag.gold { color: var(--color-gold); background: var(--color-gold-dim); border-color: transparent; }
+
+    .deal-score-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+    .deal-score-label {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      min-width: 60px;
+    }
+    .deal-score-track {
+      flex: 1;
+      height: 4px;
+      background: var(--color-border);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .deal-score-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      background: linear-gradient(90deg, var(--color-primary), var(--color-blue));
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .deal-score-num {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      color: var(--color-primary);
+      min-width: 28px;
+      text-align: right;
+    }
+
+    .deal-card-footer {
+      display: flex;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-5);
+      border-top: 1px solid var(--color-divider);
+      background: var(--color-surface-2);
+    }
+    .deal-cta-main {
+      flex: 1;
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-primary);
+      color: var(--color-primary-text);
+      border-radius: var(--radius-md);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      text-align: center;
+      transition: all var(--transition-fast);
+    }
+    .deal-cta-main:hover {
+      background: var(--color-primary-hover);
+      transform: translateY(-1px);
+    }
+    .deal-cta-bnpl {
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-blue-dim);
+      color: var(--color-blue);
+      border: 1px solid rgba(59,158,255,0.2);
+      border-radius: var(--radius-md);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+    }
+    .deal-cta-bnpl:hover { background: rgba(59,158,255,0.2); }
+
+    /* ─── SPONSORED STRIP ─────────────────────────────────────────────────── */
+    .ad-strip {
+      background: linear-gradient(135deg,
+        rgba(245,200,66,0.06) 0%,
+        rgba(255,159,74,0.04) 100%);
+      border: 1px solid rgba(245,200,66,0.2);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4) var(--space-6);
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+      flex-wrap: wrap;
+    }
+    .ad-strip-label {
+      font-size: var(--text-xs);
+      color: var(--color-gold);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .ad-strip-content {
+      flex: 1;
+      min-width: 200px;
+    }
+    .ad-strip-title {
+      font-size: var(--text-sm);
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    .ad-strip-sub {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+    .ad-strip-cta {
+      padding: var(--space-2) var(--space-5);
+      background: var(--color-gold-dim);
+      color: var(--color-gold);
+      border: 1px solid rgba(245,200,66,0.3);
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      transition: all var(--transition-fast);
+    }
+    .ad-strip-cta:hover { background: rgba(245,200,66,0.2); }
+
+    /* ─── MARGIN ENGINE NOTE ─────────────────────────────────────────────── */
+    .margin-note {
+      background: var(--color-surface-3);
+      border: 1px dashed var(--color-border-bright);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4) var(--space-5);
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      margin-top: var(--space-6);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+    }
+    .margin-note-icon { color: var(--color-primary); flex-shrink: 0; margin-top: 2px; }
+
+    /* ─── STATS ROW ───────────────────────────────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: var(--space-4);
+      margin-bottom: var(--space-8);
+    }
+    .stat-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+    }
+    .stat-label {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      font-weight: 500;
+      margin-bottom: var(--space-2);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .stat-value.green { color: var(--color-primary); }
+    .stat-value.blue { color: var(--color-blue); }
+    .stat-value.gold { color: var(--color-gold); }
+    .stat-delta {
+      font-size: var(--text-xs);
+      color: var(--color-text-faint);
+      margin-top: var(--space-1);
+    }
+
+    /* ─── MARGIN ENGINE PAGE ─────────────────────────────────────────────── */
+    .engine-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+    @media (max-width: 700px) { .engine-grid { grid-template-columns: 1fr; } }
+
+    .engine-card { }
+    .engine-card-title {
+      font-size: var(--text-sm);
+      font-weight: 700;
+      margin-bottom: var(--space-4);
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .engine-card-title svg { color: var(--color-primary); }
+
+    .rule-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--color-divider);
+    }
+    .rule-row:last-child { border-bottom: none; }
+    .rule-category {
+      font-size: var(--text-xs);
+      font-weight: 600;
+      min-width: 110px;
+      color: var(--color-text);
+    }
+    .rule-slider-wrap { flex: 1; }
+    .rule-slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: var(--radius-full);
+      background: var(--color-border);
+      outline: none;
+    }
+    .rule-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      cursor: pointer;
+      box-shadow: 0 0 6px var(--color-primary-dim);
+      transition: transform var(--transition-fast);
+    }
+    .rule-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+    .rule-pct {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      color: var(--color-primary);
+      min-width: 36px;
+      text-align: right;
+      font-family: var(--font-display);
+    }
+
+    /* Price breakdown card */
+    .price-breakdown {
+      background: var(--color-surface-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-top: var(--space-4);
+    }
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-3) var(--space-5);
+      border-bottom: 1px solid var(--color-divider);
+    }
+    .breakdown-row:last-child { border-bottom: none; }
+    .breakdown-label {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+    .breakdown-value {
+      font-size: var(--text-sm);
+      font-weight: 700;
+      font-family: var(--font-display);
+    }
+    .breakdown-value.green { color: var(--color-primary); }
+    .breakdown-value.hidden-row { color: var(--color-text-faint); font-style: italic; font-weight: 400; font-size: var(--text-xs); }
+    .breakdown-row.highlight { background: var(--color-primary-dim); }
+    .breakdown-row.highlight .breakdown-label { color: var(--color-text); font-weight: 600; }
+    .breakdown-row.highlight .breakdown-value { color: var(--color-primary); }
+
+    /* ─── BNPL / CREDIT PAGE ─────────────────────────────────────────────── */
+    .credit-calc {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      max-width: 540px;
+    }
+    .input-group {
+      margin-bottom: var(--space-5);
+    }
+    .input-label {
+      display: block;
+      font-size: var(--text-xs);
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: var(--space-2);
+    }
+    .input-field {
+      width: 100%;
+      background: var(--color-surface-3);
+      border: 1.5px solid var(--color-border-bright);
+      border-radius: var(--radius-md);
+      padding: var(--space-3) var(--space-4);
+      font-size: var(--text-base);
+      font-weight: 600;
+      color: var(--color-text);
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+      outline: none;
+    }
+    .input-field:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-primary-dim);
+    }
+
+    .bnpl-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+    .bnpl-option {
+      background: var(--color-surface-3);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .bnpl-option:hover, .bnpl-option.selected {
+      border-color: var(--color-primary);
+      background: var(--color-primary-dim);
+    }
+    .bnpl-option-payment {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: 900;
+      color: var(--color-text);
+      letter-spacing: -0.03em;
+    }
+    .bnpl-option-term {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      margin-top: var(--space-1);
+    }
+    .bnpl-option.selected .bnpl-option-payment { color: var(--color-primary); }
+
+    .credit-partner-row {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-6);
+    }
+    .partner-badge {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      color: var(--color-text-muted);
+    }
+    .partner-badge .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ─── RESALE PAGE ─────────────────────────────────────────────────────── */
+    .resale-form {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      max-width: 600px;
+      margin-bottom: var(--space-8);
+    }
+    .resale-estimate {
+      background: var(--color-surface-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      margin-top: var(--space-6);
+      display: none;
+    }
+    .resale-estimate.show { display: block; }
+    .resale-price-big {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+    }
+    .resale-fee-note {
+      font-size: var(--text-xs);
+      color: var(--color-text-faint);
+    }
+
+    /* ─── UPGRADE CTA ─────────────────────────────────────────────────────── */
+    .upgrade-banner {
+      background: linear-gradient(135deg, 
+        rgba(0,220,130,0.08) 0%, 
+        rgba(59,158,255,0.06) 100%);
+      border: 1px solid rgba(0,220,130,0.2);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8) var(--space-10);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-8);
+      flex-wrap: wrap;
+      margin-top: var(--space-10);
+    }
+    .upgrade-text h3 {
+      font-size: var(--text-lg);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: var(--space-2);
+    }
+    .upgrade-text p {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      max-width: 380px;
+    }
+    .upgrade-perks {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-top: var(--space-4);
+    }
+    .upgrade-perk {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+    .upgrade-perk svg { color: var(--color-primary); flex-shrink: 0; }
+
+    /* ─── TIER CARDS ──────────────────────────────────────────────────────── */
+    .tier-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--space-4);
+      margin-bottom: var(--space-8);
+    }
+    .tier-card {
+      background: var(--color-surface);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      transition: all var(--transition-med);
+    }
+    .tier-card.current {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 1px var(--color-primary-dim), var(--shadow-sm);
+    }
+    .tier-card.popular {
+      border-color: var(--color-gold);
+      box-shadow: 0 0 0 1px var(--color-gold-dim), var(--shadow-sm);
+    }
+    .tier-card-badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      margin-bottom: var(--space-3);
+    }
+    .tier-card-badge.active { background: var(--color-primary-dim); color: var(--color-primary); }
+    .tier-card-badge.popular { background: var(--color-gold-dim); color: var(--color-gold); }
+    .tier-card-badge.enterprise { background: var(--color-blue-dim); color: var(--color-blue); }
+    .tier-card-name {
+      font-size: var(--text-base);
+      font-weight: 800;
+      margin-bottom: var(--space-1);
+      letter-spacing: -0.02em;
+    }
+    .tier-card-price {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      margin-bottom: var(--space-1);
+    }
+    .tier-card-price span {
+      font-size: var(--text-sm);
+      font-weight: 400;
+      color: var(--color-text-muted);
+    }
+    .tier-card-desc {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-5);
+    }
+    .tier-features {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-bottom: var(--space-5);
+    }
+    .tier-feature {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-2);
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+    .tier-feature svg { color: var(--color-primary); flex-shrink: 0; margin-top: 1px; }
+    .tier-feature.locked svg { color: var(--color-text-faint); }
+    .tier-feature.locked { color: var(--color-text-faint); }
+
+    /* ─── FOOTER ──────────────────────────────────────────────────────────── */
+    footer {
+      padding: var(--space-6) var(--space-8);
+      border-top: 1px solid var(--color-divider);
+      font-size: var(--text-xs);
+      color: var(--color-text-faint);
+    }
+    footer a { color: var(--color-text-muted); text-decoration: underline; text-underline-offset: 3px; }
+    footer a:hover { color: var(--color-primary); }
+
+    /* ─── MOBILE ──────────────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .app-layout {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "topbar"
+          "main";
+      }
+      .sidebar { display: none; }
+      .page { padding: var(--space-5); }
+      .scan-hero { padding: var(--space-6); }
+      .deals-grid { grid-template-columns: 1fr; }
+      .engine-grid { grid-template-columns: 1fr; }
+      .bnpl-options { grid-template-columns: 1fr; }
+      .upgrade-banner { flex-direction: column; }
+      .tier-cards { grid-template-columns: 1fr; }
+      .mobile-nav {
+        display: flex !important;
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        background: var(--color-surface);
+        border-top: 1px solid var(--color-border);
+        z-index: 200;
+        padding: var(--space-2) var(--space-4);
+      }
+      .main { height: calc(100vh - 60px - 64px); }
+    }
+    .mobile-nav { display: none; }
+
+    .mobile-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: var(--space-2);
+      cursor: pointer;
+      color: var(--color-text-faint);
+      border-radius: var(--radius-md);
+      font-size: 10px;
+      font-weight: 500;
+      transition: color var(--transition-fast);
+    }
+    .mobile-nav-item.active { color: var(--color-primary); }
+
+    /* ─── ANIMATIONS ──────────────────────────────────────────────────────── */
+    .fade-in {
+      animation: fadeIn 0.3s ease forwards;
+    }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .deal-card { animation: fadeIn 0.3s ease both; }
+    .deal-card:nth-child(1){animation-delay:0s}
+    .deal-card:nth-child(2){animation-delay:0.05s}
+    .deal-card:nth-child(3){animation-delay:0.1s}
+    .deal-card:nth-child(4){animation-delay:0.15s}
+    .deal-card:nth-child(5){animation-delay:0.2s}
+    .deal-card:nth-child(6){animation-delay:0.25s}
+
+    /* ─── TOOLTIP ─────────────────────────────────────────────────────────── */
+    [data-tip] {
+      position: relative;
+    }
+    [data-tip]:hover::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-text);
+      color: var(--color-bg);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* divider */
+    .divider { height: 1px; background: var(--color-divider); margin: var(--space-6) 0; }
+
+    /* section heading */
+    .section-heading {
+      font-size: var(--text-base);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: var(--space-4);
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .section-heading .label-accent {
+      font-size: var(--text-xs);
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    /* tag */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: 600;
+    }
+    .tag.primary { background: var(--color-primary-dim); color: var(--color-primary); }
+    .tag.gold { background: var(--color-gold-dim); color: var(--color-gold); }
+    .tag.blue { background: var(--color-blue-dim); color: var(--color-blue); }
+    .tag.muted { background: var(--color-surface-3); color: var(--color-text-muted); border: 1px solid var(--color-border); }
+
+    select.input-field {
+      cursor: pointer;
+    }
+    textarea.input-field {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* history table */
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .history-table th {
+      font-size: var(--text-xs);
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+      text-align: left;
+    }
+    .history-table td {
+      padding: var(--space-3) var(--space-4);
+      font-size: var(--text-sm);
+      border-bottom: 1px solid var(--color-divider);
+    }
+    .history-table tr:last-child td { border-bottom: none; }
+    .history-table tr:hover td { background: var(--color-surface-2); }
+
+    .progress-ring { transform: rotate(-90deg); }
+    .progress-ring-circle {
+      transition: stroke-dashoffset 0.8s cubic-bezier(0.16,1,0.3,1);
+      stroke-linecap: round;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-logo">
+      <div class="logo-icon">
+        <!-- SmartScan icon: scan lines + sparkle -->
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <rect x="2" y="2" width="5" height="5" rx="1"/>
+          <rect x="11" y="2" width="5" height="5" rx="1"/>
+          <rect x="2" y="11" width="5" height="5" rx="1"/>
+          <path d="M11 11.5 L13 14 L16 10.5" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="logo-wordmark">
+        R.E.A.L. SmartScan
+        <span>AI Deal Engine</span>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <span class="tier-badge free" id="tier-display">FREE TIER</span>
+      <button class="icon-btn" data-theme-toggle aria-label="Toggle theme" title="Toggle theme">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+      <div class="avatar" title="Guest User">G</div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <span class="nav-section-label">Core</span>
+
+    <div class="nav-item active" data-page="scan">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+      SmartScan
+      <span class="nav-badge">Live</span>
+    </div>
+
+    <div class="nav-item" data-page="engine">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
+        <path d="M12 2v2M12 20v2M2 12h2M20 12h2"/>
+      </svg>
+      Margin Engine
+    </div>
+
+    <div class="nav-item" data-page="credit">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <rect x="2" y="5" width="20" height="14" rx="2"/>
+        <path d="M2 10h20"/>
+      </svg>
+      BNPL & Credit
+      <span class="nav-badge blue">New</span>
+    </div>
+
+    <div class="nav-item" data-page="resale">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+        <path d="M7.5 4.21l4.5 2.6 4.5-2.6M12 22.76V12"/>
+      </svg>
+      Resale Channel
+    </div>
+
+    <span class="nav-section-label" style="margin-top:var(--space-4)">Analytics</span>
+
+    <div class="nav-item" data-page="dashboard">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <rect x="3" y="3" width="7" height="7" rx="1"/>
+        <rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/>
+        <rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+      Dashboard
+    </div>
+
+    <span class="nav-section-label" style="margin-top:var(--space-4)">Account</span>
+    <div class="nav-item" data-page="tiers">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+      Upgrade
+      <span class="nav-badge gold">Pro</span>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="nav-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v4M12 16h.01"/>
+        </svg>
+        Help & Docs
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- ─── SCAN PAGE ─────────────────────────────────────────────────── -->
+    <div id="page-scan" class="page active">
+      <div class="scan-hero">
+        <div class="scan-hero-eyebrow">AI-Powered Deal Intelligence</div>
+        <h1>Scan Any Product.<br>Find the Best Deal.</h1>
+        <p>SmartScan searches 500+ retailers in real time to surface savings you can't find on your own.</p>
+
+        <div class="scan-input-row">
+          <div class="scan-input-wrap">
+            <span class="scan-input-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+              </svg>
+            </span>
+            <input
+              class="scan-input"
+              id="scan-query"
+              type="text"
+              placeholder="Search any product — Nike Air Force 1, iPhone 15, Sony WH-1000XM5…"
+              autocomplete="off"
+            >
+          </div>
+          <button class="btn-primary" id="scan-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+            </svg>
+            Scan
+          </button>
+        </div>
+
+        <div class="quick-chips">
+          <span class="quick-chip" data-q="Nike Air Force 1">👟 Nike Sneakers</span>
+          <span class="quick-chip" data-q="Sony WH-1000XM5 headphones">🎧 Headphones</span>
+          <span class="quick-chip" data-q="iPhone 15 Pro">📱 iPhone 15 Pro</span>
+          <span class="quick-chip" data-q="Apple AirPods Pro">🎵 AirPods Pro</span>
+          <span class="quick-chip" data-q="Samsung 65 inch 4K TV">📺 4K TV</span>
+          <span class="quick-chip" data-q="PS5 console">🎮 PS5</span>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div class="scan-loading" id="scan-loading">
+        <div class="scan-spinner"></div>
+        <div class="scan-loading-text" id="loading-text">Scanning 500+ retailers…</div>
+      </div>
+
+      <!-- Results -->
+      <div class="scan-results" id="scan-results">
+        <div class="results-header">
+          <div class="results-title" id="results-title">Results for "Nike Air Force 1"</div>
+          <div class="results-meta">
+            <div class="live-dot"></div>
+            <span id="results-count">6 deals found</span>
+            &bull;
+            <span id="results-time">scanned in 1.2s</span>
+          </div>
+        </div>
+
+        <!-- Sponsored strip -->
+        <div class="ad-strip" id="ad-strip">
+          <span class="ad-strip-label">&#9733; Featured</span>
+          <div class="ad-strip-content">
+            <div class="ad-strip-title" id="ad-title">Get up to 40% off at Nike.com this week</div>
+            <div class="ad-strip-sub">Members unlock exclusive early-access deals + free shipping on all orders</div>
+          </div>
+          <button class="ad-strip-cta">Shop Now →</button>
+        </div>
+
+        <!-- Deals grid -->
+        <div class="deals-grid" id="deals-grid"></div>
+
+        <div class="margin-note">
+          <span class="margin-note-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+            </svg>
+          </span>
+          <span><strong>How we work:</strong> SmartScan is free to use. We earn a small referral fee when you make a purchase through our links — this never changes the price you see. Pro members unlock deeper discounts and exclusive partner rates.</span>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div id="scan-empty" style="text-align:center; padding: var(--space-20) var(--space-8); color: var(--color-text-faint);">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="margin:0 auto var(--space-4)">
+          <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        <div style="font-size:var(--text-base); font-weight:600; margin-bottom:var(--space-2)">Ready to scan</div>
+        <div style="font-size:var(--text-sm)">Type a product above or tap a quick chip to see live deals</div>
+      </div>
+    </div>
+
+    <!-- ─── MARGIN ENGINE PAGE ─────────────────────────────────────────── -->
+    <div id="page-engine" class="page">
+      <div class="page-header">
+        <h1 class="page-title">Margin Engine</h1>
+        <p class="page-subtitle">Configure how SmartScan embeds your take-rate across categories. The user always sees savings — you control the spread.</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Avg. Embedded Margin</div>
+          <div class="stat-value green" id="avg-margin-display">8.4%</div>
+          <div class="stat-delta">Across all categories</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Revenue This Month</div>
+          <div class="stat-value blue">$14,280</div>
+          <div class="stat-delta">↑ 23% vs last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Transactions</div>
+          <div class="stat-value">1,847</div>
+          <div class="stat-delta">Avg. order: $77.40</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Ad Revenue</div>
+          <div class="stat-value gold">$3,120</div>
+          <div class="stat-delta">Featured placements</div>
+        </div>
+      </div>
+
+      <div class="engine-grid">
+        <div class="card">
+          <div class="engine-card-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+            Category Take-Rate Rules
+          </div>
+          <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-5)">Drag each slider to set your embedded cut per category. Users see "savings" — they never see your spread.</p>
+
+          <div id="rule-rows">
+            <!-- Injected by JS -->
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="engine-card-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            Live Price Breakdown
+          </div>
+          <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-5)">For any scanned item, this is how the numbers flow. The customer only sees the highlighted row.</p>
+
+          <div class="price-breakdown" id="price-breakdown">
+            <div class="breakdown-row">
+              <span class="breakdown-label">Retailer base cost</span>
+              <span class="breakdown-value" id="bd-base">$89.99</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="breakdown-label">Sourced discount</span>
+              <span class="breakdown-value green" id="bd-discount">−$22.00</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="breakdown-label" data-tip="We buy at this price">Your net buy cost</span>
+              <span class="breakdown-value" id="bd-net">$67.99</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="breakdown-label" style="color:var(--color-text-faint);font-style:italic">Embedded margin</span>
+              <span class="breakdown-value hidden-row" id="bd-margin">hidden from user</span>
+            </div>
+            <div class="breakdown-row highlight">
+              <span class="breakdown-label">Customer-facing price</span>
+              <span class="breakdown-value" id="bd-shown">$74.99</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="breakdown-label">Customer sees savings of</span>
+              <span class="breakdown-value green" id="bd-savings-shown">$15.00 (17%)</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="breakdown-label">Your take on this order</span>
+              <span class="breakdown-value green" id="bd-take">$7.00</span>
+            </div>
+          </div>
+
+          <div style="margin-top:var(--space-4)">
+            <label class="input-label">Simulate product price</label>
+            <input type="range" class="rule-slider" min="20" max="500" value="90" id="sim-price-slider" style="width:100%">
+            <div style="display:flex;justify-content:space-between;margin-top:var(--space-1)">
+              <span style="font-size:var(--text-xs);color:var(--color-text-faint)">$20</span>
+              <span style="font-size:var(--text-xs);color:var(--color-primary);font-weight:700" id="sim-price-val">$90</span>
+              <span style="font-size:var(--text-xs);color:var(--color-text-faint)">$500</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-heading">
+        Featured Placement Revenue
+        <span class="label-accent">Ad Slots</span>
+      </div>
+      <p style="font-size:var(--text-sm);color:var(--color-text-muted);margin-bottom:var(--space-5);max-width:540px">Brands pay to appear at the top of SmartScan results for relevant searches. This stacks on top of your transaction margin — zero additional cost to users.</p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:var(--space-3);margin-bottom:var(--space-8)">
+        <div class="card-sm" style="text-align:center">
+          <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-2)">Top Banner (per 1K)</div>
+          <div style="font-family:var(--font-display);font-size:var(--text-lg);font-weight:900;color:var(--color-gold)">$45</div>
+          <div style="font-size:var(--text-xs);color:var(--color-text-faint)">CPM rate</div>
+        </div>
+        <div class="card-sm" style="text-align:center">
+          <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-2)">Deal Card Featured</div>
+          <div style="font-family:var(--font-display);font-size:var(--text-lg);font-weight:900;color:var(--color-gold)">$0.80</div>
+          <div style="font-size:var(--text-xs);color:var(--color-text-faint)">Per click-through</div>
+        </div>
+        <div class="card-sm" style="text-align:center">
+          <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-2)">Category Takeover</div>
+          <div style="font-family:var(--font-display);font-size:var(--text-lg);font-weight:900;color:var(--color-gold)">$1,200</div>
+          <div style="font-size:var(--text-xs);color:var(--color-text-faint)">Per day</div>
+        </div>
+        <div class="card-sm" style="text-align:center">
+          <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-2)">B2B Vertical API</div>
+          <div style="font-family:var(--font-display);font-size:var(--text-lg);font-weight:900;color:var(--color-blue)">$499</div>
+          <div style="font-size:var(--text-xs);color:var(--color-text-faint)">/ month seat</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── BNPL / CREDIT PAGE ─────────────────────────────────────────── -->
+    <div id="page-credit" class="page">
+      <div class="page-header">
+        <h1 class="page-title">BNPL & Credit</h1>
+        <p class="page-subtitle">Give customers flexible payment options at checkout. SmartScan routes through your BNPL partners — you earn a referral fee on every financing event.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-8);align-items:start" class="engine-grid">
+        <div>
+          <div class="section-heading">Payment Calculator</div>
+          <div class="credit-calc">
+            <div class="input-group">
+              <label class="input-label">Product price</label>
+              <input class="input-field" type="number" id="bnpl-amount" value="249" min="1" max="10000">
+            </div>
+
+            <div class="section-heading" style="font-size:var(--text-sm);margin-bottom:var(--space-3)">Choose your plan</div>
+            <div class="bnpl-options" id="bnpl-options">
+              <!-- injected by JS -->
+            </div>
+
+            <button class="btn-primary" style="width:100%" id="bnpl-apply-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+              Apply — Get Instant Decision
+            </button>
+
+            <div style="font-size:var(--text-xs);color:var(--color-text-faint);text-align:center;margin-top:var(--space-3)">
+              Soft credit check only &bull; No impact on credit score &bull; Results in seconds
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-heading">Partner Network</div>
+          <p style="font-size:var(--text-sm);color:var(--color-text-muted);margin-bottom:var(--space-5)">SmartScan connects to best-in-class BNPL and micro-loan partners. Each partner integration earns you a referral fee on every funded event.</p>
+
+          <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+            <div class="card-sm" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-3)">
+              <div>
+                <div style="font-size:var(--text-sm);font-weight:700">Affirm</div>
+                <div style="font-size:var(--text-xs);color:var(--color-text-muted)">Pay over 3, 6, or 12 months — 0% APR promo</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:var(--text-xs);color:var(--color-primary);font-weight:700">1.5% referral</div>
+                <div style="font-size:var(--text-xs);color:var(--color-text-faint)">per funded loan</div>
+              </div>
+            </div>
+            <div class="card-sm" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-3)">
+              <div>
+                <div style="font-size:var(--text-sm);font-weight:700">Klarna</div>
+                <div style="font-size:var(--text-xs);color:var(--color-text-muted)">Pay in 4 installments — no interest</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:var(--text-xs);color:var(--color-primary);font-weight:700">$2.50 CPA</div>
+                <div style="font-size:var(--text-xs);color:var(--color-text-faint)">per checkout</div>
+              </div>
+            </div>
+            <div class="card-sm" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-3)">
+              <div>
+                <div style="font-size:var(--text-sm);font-weight:700">Sezzle</div>
+                <div style="font-size:var(--text-xs);color:var(--color-text-muted)">Split any purchase over 6 weeks</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:var(--text-xs);color:var(--color-primary);font-weight:700">1.0% referral</div>
+                <div style="font-size:var(--text-xs);color:var(--color-text-faint)">per funded loan</div>
+              </div>
+            </div>
+            <div class="card-sm" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-3);border-color:rgba(59,158,255,0.3)">
+              <div>
+                <div style="font-size:var(--text-sm);font-weight:700">LendUp Micro <span class="tag blue" style="font-size:9px;vertical-align:middle">Coming Soon</span></div>
+                <div style="font-size:var(--text-xs);color:var(--color-text-muted)">Short-term personal loans up to $2,500</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:var(--text-xs);color:var(--color-blue);font-weight:700">3.0% referral</div>
+                <div style="font-size:var(--text-xs);color:var(--color-text-faint)">per funded loan</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:var(--space-6)">
+            <div class="engine-card-title">Revenue Estimate
+              <span class="label-accent" style="margin-left:auto;font-size:var(--text-xs)">BNPL Projection</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:var(--text-xs);color:var(--color-text-muted)">100 BNPL checkouts/day × $2.50</span>
+                <span style="font-size:var(--text-sm);font-weight:700;color:var(--color-primary)">$7,500/mo</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:var(--text-xs);color:var(--color-text-muted)">500K users × 4% BNPL conversion</span>
+                <span style="font-size:var(--text-sm);font-weight:700;color:var(--color-primary)">$50K/mo</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:var(--text-xs);color:var(--color-text-muted)">At 1M users (1.5% referral, avg $180 loan)</span>
+                <span style="font-size:var(--text-sm);font-weight:700;color:var(--color-gold)">$270K/mo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── RESALE PAGE ─────────────────────────────────────────────────── -->
+    <div id="page-resale" class="page">
+      <div class="page-header">
+        <h1 class="page-title">Resale Channel</h1>
+        <p class="page-subtitle">Let users sell their own items through SmartScan. You earn a platform fee on every sale — and AI suggests the optimal price and marketplace.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-8);align-items:start" class="engine-grid">
+        <div>
+          <div class="resale-form">
+            <div class="section-heading">List an Item</div>
+            <div class="input-group">
+              <label class="input-label">Item Name</label>
+              <input class="input-field" id="resale-name" type="text" placeholder="e.g. Nike Air Jordan 4, PlayStation 5">
+            </div>
+            <div class="input-group">
+              <label class="input-label">Condition</label>
+              <select class="input-field" id="resale-condition">
+                <option>Like New (9/10)</option>
+                <option>Good (7/10)</option>
+                <option>Fair (5/10)</option>
+                <option>Parts / Repair</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label class="input-label">What you paid (optional)</label>
+              <input class="input-field" id="resale-paid" type="number" placeholder="$0.00">
+            </div>
+            <div class="input-group">
+              <label class="input-label">Description</label>
+              <textarea class="input-field" id="resale-desc" placeholder="Any notes about the item, included accessories, etc."></textarea>
+            </div>
+            <button class="btn-primary" id="resale-estimate-btn" style="width:100%">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+              Get AI Price Estimate
+            </button>
+
+            <div class="resale-estimate" id="resale-estimate">
+              <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-2);font-weight:600;text-transform:uppercase;letter-spacing:0.07em">SmartScan Suggests</div>
+              <div class="resale-price-big" id="resale-suggest-price">$148 – $175</div>
+              <div class="resale-fee-note" id="resale-fee-note">SmartScan fee: 8% of sale price ($11.84 – $14.00)</div>
+              <div class="divider"></div>
+              <div class="section-heading" style="font-size:var(--text-sm);margin-bottom:var(--space-3)">Best Marketplaces</div>
+              <div id="resale-marketplaces" style="display:flex;flex-direction:column;gap:var(--space-2)">
+                <!-- injected by JS -->
+              </div>
+              <button class="btn-primary" style="width:100%;margin-top:var(--space-5)">
+                List Now — Free to Post
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-heading">Platform Fee Structure</div>
+          <div class="card" style="margin-bottom:var(--space-5)">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>Sale Price Range</th>
+                  <th>Platform Fee</th>
+                  <th>Seller Gets</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="color:var(--color-text-muted)">$0 – $50</td>
+                  <td><span class="tag primary">10%</span></td>
+                  <td style="font-weight:600">90%</td>
+                </tr>
+                <tr>
+                  <td style="color:var(--color-text-muted)">$50 – $200</td>
+                  <td><span class="tag primary">8%</span></td>
+                  <td style="font-weight:600">92%</td>
+                </tr>
+                <tr>
+                  <td style="color:var(--color-text-muted)">$200 – $1,000</td>
+                  <td><span class="tag blue">6%</span></td>
+                  <td style="font-weight:600">94%</td>
+                </tr>
+                <tr>
+                  <td style="color:var(--color-text-muted)">$1,000+</td>
+                  <td><span class="tag gold">4%</span></td>
+                  <td style="font-weight:600">96%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="section-heading">Recent Listings</div>
+          <div class="card">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>List Price</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Nike Dunk Low — Sz 10</td>
+                  <td style="font-weight:600">$162</td>
+                  <td><span class="tag primary">Sold</span></td>
+                </tr>
+                <tr>
+                  <td>Apple Watch Series 8</td>
+                  <td style="font-weight:600">$310</td>
+                  <td><span class="tag blue">Active</span></td>
+                </tr>
+                <tr>
+                  <td>Sony WH-1000XM4</td>
+                  <td style="font-weight:600">$175</td>
+                  <td><span class="tag muted">Draft</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── DASHBOARD PAGE ─────────────────────────────────────────────── -->
+    <div id="page-dashboard" class="page">
+      <div class="page-header">
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Your savings, earnings, and activity at a glance.</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Total Saved</div>
+          <div class="stat-value green">$1,240</div>
+          <div class="stat-delta">Lifetime across 38 purchases</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Scans This Month</div>
+          <div class="stat-value">142</div>
+          <div class="stat-delta">↑ 18 vs last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Resale Earnings</div>
+          <div class="stat-value gold">$487</div>
+          <div class="stat-delta">3 completed sales</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Deal Score Avg.</div>
+          <div class="stat-value blue">87</div>
+          <div class="stat-delta">Top 12% of users</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:var(--space-6)" class="engine-grid">
+        <div>
+          <div class="section-heading">Recent Deals</div>
+          <div class="card">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Paid</th>
+                  <th>Retail</th>
+                  <th>Saved</th>
+                  <th>Via</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Nike Air Force 1 (Sz 11)</td>
+                  <td style="font-weight:600">$74.99</td>
+                  <td style="color:var(--color-text-muted);text-decoration:line-through">$110</td>
+                  <td><span class="tag primary">$35.01</span></td>
+                  <td style="color:var(--color-text-faint)">Finish Line</td>
+                </tr>
+                <tr>
+                  <td>Sony WH-1000XM5</td>
+                  <td style="font-weight:600">$279</td>
+                  <td style="color:var(--color-text-muted);text-decoration:line-through">$399</td>
+                  <td><span class="tag primary">$120</span></td>
+                  <td style="color:var(--color-text-faint)">Amazon</td>
+                </tr>
+                <tr>
+                  <td>Samsung 65" QLED TV</td>
+                  <td style="font-weight:600">$897</td>
+                  <td style="color:var(--color-text-muted);text-decoration:line-through">$1,299</td>
+                  <td><span class="tag primary">$402</span></td>
+                  <td style="color:var(--color-text-faint)">Best Buy</td>
+                </tr>
+                <tr>
+                  <td>AirPods Pro (2nd Gen)</td>
+                  <td style="font-weight:600">$179</td>
+                  <td style="color:var(--color-text-muted);text-decoration:line-through">$249</td>
+                  <td><span class="tag primary">$70</span></td>
+                  <td style="color:var(--color-text-faint)">Target</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <div class="section-heading">Deal Score</div>
+          <div class="card" style="text-align:center;padding:var(--space-8)">
+            <svg width="120" height="120" viewBox="0 0 120 120" style="margin:0 auto var(--space-4)">
+              <circle cx="60" cy="60" r="50" fill="none" stroke="var(--color-border)" stroke-width="8"/>
+              <circle class="progress-ring-circle progress-ring" cx="60" cy="60" r="50" fill="none"
+                stroke="var(--color-primary)" stroke-width="8"
+                stroke-dasharray="314"
+                stroke-dashoffset="40"/>
+              <text x="60" y="65" text-anchor="middle" font-family="var(--font-display)" font-size="28" font-weight="900" fill="var(--color-text)">87</text>
+              <text x="60" y="82" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--color-text-muted)">/ 100</text>
+            </svg>
+            <div style="font-size:var(--text-sm);font-weight:700;color:var(--color-primary)">Expert Deal Hunter</div>
+            <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-2)">Top 12% of all SmartScan users this month</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="upgrade-banner">
+        <div class="upgrade-text">
+          <h3>Unlock Pro Deals</h3>
+          <p>Free users earn savings. Pro members earn more — deeper discounts, batch scanning, and priority deal alerts before they sell out.</p>
+          <div class="upgrade-perks">
+            <div class="upgrade-perk">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+              Up to 3× better embedded savings vs. Free
+            </div>
+            <div class="upgrade-perk">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+              Batch scan up to 50 items at once
+            </div>
+            <div class="upgrade-perk">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+              Price drop alerts via push notification
+            </div>
+            <div class="upgrade-perk">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+              Reduced platform fee on resales (4% flat)
+            </div>
+          </div>
+        </div>
+        <button class="btn-primary" style="font-size:var(--text-base);padding:var(--space-5) var(--space-8)" onclick="navigateTo('tiers')">
+          Upgrade to Pro →
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── TIERS PAGE ──────────────────────────────────────────────────── -->
+    <div id="page-tiers" class="page">
+      <div class="page-header">
+        <h1 class="page-title">Plans & Pricing</h1>
+        <p class="page-subtitle">SmartScan is free forever. Upgrade for deeper savings and more powerful features.</p>
+      </div>
+
+      <div class="tier-cards">
+        <div class="tier-card current">
+          <span class="tier-card-badge active">CURRENT</span>
+          <div class="tier-card-name">Free</div>
+          <div class="tier-card-price">$0 <span>/ month</span></div>
+          <div class="tier-card-desc">Great for occasional shoppers who want to find the best deal fast.</div>
+          <div class="tier-features">
+            <div class="tier-feature"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Unlimited product scans</div>
+            <div class="tier-feature"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Standard deal feed</div>
+            <div class="tier-feature"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>BNPL checkout (Klarna / Sezzle)</div>
+            <div class="tier-feature"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Resale listings (10% fee)</div>
+            <div class="tier-feature locked"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><path d="M6 1v3M10 1v3M14 1v3"/></svg>Batch scanning (5 items max)</div>
+            <div class="tier-feature locked"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><path d="M6 1v3M10 1v3M14 1v3"/></svg>Price drop alerts</div>
+          </div>
+          <button class="btn-secondary" style="width:100%">Current Plan</button>
+        </div>
+
+        <div class="tier-card popular">
+          <span class="tier-card-badge popular">&#9733; MOST POPULAR</span>
+          <div class="tier-card-name">Pro</div>
+          <div class="tier-card-price">$9.99 <span>/ month</span></div>
+          <div class="tier-card-desc">For frequent shoppers who want maximum savings and early access to the best deals.</div>
+          <div class="tier-features">
+            <div class="tier-feature"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Everything in Free</div>
+            <div class="tier-feature"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Priority deal feed (3× better margins)</div>
+            <div class="tier-feature"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Batch scan up to 50 items</div>
+            <div class="tier-feature"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Price drop + restock alerts</div>
+            <div class="tier-feature"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Resale fee cut to 4% flat</div>
+            <div class="tier-feature"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>BNPL access to Affirm + LendUp Micro</div>
+            <div class="tier-feature"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Ad-free scanning experience</div>
+          </div>
+          <button class="btn-primary" style="width:100%" id="upgrade-pro-btn">Upgrade to Pro →</button>
+        </div>
+
+        <div class="tier-card">
+          <span class="tier-card-badge enterprise">B2B / ENTERPRISE</span>
+          <div class="tier-card-name">Business</div>
+          <div class="tier-card-price">$499 <span>/ mo</span></div>
+          <div class="tier-card-desc">White-label SmartScan for your industry. Full API access, custom margin rules, and dedicated support.</div>
+          <div class="tier-features">
+            <div class="tier-feature"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Everything in Pro</div>
+            <div class="tier-feature"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Full REST API access</div>
+            <div class="tier-feature"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Custom take-rate rules per vertical</div>
+            <div class="tier-feature"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>White-label dashboard + branding</div>
+            <div class="tier-feature"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>SLA + dedicated support</div>
+            <div class="tier-feature"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Revenue share program</div>
+          </div>
+          <button class="btn-secondary" style="width:100%">Contact Sales</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="engine-card-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+          Revenue Model — How SmartScan Earns (Without Charging Users)
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--space-4);margin-top:var(--space-4)">
+          <div style="padding:var(--space-4);background:var(--color-surface-3);border-radius:var(--radius-lg)">
+            <div style="font-size:var(--text-xs);color:var(--color-primary);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:var(--space-2)">Transaction Margin</div>
+            <div style="font-size:var(--text-xs);color:var(--color-text-muted)">5–15% embedded take-rate on every purchase routed through SmartScan. User sees only savings.</div>
+          </div>
+          <div style="padding:var(--space-4);background:var(--color-surface-3);border-radius:var(--radius-lg)">
+            <div style="font-size:var(--text-xs);color:var(--color-gold);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:var(--space-2)">Featured Ads</div>
+            <div style="font-size:var(--text-xs);color:var(--color-text-muted)">Brand placements in scan results — CPM + CPC. Higher CPM for category-locked inventory.</div>
+          </div>
+          <div style="padding:var(--space-4);background:var(--color-surface-3);border-radius:var(--radius-lg)">
+            <div style="font-size:var(--text-xs);color:var(--color-blue);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:var(--space-2)">BNPL Referral</div>
+            <div style="font-size:var(--text-xs);color:var(--color-text-muted)">1–3% referral fee per funded BNPL or micro-loan at checkout. Grows with transaction volume.</div>
+          </div>
+          <div style="padding:var(--space-4);background:var(--color-surface-3);border-radius:var(--radius-lg)">
+            <div style="font-size:var(--text-xs);color:var(--color-text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:var(--space-2)">Resale Fee</div>
+            <div style="font-size:var(--text-xs);color:var(--color-text-muted)">4–10% platform fee on every item sold through the resale channel. Scaled by sale price tier.</div>
+          </div>
+          <div style="padding:var(--space-4);background:var(--color-surface-3);border-radius:var(--radius-lg)">
+            <div style="font-size:var(--text-xs);color:var(--color-text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:var(--space-2)">Pro Subscriptions</div>
+            <div style="font-size:var(--text-xs);color:var(--color-text-muted)">$9.99/mo for power users who want better deals. Predictable MRR that funds growth.</div>
+          </div>
+          <div style="padding:var(--space-4);background:var(--color-surface-3);border-radius:var(--radius-lg)">
+            <div style="font-size:var(--text-xs);color:var(--color-text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:var(--space-2)">B2B API</div>
+            <div style="font-size:var(--text-xs);color:var(--color-text-muted)">$499+/month for businesses embedding SmartScan into their own flows or white-labeling the engine.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      R.E.A.L. SmartScan AI Engine — Prototype &bull;
+      <a href="https://www.real-pt.com/" target="_blank">real-pt.com</a> &bull;
+      <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+    </footer>
+  </main>
+</div>
+
+<!-- MOBILE NAV -->
+<nav class="mobile-nav" id="mobile-nav">
+  <div class="mobile-nav-item active" data-page="scan">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    Scan
+  </div>
+  <div class="mobile-nav-item" data-page="engine">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
+    Margin
+  </div>
+  <div class="mobile-nav-item" data-page="credit">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+    BNPL
+  </div>
+  <div class="mobile-nav-item" data-page="resale">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+    Resale
+  </div>
+  <div class="mobile-nav-item" data-page="tiers">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    Pro
+  </div>
+</nav>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const DEAL_DB = {
+  "nike air force 1": [
+    { retailer:"Nike.com", name:"Nike Air Force 1 '07 — White/White", emoji:"👟", basePrice:110, shownPrice:74.99, coupon:"AIRFORCE15", score:94, tags:["coupon","all-time-low","free-ship"], featured:true },
+    { retailer:"Finish Line", name:"Nike Air Force 1 — White Sz 10", emoji:"👟", basePrice:110, shownPrice:79.99, coupon:null, score:88, tags:["lowest-in-90d"] },
+    { retailer:"Dick's Sporting", name:"Air Force 1 React — Triple White", emoji:"👟", basePrice:120, shownPrice:84.00, coupon:"SAVE10", score:81, tags:["coupon"] },
+    { retailer:"Amazon", name:"Nike Air Force 1 — Black Sz 9", emoji:"👟", basePrice:110, shownPrice:68.50, coupon:null, score:96, tags:["lightning-deal","prime"], sponsored:true },
+    { retailer:"Foot Locker", name:"Air Force 1 '07 LV8 — Blue", emoji:"👟", basePrice:130, shownPrice:89.99, coupon:null, score:78, tags:["member-exclusive"] },
+    { retailer:"GOAT", name:"Nike AF1 Shadow — OG Colorway", emoji:"👟", basePrice:160, shownPrice:124.00, coupon:null, score:72, tags:["authenticated","rare"] }
+  ],
+  "sony wh-1000xm5 headphones": [
+    { retailer:"Sony.com", name:"Sony WH-1000XM5 — Midnight Black", emoji:"🎧", basePrice:399, shownPrice:279, coupon:"SONY30", score:92, tags:["coupon","all-time-low"], featured:true },
+    { retailer:"Amazon", name:"Sony WH-1000XM5 — Silver", emoji:"🎧", basePrice:399, shownPrice:299, coupon:null, score:88, tags:["prime","free-ship"] },
+    { retailer:"Best Buy", name:"Sony WH-1000XM5 (Open Box)", emoji:"🎧", basePrice:399, shownPrice:259, coupon:null, score:90, tags:["open-box","certified"] },
+    { retailer:"Target", name:"Sony WH-1000XM5 — Black", emoji:"🎧", basePrice:399, shownPrice:319, coupon:"CIRCLE15", score:80, tags:["coupon","circle-member"], sponsored:true },
+    { retailer:"Costco", name:"Sony WH-1000XM5 + Carry Case Bundle", emoji:"🎧", basePrice:449, shownPrice:349, coupon:null, score:85, tags:["bundle","members"] }
+  ],
+  "iphone 15 pro": [
+    { retailer:"Apple.com", name:"iPhone 15 Pro — 128GB Natural Titanium", emoji:"📱", basePrice:999, shownPrice:999, coupon:null, score:70, tags:["trade-in-up-to-600"] },
+    { retailer:"Amazon", name:"iPhone 15 Pro 128GB — Black Titanium", emoji:"📱", basePrice:999, shownPrice:929, coupon:null, score:82, tags:["lowest-since-launch"], featured:true },
+    { retailer:"Best Buy", name:"iPhone 15 Pro — $200 Gift Card Bundle", emoji:"📱", basePrice:999, shownPrice:999, coupon:null, score:88, tags:["bundle","gift-card"], sponsored:true },
+    { retailer:"Walmart", name:"iPhone 15 Pro 256GB — All Colors", emoji:"📱", basePrice:1099, shownPrice:949, coupon:null, score:86, tags:["sale","limited"] },
+    { retailer:"Verizon", name:"iPhone 15 Pro — $400 off with trade-in", emoji:"📱", basePrice:999, shownPrice:599, coupon:"TRADE400", score:95, tags:["trade-in","carrier"] }
+  ],
+  "apple airpods pro": [
+    { retailer:"Amazon", name:"AirPods Pro (2nd Gen) USB-C", emoji:"🎵", basePrice:249, shownPrice:179, coupon:null, score:93, tags:["all-time-low","prime"], featured:true },
+    { retailer:"Target", name:"AirPods Pro 2nd Gen — White", emoji:"🎵", basePrice:249, shownPrice:199, coupon:"CIRCLE20", score:86, tags:["coupon","circle-member"] },
+    { retailer:"Best Buy", name:"AirPods Pro 2 + AppleCare+ Bundle", emoji:"🎵", basePrice:299, shownPrice:229, coupon:null, score:88, tags:["bundle","warranty"], sponsored:true },
+    { retailer:"Walmart", name:"Apple AirPods Pro 2nd Gen", emoji:"🎵", basePrice:249, shownPrice:189, coupon:null, score:90, tags:["lowest-in-60d"] }
+  ],
+  "samsung 65 inch 4k tv": [
+    { retailer:"Samsung.com", name:"Samsung 65\" QLED 4K Q80C", emoji:"📺", basePrice:1299, shownPrice:897, coupon:"SAVE30", score:90, tags:["coupon","sale"], featured:true },
+    { retailer:"Best Buy", name:"Samsung 65\" Neo QLED 4K QN85B", emoji:"📺", basePrice:1499, shownPrice:999, coupon:null, score:88, tags:["open-box-avail","haul-away"] },
+    { retailer:"Costco", name:"Samsung 65\" QLED 4K + 5yr Warranty", emoji:"📺", basePrice:1399, shownPrice:1049, coupon:null, score:85, tags:["bundle","members"], sponsored:true },
+    { retailer:"Amazon", name:"Samsung 65\" Crystal UHD TU-8000", emoji:"📺", basePrice:999, shownPrice:647, coupon:null, score:87, tags:["lightning-deal","prime"] }
+  ],
+  "ps5 console": [
+    { retailer:"PlayStation", name:"PS5 Console (Disc) — White", emoji:"🎮", basePrice:499, shownPrice:499, coupon:null, score:72, tags:["in-stock-alert"] },
+    { retailer:"Amazon", name:"PS5 Console + Extra Controller Bundle", emoji:"🎮", basePrice:559, shownPrice:519, coupon:null, score:82, tags:["bundle","prime"], featured:true },
+    { retailer:"Best Buy", name:"PS5 Disc Edition — 2 Game Bundle", emoji:"🎮", basePrice:599, shownPrice:549, coupon:null, score:85, tags:["bundle","sale"], sponsored:true },
+    { retailer:"Target", name:"PS5 Console — Standard Edition", emoji:"🎮", basePrice:499, shownPrice:499, coupon:"GAMER15", score:78, tags:["coupon","circle-member"] },
+    { retailer:"eBay", name:"PS5 Disc — New Sealed", emoji:"🎮", basePrice:499, shownPrice:469, coupon:null, score:80, tags:["verified-seller"] }
+  ]
+};
+
+const AD_MAP = {
+  "nike air force 1": { title:"Nike Members get 20% off select styles + free shipping", brand:"Nike" },
+  "sony wh-1000xm5 headphones": { title:"Sony Insider Club — Extra 10% off + 3-year warranty", brand:"Sony" },
+  "iphone 15 pro": { title:"Best Buy Total Tech members get $200 instant off iPhones", brand:"Best Buy" },
+  "apple airpods pro": { title:"Apple Back to School — $70 gift card with AirPods Pro", brand:"Apple" },
+  "samsung 65 inch 4k tv": { title:"Samsung Days Sale — save up to 40% on all QLED TVs", brand:"Samsung" },
+  "ps5 console": { title:"PlayStation Plus — 3 months free with any PS5 bundle", brand:"PlayStation" }
+};
+
+const CATEGORIES = [
+  { name:"Sneakers", pct:12 },
+  { name:"Electronics", pct:7 },
+  { name:"Apparel", pct:10 },
+  { name:"Home & Kitchen", pct:14 },
+  { name:"Toys & Games", pct:11 },
+  { name:"Sports", pct:9 }
+];
+
+// ─── NAVIGATION ──────────────────────────────────────────────────────────────
+function navigateTo(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + pageId).classList.add('active');
+
+  document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(n => {
+    n.classList.toggle('active', n.dataset.page === pageId);
+  });
+
+  // scroll main to top
+  document.querySelector('.main').scrollTop = 0;
+}
+
+document.querySelectorAll('.nav-item[data-page], .mobile-nav-item[data-page]').forEach(item => {
+  item.addEventListener('click', () => navigateTo(item.dataset.page));
+});
+
+// ─── THEME TOGGLE ─────────────────────────────────────────────────────────────
+(function(){
+  const t = document.querySelector('[data-theme-toggle]');
+  const r = document.documentElement;
+  let d = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  r.setAttribute('data-theme', d);
+  if (t) t.addEventListener('click', () => {
+    d = d === 'dark' ? 'light' : 'dark';
+    r.setAttribute('data-theme', d);
+    t.innerHTML = d === 'dark'
+      ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
+      : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+  });
+})();
+
+// ─── SCANNER ─────────────────────────────────────────────────────────────────
+const loadingMessages = [
+  "Scanning 500+ retailers…",
+  "Checking price history…",
+  "Applying AI margin rules…",
+  "Validating coupon codes…",
+  "Ranking deals by savings score…",
+  "Almost done…"
+];
+
+function getDeals(query) {
+  const q = query.toLowerCase().trim();
+  for (const [key, deals] of Object.entries(DEAL_DB)) {
+    if (q.includes(key) || key.includes(q) || q.split(' ').some(w => key.includes(w) && w.length > 3)) {
+      return { deals, key };
+    }
+  }
+  // Default / generic fallback
+  return { deals: generateGenericDeals(query), key: null };
+}
+
+function generateGenericDeals(query) {
+  const retailers = ["Amazon", "Walmart", "Target", "Best Buy", "eBay"];
+  const emojis = ["🛒","📦","🏷️","🔖","💡"];
+  return retailers.map((r, i) => ({
+    retailer: r,
+    name: `${query} — ${r} Listing`,
+    emoji: emojis[i],
+    basePrice: Math.round(50 + Math.random() * 300),
+    shownPrice: Math.round(40 + Math.random() * 250),
+    coupon: i === 0 ? "SAVE10" : null,
+    score: Math.round(70 + Math.random() * 25),
+    tags: i === 0 ? ["sale","free-ship"] : ["standard"],
+    featured: i === 0,
+    sponsored: i === 2
+  }));
+}
+
+function renderDealCard(deal) {
+  const savings = deal.basePrice - deal.shownPrice;
+  const savingsPct = Math.round((savings / deal.basePrice) * 100);
+  const tagsHtml = deal.tags.map(t => {
+    const cls = t === 'all-time-low' ? 'green' : t.includes('prime') || t === 'free-ship' ? 'blue' : t.includes('coupon') ? 'gold' : '';
+    return `<span class="deal-tag ${cls}">${t.replace(/-/g,' ')}</span>`;
+  }).join('');
+
+  const card = document.createElement('div');
+  card.className = 'deal-card' + (deal.featured ? ' featured' : '') + (deal.sponsored ? ' sponsored' : '');
+  card.innerHTML = `
+    <div class="deal-card-img">
+      <div class="deal-card-img-bg"></div>
+      <span style="position:relative;z-index:1;font-size:52px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3))">${deal.emoji}</span>
+    </div>
+    <div class="deal-card-body">
+      <div class="deal-card-retailer">${deal.retailer}</div>
+      <div class="deal-card-name">${deal.name}</div>
+      <div class="deal-price-row">
+        <span class="deal-price-shown">$${deal.shownPrice.toFixed(2)}</span>
+        ${savings > 0 ? `<span class="deal-price-original">$${deal.basePrice.toFixed(2)}</span>
+        <span class="deal-savings-badge">Save ${savingsPct}%</span>` : ''}
+      </div>
+      <div class="deal-meta-row">
+        ${tagsHtml}
+        ${deal.coupon ? `<span class="deal-tag gold">Code: <strong>${deal.coupon}</strong></span>` : ''}
+      </div>
+      <div class="deal-score-bar">
+        <span class="deal-score-label">Deal Score</span>
+        <div class="deal-score-track">
+          <div class="deal-score-fill" style="width:${deal.score}%"></div>
+        </div>
+        <span class="deal-score-num">${deal.score}</span>
+      </div>
+    </div>
+    <div class="deal-card-footer">
+      <button class="deal-cta-main" onclick="handleDealClick(event, '${deal.retailer}', ${deal.shownPrice})">Get This Deal</button>
+      <button class="deal-cta-bnpl" onclick="handleBNPL(event, ${deal.shownPrice})">Pay Later</button>
+    </div>
+  `;
+  return card;
+}
+
+function handleDealClick(e, retailer, price) {
+  e.stopPropagation();
+  alert(`Opening deal at ${retailer} for $${price.toFixed(2)}\n\nIn production, this routes through SmartScan's affiliate link — earning your take-rate on the transaction.`);
+}
+
+function handleBNPL(e, price) {
+  e.stopPropagation();
+  navigateTo('credit');
+  setTimeout(() => {
+    const inp = document.getElementById('bnpl-amount');
+    if (inp) { inp.value = price.toFixed(0); renderBNPL(); }
+  }, 100);
+}
+
+function runScan(query) {
+  if (!query.trim()) return;
+
+  document.getElementById('scan-empty').style.display = 'none';
+  document.getElementById('scan-results').classList.remove('show');
+  document.getElementById('scan-loading').classList.add('show');
+  document.getElementById('scan-btn').disabled = true;
+
+  let msgIdx = 0;
+  const loadTxt = document.getElementById('loading-text');
+  const msgInterval = setInterval(() => {
+    msgIdx = (msgIdx + 1) % loadingMessages.length;
+    loadTxt.textContent = loadingMessages[msgIdx];
+  }, 400);
+
+  const scanTime = 900 + Math.random() * 600;
+  setTimeout(() => {
+    clearInterval(msgInterval);
+    document.getElementById('scan-loading').classList.remove('show');
+    document.getElementById('scan-btn').disabled = false;
+
+    const { deals, key } = getDeals(query);
+    const sorted = [...deals].sort((a, b) => b.score - a.score);
+
+    document.getElementById('results-title').textContent = `Results for "${query}"`;
+    document.getElementById('results-count').textContent = `${sorted.length} deals found`;
+    document.getElementById('results-time').textContent = `scanned in ${(scanTime/1000).toFixed(1)}s`;
+
+    // Ad
+    const adKey = key && AD_MAP[key];
+    if (adKey) {
+      document.getElementById('ad-title').textContent = adKey.title;
+      document.getElementById('ad-strip').style.display = 'flex';
+    } else {
+      document.getElementById('ad-strip').style.display = 'none';
+    }
+
+    const grid = document.getElementById('deals-grid');
+    grid.innerHTML = '';
+    sorted.forEach(deal => grid.appendChild(renderDealCard(deal)));
+
+    document.getElementById('scan-results').classList.add('show');
+  }, scanTime);
+}
+
+document.getElementById('scan-btn').addEventListener('click', () => {
+  runScan(document.getElementById('scan-query').value);
+});
+document.getElementById('scan-query').addEventListener('keydown', e => {
+  if (e.key === 'Enter') runScan(e.target.value);
+});
+document.querySelectorAll('.quick-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const q = chip.dataset.q;
+    document.getElementById('scan-query').value = q;
+    runScan(q);
+  });
+});
+
+// ─── MARGIN ENGINE ────────────────────────────────────────────────────────────
+const ruleRows = document.getElementById('rule-rows');
+const ruleState = {};
+
+CATEGORIES.forEach(cat => {
+  ruleState[cat.name] = cat.pct;
+  const row = document.createElement('div');
+  row.className = 'rule-row';
+  row.innerHTML = `
+    <span class="rule-category">${cat.name}</span>
+    <div class="rule-slider-wrap">
+      <input type="range" class="rule-slider" min="1" max="25" value="${cat.pct}" data-cat="${cat.name}">
+    </div>
+    <span class="rule-pct" id="pct-${cat.name}">${cat.pct}%</span>
+  `;
+  ruleRows.appendChild(row);
+
+  row.querySelector('input').addEventListener('input', e => {
+    const v = parseInt(e.target.value);
+    ruleState[cat.name] = v;
+    document.getElementById('pct-' + cat.name).textContent = v + '%';
+    updateAvgMargin();
+    updateBreakdown();
+  });
+});
+
+function updateAvgMargin() {
+  const vals = Object.values(ruleState);
+  const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+  document.getElementById('avg-margin-display').textContent = avg.toFixed(1) + '%';
+}
+
+// Price breakdown sim
+const simSlider = document.getElementById('sim-price-slider');
+const simVal = document.getElementById('sim-price-val');
+
+function updateBreakdown() {
+  const base = parseInt(simSlider.value);
+  const marginPct = (ruleState['Electronics'] || 7) / 100;
+  const discount = base * 0.25;
+  const net = base - discount;
+  const embedded = net * marginPct;
+  const shown = (net + embedded).toFixed(2);
+  const savingsShown = (base - shown).toFixed(2);
+  const savingsPct = Math.round(((base - shown) / base) * 100);
+
+  document.getElementById('bd-base').textContent = '$' + base.toFixed(2);
+  document.getElementById('bd-discount').textContent = '−$' + discount.toFixed(2);
+  document.getElementById('bd-net').textContent = '$' + net.toFixed(2);
+  document.getElementById('bd-margin').textContent = `$${embedded.toFixed(2)} (${(marginPct*100).toFixed(0)}%) — hidden`;
+  document.getElementById('bd-shown').textContent = '$' + shown;
+  document.getElementById('bd-savings-shown').textContent = `$${savingsShown} (${savingsPct}%)`;
+  document.getElementById('bd-take').textContent = '$' + embedded.toFixed(2);
+}
+
+simSlider.addEventListener('input', e => {
+  simVal.textContent = '$' + e.target.value;
+  updateBreakdown();
+});
+updateBreakdown();
+
+// ─── BNPL CALCULATOR ──────────────────────────────────────────────────────────
+function renderBNPL() {
+  const amount = parseFloat(document.getElementById('bnpl-amount').value) || 249;
+  const plans = [
+    { term: '4 payments', months: 4, apr: 0 },
+    { term: '6 months', months: 6, apr: 0.15 },
+    { term: '12 months', months: 12, apr: 0.199 }
+  ];
+
+  const container = document.getElementById('bnpl-options');
+  container.innerHTML = '';
+  plans.forEach((plan, i) => {
+    const monthly = plan.apr === 0
+      ? (amount / plan.months)
+      : (amount * (plan.apr / 12)) / (1 - Math.pow(1 + plan.apr / 12, -plan.months));
+    const div = document.createElement('div');
+    div.className = 'bnpl-option' + (i === 0 ? ' selected' : '');
+    div.innerHTML = `
+      <div class="bnpl-option-payment">$${monthly.toFixed(2)}</div>
+      <div class="bnpl-option-term">${plan.term}${plan.apr > 0 ? ' (' + (plan.apr*100).toFixed(0) + '% APR)' : ' · 0% APR'}</div>
+    `;
+    div.addEventListener('click', () => {
+      container.querySelectorAll('.bnpl-option').forEach(o => o.classList.remove('selected'));
+      div.classList.add('selected');
+    });
+    container.appendChild(div);
+  });
+}
+
+document.getElementById('bnpl-amount').addEventListener('input', renderBNPL);
+document.getElementById('bnpl-apply-btn').addEventListener('click', () => {
+  alert('In production, this routes to your BNPL partner API (Affirm, Klarna, Sezzle) for instant underwriting.\n\nYou earn a referral fee on every funded event — no cost to the user.');
+});
+renderBNPL();
+
+// ─── RESALE ───────────────────────────────────────────────────────────────────
+const marketplaces = [
+  { name:"eBay", icon:"🟡", fee:"12.9%", speed:"2–5 days", rec:true },
+  { name:"StockX", icon:"🔴", fee:"9%", speed:"7–10 days", rec:false },
+  { name:"R.E.A.L. Marketplace", icon:"🟢", fee:"8%", speed:"1–3 days", rec:true },
+  { name:"Facebook Marketplace", icon:"🔵", fee:"5%", speed:"Local", rec:false }
+];
+
+document.getElementById('resale-estimate-btn').addEventListener('click', () => {
+  const name = document.getElementById('resale-name').value || "Your Item";
+  const condition = document.getElementById('resale-condition').value;
+  const paid = parseFloat(document.getElementById('resale-paid').value) || 100;
+
+  // Simple estimate: condition multiplier
+  const mults = { "Like New (9/10)": 1.5, "Good (7/10)": 1.2, "Fair (5/10)": 0.9, "Parts / Repair": 0.5 };
+  const mult = mults[condition] || 1.2;
+  const low = (paid * mult * 0.9).toFixed(0);
+  const high = (paid * mult * 1.1).toFixed(0);
+  const feeL = (low * 0.08).toFixed(2);
+  const feeH = (high * 0.08).toFixed(2);
+
+  document.getElementById('resale-suggest-price').textContent = `$${low} – $${high}`;
+  document.getElementById('resale-fee-note').textContent = `SmartScan fee: 8% of sale price ($${feeL} – $${feeH})`;
+
+  const mpContainer = document.getElementById('resale-marketplaces');
+  mpContainer.innerHTML = '';
+  marketplaces.forEach(mp => {
+    const div = document.createElement('div');
+    div.style.cssText = `display:flex;align-items:center;justify-content:space-between;padding:var(--space-3) var(--space-4);background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-md);gap:var(--space-3);${mp.rec ? 'border-color:rgba(0,220,130,0.3)' : ''}`;
+    div.innerHTML = `
+      <div style="display:flex;align-items:center;gap:var(--space-2)">
+        <span>${mp.icon}</span>
+        <span style="font-size:var(--text-sm);font-weight:600">${mp.name}</span>
+        ${mp.rec ? '<span class="tag primary" style="font-size:9px">Recommended</span>' : ''}
+      </div>
+      <div style="text-align:right;font-size:var(--text-xs)">
+        <div style="font-weight:600;color:var(--color-text)">${mp.fee} fee</div>
+        <div style="color:var(--color-text-faint)">${mp.speed}</div>
+      </div>
+    `;
+    mpContainer.appendChild(div);
+  });
+
+  document.getElementById('resale-estimate').classList.add('show');
+});
+
+// ─── UPGRADE BUTTON ───────────────────────────────────────────────────────────
+document.getElementById('upgrade-pro-btn').addEventListener('click', () => {
+  const badge = document.getElementById('tier-display');
+  badge.className = 'tier-badge pro';
+  badge.textContent = '★ PRO';
+  badge.style.animation = 'fadeIn 0.3s ease';
+  alert('Welcome to Pro! 🎉\n\nIn production, this triggers Stripe checkout and upgrades your account.\nYou now unlock:\n• Priority deal feed\n• Batch scanning (50 items)\n• Price drop alerts\n• Reduced resale fees (4% flat)');
+});
+
+// ─── AUTO-TRIGGER demo scan on load ───────────────────────────────────────────
+setTimeout(() => {
+  document.getElementById('scan-query').value = 'Nike Air Force 1';
+  runScan('Nike Air Force 1');
+}, 600);
+</script>
+</body>
+</html>

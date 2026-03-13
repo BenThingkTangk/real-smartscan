@@ -1,0 +1,14 @@
+{
+  "name": "real-smartscan",
+  "version": "1.0.0",
+  "description": "R.E.A.L. SmartScan AI Deal Engine — Consumer-facing smart scanner with embedded margin engine, BNPL, and resale channel.",
+  "scripts": {
+    "dev": "npx serve public -l 3000",
+    "build": "echo 'Static site — no build step required'",
+    "start": "npx serve public -l 3000"
+  },
+  "keywords": ["smartscan", "retail", "ai", "deals"],
+  "author": "AntimatterAI / ThingkTank",
+  "license": "UNLICENSED",
+  "private": true
+}
