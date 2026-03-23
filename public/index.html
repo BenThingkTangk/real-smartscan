@@ -58,6 +58,8 @@ img{max-width:100%;display:block}
 }
 
 /* Card reveal */
+
+@keyframes adminShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
 @keyframes cardReveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .deal-card-anim{
   animation:cardReveal 350ms cubic-bezier(0.16,1,0.3,1) both;
@@ -441,11 +443,12 @@ img{max-width:100%;display:block}
 .checkout-trust-item{font-size:11px;color:var(--text-3);display:flex;align-items:center;gap:5px}
 
 /* Admin login */
-.admin-login-overlay{position:fixed;inset:0;background:var(--bg-0);z-index:500;display:flex;align-items:center;justify-content:center}
-.admin-login-box{background:var(--bg-2);border:1px solid var(--border-2);border-radius:var(--r-xl);padding:40px;width:100%;max-width:380px;text-align:center}
+.admin-login-overlay{position:fixed;inset:0;background:rgba(6,10,20,0.98);backdrop-filter:blur(16px);z-index:9999;display:none;align-items:center;justify-content:center}
+.admin-login-box{background:var(--bg-2);border:1px solid var(--border-2);border-radius:var(--r-xl);padding:40px 36px;width:100%;max-width:400px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,0.6)}
 .admin-login-box h2{font-size:24px;font-weight:700;color:var(--text-1);margin-bottom:8px}
 .admin-login-box p{font-size:14px;color:var(--text-3);margin-bottom:28px}
-.admin-login-input{width:100%;background:var(--bg-glass);border:1px solid var(--border-1);color:var(--text-1);padding:12px 16px;border-radius:var(--r-sm);font-size:16px;margin-bottom:12px;text-align:center;letter-spacing:4px}
+.admin-login-input{width:100%;background:var(--bg-3);border:1.5px solid var(--border-1);border-radius:var(--r-md);color:var(--text-1);font-size:16px;font-family:var(--font-b);padding:13px 16px;margin-bottom:12px;outline:none;text-align:center;letter-spacing:2px;transition:border-color .2s,box-shadow .2s}
+.admin-login-input:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--orange-dim)}
 .admin-login-input:focus{border-color:rgba(240,112,32,0.5)}
 .admin-login-btn{width:100%;padding:13px;background:var(--grad-orange);color:#fff;font-size:15px;font-weight:700;border-radius:var(--r-sm);cursor:pointer}
 .admin-login-error{font-size:13px;color:var(--red);margin-top:8px;display:none}
@@ -618,7 +621,7 @@ img{max-width:100%;display:block}
 
 <!-- NAV -->
 <nav class="nav" id="mainNav">
-  <div class="nav-logo">
+  <div class="nav-logo" onclick="goHome()" style="cursor:pointer" title="R.E.A.L. SmartScan — Home">
     <div class="nav-logo-icon">R</div>
     <div class="nav-logo-text"><span>R.E.A.L.</span> SmartScan</div>
   </div>
@@ -637,10 +640,12 @@ img{max-width:100%;display:block}
     <button class="nav-search-btn" id="navSearchBtn" aria-label="Search">🔍</button>
   </div>
   <div class="nav-links">
-    <span class="nav-link" onclick="scrollToSection('categories')">Shop</span>
-    <span class="nav-link" onclick="scrollToSection('categories')">Categories</span>
+    <span class="nav-link" onclick="navGoTo('categories')">Shop</span>
+    <span class="nav-link" onclick="navGoTo('categories')">Categories</span>
+    <span class="nav-link" onclick="navGoTo('realtv')">Real TV 🔴</span>
+    <span class="nav-link" onclick="navGoTo('prime')">Prime Elite</span>
     <button class="nav-btn-admin" onclick="showAdminLogin()">Admin</button>
-    <button class="nav-btn-prime" onclick="scrollToSection('prime')">Prime Elite ★</button>
+    <button class="nav-btn-prime" onclick="openPrimeSignup()">Join Prime ★</button>
   </div>
 </nav>
 
@@ -820,6 +825,8 @@ img{max-width:100%;display:block}
   </div>
 </div>
   </div><!-- /results-cols-wrap -->
+  </div><!-- /results-inner -->
+</div><!-- /resultsPage -->
 
 <!-- CATEGORIES SECTION -->
 <section class="section" id="categories">
@@ -850,6 +857,32 @@ img{max-width:100%;display:block}
 </section>
 
 <!-- PRIME ELITE -->
+
+<!-- REAL TV SECTION -->
+<section class="section" id="realtv" style="background:linear-gradient(180deg,var(--bg-0) 0%,#0a0a1a 100%);border-top:1px solid var(--border-0)">
+  <div style="max-width:1400px;margin:0 auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:16px">
+      <div>
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:99px;padding:5px 14px;font-size:12px;font-weight:700;color:#EF4444;letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px">
+          <span style="width:7px;height:7px;background:#EF4444;border-radius:50%;animation:livePulse 1.2s ease infinite"></span>
+          Live Now
+        </div>
+        <h2 class="section-title" style="margin-bottom:8px">R.E.A.L. TV</h2>
+        <p style="font-size:15px;color:var(--text-3)">Live deal streams, expert reviews, and price-drop alerts — happening right now.</p>
+      </div>
+      <button onclick="navGoTo('prime')" style="background:var(--grad-orange);border:none;color:#fff;font-size:14px;font-weight:700;padding:11px 22px;border-radius:var(--r-md);cursor:pointer;white-space:nowrap">Watch Free with Prime Elite ★</button>
+    </div>
+    <div id="realtvGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px">
+      <!-- Populated by JS from realtvContent database -->
+    </div>
+    <div id="realtvEmpty" style="display:none;text-align:center;padding:48px;color:var(--text-3)">
+      <div style="font-size:48px;margin-bottom:12px">📺</div>
+      <div style="font-size:16px;font-weight:600">No content yet</div>
+      <div style="font-size:13px;margin-top:6px">Add videos and streams from the Admin Portal → Real TV</div>
+    </div>
+  </div>
+</section>
+
 <section class="prime-section" id="prime">
   <div style="max-width:1400px;margin:0 auto">
     <div class="section-header">
@@ -1017,17 +1050,6 @@ img{max-width:100%;display:block}
   </div>
 </div>
 
-<!-- ADMIN LOGIN -->
-<div class="admin-login-overlay" id="adminLoginOverlay" style="display:none">
-  <div class="admin-login-box">
-    <h2>Admin Portal</h2>
-    <p>Enter your admin access code</p>
-    <input type="password" class="admin-login-input" id="adminPasswordInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkAdminPassword()">
-    <button class="admin-login-btn" onclick="checkAdminPassword()">Access Portal →</button>
-    <div class="admin-login-error" id="adminLoginError">Incorrect password. Try again.</div>
-    <div style="margin-top:16px"><span style="font-size:12px;color:var(--text-4);cursor:pointer" onclick="hideAdminLogin()">← Back to store</span></div>
-  </div>
-</div>
 
 <!-- ADMIN PORTAL -->
 <div class="admin-page" id="adminPage">
@@ -1043,6 +1065,7 @@ img{max-width:100%;display:block}
     <div class="admin-nav-item" onclick="showAdminTab('products')"><span class="admin-nav-icon">🏷️</span>Products</div>
     <div class="admin-nav-item" onclick="showAdminTab('customers')"><span class="admin-nav-icon">👥</span>Customers</div>
     <div class="admin-nav-item" onclick="showAdminTab('settings')"><span class="admin-nav-icon">⚙️</span>Settings</div>
+    <div class="admin-nav-item" onclick="showAdminTab('realtv')"><span class="admin-nav-icon">📺</span>Real TV</div>
     <div style="margin-top:auto;padding:20px">
       <button class="btn-admin-secondary" style="width:100%" onclick="exitAdmin()">← Exit Admin</button>
     </div>
@@ -1210,6 +1233,67 @@ img{max-width:100%;display:block}
           <strong>Email:</strong> <a href="mailto:invest@realecosystem.com" style="color:var(--orange)">invest@realecosystem.com</a>&nbsp;&nbsp;·&nbsp;&nbsp;
           <a href="https://real-smart-retail-concept.vercel.app" target="_blank" style="color:var(--cyan)">View Full Investor Deck →</a>&nbsp;&nbsp;·&nbsp;&nbsp;
           <a href="https://real-pt.com" target="_blank" style="color:var(--text-3)">real-pt.com</a>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- REAL TV ADMIN TAB -->
+    <div class="admin-tab" id="tab-realtv" style="display:none">
+      <div class="admin-header"><h2>📺 Real TV — Content Manager</h2><p>Manage live streams and recorded content shown on the homepage</p></div>
+      
+      <!-- Add Content Form -->
+      <div class="chart-card" style="margin-bottom:20px">
+        <h3>Add New Content</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+          <div>
+            <div class="admin-form-group">
+              <label class="admin-form-label">Content Type</label>
+              <select class="admin-input" id="rtvType">
+                <option value="live">🔴 Live Stream</option>
+                <option value="recorded">📹 Recorded Video</option>
+              </select>
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-form-label">Title</label>
+              <input type="text" class="admin-input" id="rtvTitle" placeholder="e.g. Nike Air Max Flash Sale — Live Deals">
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-form-label">Category</label>
+              <input type="text" class="admin-input" id="rtvCategory" placeholder="e.g. Sneakers, Electronics, Gaming...">
+            </div>
+          </div>
+          <div>
+            <div class="admin-form-group">
+              <label class="admin-form-label">Video / Stream URL</label>
+              <input type="url" class="admin-input" id="rtvUrl" placeholder="https://youtube.com/watch?v=... or stream URL">
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-form-label">Thumbnail Emoji</label>
+              <input type="text" class="admin-input" id="rtvEmoji" placeholder="🎮 👟 📱 💪" maxlength="4" style="font-size:24px">
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-form-label">Description (optional)</label>
+              <input type="text" class="admin-input" id="rtvDesc" placeholder="Brief description of the content">
+            </div>
+          </div>
+        </div>
+        <button class="btn-admin-primary" onclick="addRealTVContent()" style="margin-top:8px">+ Add to Real TV</button>
+        <div id="rtvAddMsg" style="display:none;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:13px"></div>
+      </div>
+      
+      <!-- Content List -->
+      <div class="chart-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <h3>Current Content (<span id="rtvCount">0</span>)</h3>
+          <div style="display:flex;gap:8px">
+            <button onclick="filterRTV('all')" id="rtvFilterAll" class="btn-admin-primary" style="font-size:12px;padding:6px 12px">All</button>
+            <button onclick="filterRTV('live')" id="rtvFilterLive" class="btn-admin-secondary" style="font-size:12px;padding:6px 12px">Live</button>
+            <button onclick="filterRTV('recorded')" id="rtvFilterRec" class="btn-admin-secondary" style="font-size:12px;padding:6px 12px">Recorded</button>
+          </div>
+        </div>
+        <div id="rtvAdminList" style="display:flex;flex-direction:column;gap:10px">
+          <div style="text-align:center;padding:32px;color:var(--text-3);font-size:13px">Loading content...</div>
         </div>
       </div>
     </div>
@@ -1911,6 +1995,29 @@ function scrollToSection(id) {
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+function navGoTo(id) {
+  // If in search results or admin, go home first then scroll
+  const resultsPage = document.getElementById('resultsPage');
+  const adminPage = document.getElementById('adminPage');
+  const hero = document.getElementById('heroSection');
+  const adminOverlay = document.getElementById('adminLoginOverlay');
+  
+  if (adminPage && adminPage.classList.contains('visible')) {
+    adminPage.classList.remove('visible');
+    document.body.style.overflow = '';
+  }
+  if (adminOverlay) adminOverlay.style.display = 'none';
+  if (resultsPage && resultsPage.classList.contains('visible')) {
+    resultsPage.classList.remove('visible');
+    if (hero) hero.classList.remove('collapsed');
+  }
+  
+  setTimeout(function() {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   const hero = document.getElementById('heroSection');
@@ -1946,13 +2053,18 @@ function checkAdminPassword() {
   const input = document.getElementById('adminPasswordInput');
   const errorEl = document.getElementById('adminLoginError');
   if (!input) return;
-  if (input.value === ADMIN_PASSWORD) {
+  if (input.value.trim() === ADMIN_PASSWORD) {
     hideAdminLogin();
     showAdmin();
   } else {
-    if (errorEl) errorEl.style.display = 'block';
+    if (errorEl) { errorEl.style.display = 'block'; }
     input.value = '';
     input.focus();
+    // shake animation
+    input.style.animation = 'none';
+    input.offsetHeight; // reflow
+    input.style.animation = 'adminShake 0.4s ease';
+    setTimeout(function(){ input.style.animation = ''; }, 400);
   }
 }
 
@@ -1963,6 +2075,21 @@ function showAdmin() {
   initAdminCharts();
   populateAdminTables();
   startLiveOrdersFeed();
+}
+
+function goHome() {
+  // Exit admin if open
+  const adminPage = document.getElementById('adminPage');
+  if (adminPage) adminPage.classList.remove('visible');
+  const adminOverlay = document.getElementById('adminLoginOverlay');
+  if (adminOverlay) adminOverlay.style.display = 'none';
+  document.body.style.overflow = '';
+  // Show hero, hide results
+  const hero = document.getElementById('heroSection');
+  const results = document.getElementById('resultsPage');
+  if (hero) hero.classList.remove('collapsed');
+  if (results) results.classList.remove('visible');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function exitAdmin() {
@@ -2531,5 +2658,241 @@ document.addEventListener('click', function(e) {
 });
 </script>
 
+
+<!-- ADMIN LOGIN -->
+<div class="admin-login-overlay" id="adminLoginOverlay">
+  <div class="admin-login-box">
+    <div style="width:48px;height:48px;background:var(--grad-orange);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;font-family:var(--font-d);margin:0 auto 20px">R</div>
+    <h2 style="font-family:var(--font-d);font-size:26px;font-weight:700;margin-bottom:6px">Admin Portal</h2>
+    <p style="font-size:14px;color:var(--text-3);margin-bottom:28px">Enter your access code to continue</p>
+    <input type="password" class="admin-login-input" id="adminPasswordInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkAdminPassword()" autocomplete="current-password">
+    <button class="admin-login-btn" onclick="checkAdminPassword()">Access Portal →</button>
+    <div class="admin-login-error" id="adminLoginError" style="display:none;color:var(--red);font-size:13px;margin-top:10px;padding:8px 12px;background:rgba(239,68,68,0.1);border-radius:8px;border:1px solid rgba(239,68,68,0.2)">Incorrect password. Please try again.</div>
+    <div style="margin-top:20px"><span style="font-size:12px;color:var(--text-4);cursor:pointer;transition:color .2s" onmouseover="this.style.color='var(--text-2)'" onmouseout="this.style.color='var(--text-4)'" onclick="hideAdminLogin()">← Back to store</span></div>
+  </div>
+</div>
+
+<script>
+// ── REAL TV DATABASE ─────────────────────────────────────────
+var realtvContent = [
+  {
+    id: 'rtv1',
+    type: 'live',
+    title: 'PS5 Slim vs Xbox Series X — Best Deal Right Now?',
+    category: 'Gaming Deals',
+    thumbnail: '🎮',
+    viewers: '1,204',
+    url: '',
+    description: 'Live price breakdown comparing the top gaming consoles',
+    addedAt: Date.now() - 3600000
+  },
+  {
+    id: 'rtv2',
+    type: 'live',
+    title: 'Sneaker Prices DROPPING: Yeezy & Nike Air Max Flash Sale',
+    category: 'Sneakers',
+    thumbnail: '👟',
+    viewers: '892',
+    url: '',
+    description: 'Real-time sneaker arbitrage — best drops of the week',
+    addedAt: Date.now() - 7200000
+  },
+  {
+    id: 'rtv3',
+    type: 'recorded',
+    title: 'iPhone 16 Pro vs Samsung S25 Ultra — Full Price Breakdown',
+    category: 'Electronics',
+    thumbnail: '📱',
+    viewers: null,
+    url: '',
+    description: 'Side-by-side comparison with every retailer price',
+    addedAt: Date.now() - 86400000
+  },
+  {
+    id: 'rtv4',
+    type: 'recorded',
+    title: 'Theragun vs Hyperice: Which Recovery Device is Worth It?',
+    category: 'Health & Fitness',
+    thumbnail: '💪',
+    viewers: null,
+    url: '',
+    description: 'Expert review + where to buy for the lowest price',
+    addedAt: Date.now() - 172800000
+  }
+];
+
+function renderRealTV() {
+  var grid = document.getElementById('realtvGrid');
+  var empty = document.getElementById('realtvEmpty');
+  if (!grid) return;
+  
+  if (realtvContent.length === 0) {
+    grid.style.display = 'none';
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  
+  grid.style.display = 'grid';
+  if (empty) empty.style.display = 'none';
+  
+  grid.innerHTML = realtvContent.map(function(item) {
+    var isLive = item.type === 'live';
+    var timeAgo = getTimeAgo(item.addedAt);
+    return '<div style="background:var(--bg-card);border:1px solid var(--border-1);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:all .2s" ' +
+      'onmouseover="this.style.borderColor=var(--orange-color,\'#F07020\');this.style.transform=\'translateY(-3px)\'" ' +
+      'onmouseout="this.style.borderColor=\'rgba(255,255,255,0.09)\';this.style.transform=\'none\'" ' +
+      'onclick="openRealTVItem(\'' + item.id + '\')">' +
+      '<div style="aspect-ratio:16/9;background:linear-gradient(135deg,var(--bg-2),var(--bg-3));display:flex;align-items:center;justify-content:center;font-size:56px;position:relative">' +
+        item.thumbnail +
+        (isLive ? '<div style="position:absolute;top:10px;left:10px;background:#EF4444;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:99px;letter-spacing:.06em;display:flex;align-items:center;gap:4px"><span style="width:5px;height:5px;background:#fff;border-radius:50%;animation:livePulse 1.2s ease infinite"></span>LIVE</div>' : '') +
+        (isLive ? '<div style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.7);color:#fff;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px">👁 ' + item.viewers + '</div>' : '') +
+      '</div>' +
+      '<div style="padding:14px">' +
+        '<div style="font-size:11px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">' + item.category + '</div>' +
+        '<div style="font-size:14px;font-weight:700;color:var(--text-1);line-height:1.35;margin-bottom:6px">' + item.title + '</div>' +
+        '<div style="font-size:12px;color:var(--text-3)">' + (isLive ? 'Streaming live' : timeAgo) + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function getTimeAgo(ts) {
+  var diff = Date.now() - ts;
+  var mins = Math.floor(diff / 60000);
+  var hrs = Math.floor(diff / 3600000);
+  var days = Math.floor(diff / 86400000);
+  if (days > 0) return days + 'd ago';
+  if (hrs > 0) return hrs + 'h ago';
+  return mins + 'm ago';
+}
+
+function openRealTVItem(id) {
+  var item = realtvContent.find(function(i){ return i.id === id; });
+  if (!item) return;
+  if (item.url) {
+    window.open(item.url, '_blank');
+  } else {
+    alert('📺 ' + item.title + '\n\nThis stream/video can be linked from the Admin Portal → Real TV.');
+  }
+}
+
+// Render Real TV on load
+document.addEventListener("DOMContentLoaded", function(){ renderRealTV(); });
+
+// ── REAL TV ADMIN FUNCTIONS ───────────────────────────────────
+var rtvFilter = 'all';
+
+function renderRealTVAdmin() {
+  var list = document.getElementById('rtvAdminList');
+  var countEl = document.getElementById('rtvCount');
+  if (!list) return;
+  
+  var filtered = rtvFilter === 'all' ? realtvContent : realtvContent.filter(function(i){ return i.type === rtvFilter; });
+  if (countEl) countEl.textContent = realtvContent.length;
+  
+  if (filtered.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text-3);font-size:13px">No content yet. Add your first video or stream above.</div>';
+    return;
+  }
+  
+  list.innerHTML = filtered.map(function(item) {
+    var isLive = item.type === 'live';
+    var badge = isLive ? '<span style="background:rgba(239,68,68,0.15);color:#EF4444;font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;border:1px solid rgba(239,68,68,0.3)">🔴 LIVE</span>' :
+                         '<span style="background:var(--bg-3);color:var(--text-3);font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;border:1px solid var(--border-1)">📹 RECORDED</span>';
+    return '<div style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--bg-2);border:1px solid var(--border-0);border-radius:12px">' +
+      '<div style="font-size:32px;flex-shrink:0">' + item.thumbnail + '</div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">' +
+          badge +
+          '<span style="font-size:11px;color:var(--orange);font-weight:600">' + item.category + '</span>' +
+        '</div>' +
+        '<div style="font-size:14px;font-weight:700;color:var(--text-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + item.title + '</div>' +
+        (item.url ? '<div style="font-size:11px;color:var(--cyan);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + item.url + '</div>' : '<div style="font-size:11px;color:var(--text-4);margin-top:3px">No URL set</div>') +
+      '</div>' +
+      '<div style="display:flex;gap:8px;flex-shrink:0">' +
+        '<button onclick="toggleRTVLive(\'' + item.id + '\')" style="background:' + (isLive ? 'rgba(239,68,68,0.15)' : 'var(--bg-3)') + ';border:1px solid ' + (isLive ? 'rgba(239,68,68,0.4)' : 'var(--border-1)') + ';color:' + (isLive ? '#EF4444' : 'var(--text-3)') + ';font-size:11px;font-weight:700;padding:6px 10px;border-radius:8px;cursor:pointer">' + (isLive ? '⏹ Stop Live' : '🔴 Go Live') + '</button>' +
+        '<button onclick="deleteRTVItem(\'' + item.id + '\')" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#EF4444;font-size:11px;font-weight:700;padding:6px 10px;border-radius:8px;cursor:pointer">Remove</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function filterRTV(type) {
+  rtvFilter = type;
+  ['All','Live','Rec'].forEach(function(t) {
+    var el = document.getElementById('rtvFilter' + t);
+    if (el) el.className = 'btn-admin-secondary';
+    el.style.fontSize = '12px'; el.style.padding = '6px 12px';
+  });
+  var active = document.getElementById('rtvFilter' + (type === 'all' ? 'All' : type === 'live' ? 'Live' : 'Rec'));
+  if (active) active.className = 'btn-admin-primary';
+  renderRealTVAdmin();
+}
+
+function addRealTVContent() {
+  var type = document.getElementById('rtvType').value;
+  var title = document.getElementById('rtvTitle').value.trim();
+  var category = document.getElementById('rtvCategory').value.trim();
+  var url = document.getElementById('rtvUrl').value.trim();
+  var emoji = document.getElementById('rtvEmoji').value.trim() || (type === 'live' ? '📡' : '📹');
+  var desc = document.getElementById('rtvDesc').value.trim();
+  var msgEl = document.getElementById('rtvAddMsg');
+  
+  if (!title) {
+    if (msgEl) { msgEl.style.display='block'; msgEl.style.background='rgba(239,68,68,0.1)'; msgEl.style.color='#EF4444'; msgEl.style.border='1px solid rgba(239,68,68,0.2)'; msgEl.textContent='Please enter a title.'; }
+    return;
+  }
+  
+  var newItem = {
+    id: 'rtv' + Date.now(),
+    type: type,
+    title: title,
+    category: category || 'General',
+    thumbnail: emoji,
+    viewers: type === 'live' ? '0' : null,
+    url: url,
+    description: desc,
+    addedAt: Date.now()
+  };
+  
+  realtvContent.unshift(newItem);
+  
+  // Clear form
+  document.getElementById('rtvTitle').value = '';
+  document.getElementById('rtvCategory').value = '';
+  document.getElementById('rtvUrl').value = '';
+  document.getElementById('rtvEmoji').value = '';
+  document.getElementById('rtvDesc').value = '';
+  
+  if (msgEl) { 
+    msgEl.style.display='block'; 
+    msgEl.style.background='rgba(16,185,129,0.1)'; 
+    msgEl.style.color='#10B981'; 
+    msgEl.style.border='1px solid rgba(16,185,129,0.2)';
+    msgEl.textContent='✓ "' + title + '" added to Real TV!';
+    setTimeout(function(){ msgEl.style.display='none'; }, 3000);
+  }
+  
+  // Re-render both admin list and homepage Real TV
+  renderRealTVAdmin();
+  renderRealTV();
+}
+
+function deleteRTVItem(id) {
+  if (!confirm('Remove this content from Real TV?')) return;
+  realtvContent = realtvContent.filter(function(i){ return i.id !== id; });
+  renderRealTVAdmin();
+  renderRealTV();
+}
+
+function toggleRTVLive(id) {
+  var item = realtvContent.find(function(i){ return i.id === id; });
+  if (!item) return;
+  item.type = item.type === 'live' ? 'recorded' : 'live';
+  renderRealTVAdmin();
+  renderRealTV();
+}
+
+</script>
 </body>
 </html>
