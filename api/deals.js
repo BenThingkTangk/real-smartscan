@@ -1,21 +1,18 @@
-// /api/deals.js — DealNews RSS Ingestion
-// Pulls hourly editorial deals from DealNews RSS feeds
+// /api/deals.js — DealNews RSS Ingestion (Fixed URLs)
+// Real working feeds: https://www.dealnews.com/?rss=1 format
 // Compliant with DealNews terms: links intact, attribution shown, not rewritten as own content
-// Cached in-memory for 1 hour to avoid hammering RSS
 
-const CACHE_TTL = 3600 * 1000; // 1 hour
-let cache = { data: null, timestamp: 0, etag: null };
+const CACHE_TTL = 3600 * 1000; // 1 hour cache
+let cache = { data: null, timestamp: 0 };
 
-// DealNews RSS feeds by category
-const DEALNEWS_FEEDS = {
-  all:         'https://www.dealnews.com/rss.xml',
-  electronics: 'https://www.dealnews.com/c142/Electronics/rss.xml',
-  apparel:     'https://www.dealnews.com/c1/Apparel/rss.xml',
-  shoes:       'https://www.dealnews.com/c304/Shoes/rss.xml',
-  sports:      'https://www.dealnews.com/c131/Sports-Outdoors/rss.xml',
-  home:        'https://www.dealnews.com/c8/Home-Garden/rss.xml',
-  health:      'https://www.dealnews.com/c140/Health-Beauty/rss.xml',
-  tools:       'https://www.dealnews.com/c124/Tools-Hardware/rss.xml',
+// CORRECT DealNews RSS feed URLs (verified working March 2026)
+const FEEDS = {
+  all:         'https://www.dealnews.com/?rss=1&sort=time',
+  hot:         'https://www.dealnews.com/?rss=1&sort=hotness',
+  editors:     'https://www.dealnews.com/f1682/Staff-Pick/?rss=1',
+  electronics: 'https://www.dealnews.com/c142/Electronics/?rss=1',
+  home:        'https://www.dealnews.com/c304/Home-Garden/Appliances/?rss=1',
+  features:    'https://www.dealnews.com/rss/features/',
 };
 
 function parseRSS(xmlText) {
@@ -24,42 +21,67 @@ function parseRSS(xmlText) {
   let match;
   while ((match = itemRegex.exec(xmlText)) !== null) {
     const block = match[1];
-    const get = (tag) => {
-      const m = block.match(new RegExp(`<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\/${tag}>|<${tag}[^>]*>([\\s\\S]*?)<\/${tag}>`));
-      return m ? (m[1] || m[2] || '').trim() : '';
+
+    const getTag = (tag) => {
+      const m = block.match(new RegExp(
+        `<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\\/${tag}>` +
+        `|<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`
+      ));
+      return m ? (m[1] !== undefined ? m[1] : m[2] || '').trim() : '';
     };
-    const title = get('title');
-    const link = get('link') || block.match(/<link>(.*?)<\/link>/)?.[1] || '';
-    const desc = get('description');
-    const pubDate = get('pubDate');
-    const category = get('category');
-    const enclosure = block.match(/enclosure[^>]+url="([^"]+)"/)?.[1] || null;
 
-    if (title && link) {
-      // Extract price from title/description
-      const priceMatch = (title + ' ' + desc).match(/\$(\d+(?:\.\d{2})?)/);
-      const price = priceMatch ? parseFloat(priceMatch[1]) : null;
+    const title = getTag('title');
+    // <link> in RSS 2.0 is a text node after </title> before </link>
+    const linkMatch = block.match(/<link>([^<]+)<\/link>/);
+    const link = linkMatch ? linkMatch[1].trim() : '';
+    const desc = getTag('description');
+    const pubDate = getTag('pubDate');
+    const guid = getTag('guid');
 
-      // Extract store from description
-      const storeMatch = desc.match(/from\s+([A-Za-z][A-Za-z0-9\s&\.]+?)(?:\s+for|\s+via|\s+at|\s*\.|,)/i);
-      const store = storeMatch ? storeMatch[1].trim() : 'DealNews';
+    if (!title) continue;
+    const url = link || guid || '';
+    if (!url) continue;
 
-      items.push({
-        id: Buffer.from(link).toString('base64').slice(0, 16),
-        title: title.slice(0, 120),
-        description: desc.replace(/<[^>]+>/g, '').slice(0, 200),
-        // Keep link INTACT per DealNews terms — do not modify
-        url: link,
-        price,
-        store,
-        category: category || 'General',
-        image: enclosure,
-        published: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
-        age_minutes: pubDate ? Math.round((Date.now() - new Date(pubDate).getTime()) / 60000) : 0,
-        source: 'DealNews', // Attribution per DealNews terms
-        source_url: 'https://www.dealnews.com',
-      });
-    }
+    // Extract price from title (e.g. "Flashlight for $11 + free shipping")
+    const priceMatch = title.match(/for \$(\d+(?:\.\d{2})?)/i) ||
+                       title.match(/\$(\d+(?:\.\d{2})?)/);
+    const price = priceMatch ? parseFloat(priceMatch[1]) : null;
+
+    // Extract store from description HTML (e.g. "Buy Now at Amazon")
+    const storeMatch = desc.match(/Buy Now at ([A-Za-z0-9][A-Za-z0-9\s\.\-&]+?)(?:<|$)/);
+    const store = storeMatch ? storeMatch[1].trim() : '';
+
+    // Extract image from description HTML img tag
+    const imgMatch = desc.match(/<img[^>]+src='([^']+)'/);
+    const image = imgMatch ? imgMatch[1] : null;
+
+    // Extract coupon code from title/description
+    const couponMatch = (title + ' ' + desc).match(/coupon code[^"]*"([A-Z0-9]{5,})"/) ||
+                        (title + ' ' + desc).match(/code "([A-Z0-9]{5,})"/);
+    const coupon = couponMatch ? couponMatch[1] : null;
+
+    // Extract savings from description
+    const savingsMatch = desc.match(/savings of \$(\d+(?:\.\d{2})?)/i);
+    const savings = savingsMatch ? parseFloat(savingsMatch[1]) : null;
+
+    const published = pubDate ? new Date(pubDate) : new Date();
+    const age_minutes = Math.round((Date.now() - published.getTime()) / 60000);
+
+    items.push({
+      id: Buffer.from(url).toString('base64').slice(0, 16),
+      title: title.slice(0, 120),
+      // Keep link INTACT — DealNews terms: do not modify referral codes
+      url,
+      price,
+      store,
+      image,
+      coupon,
+      savings,
+      age_minutes: Math.max(0, age_minutes),
+      published: published.toISOString(),
+      source: 'DealNews',
+      source_url: 'https://www.dealnews.com',
+    });
   }
   return items;
 }
@@ -72,19 +94,20 @@ module.exports = async function handler(req, res) {
 
   const category = req.query.category || 'all';
   const limit = Math.min(parseInt(req.query.limit || '20'), 50);
-  const q = (req.query.q || '').toLowerCase();
+  const q = (req.query.q || '').toLowerCase().trim();
 
-  // Serve from cache if fresh
+  // Return cached data if fresh
   const now = Date.now();
   if (cache.data && (now - cache.timestamp) < CACHE_TTL) {
     let results = cache.data;
-    if (q) results = results.filter(d => d.title.toLowerCase().includes(q) || d.description.toLowerCase().includes(q) || d.category.toLowerCase().includes(q));
+    if (q) results = results.filter(d =>
+      d.title.toLowerCase().includes(q) || (d.store || '').toLowerCase().includes(q)
+    );
     return res.status(200).json({
       deals: results.slice(0, limit),
       total: results.length,
       cached: true,
       cache_age_minutes: Math.round((now - cache.timestamp) / 60000),
-      next_refresh_minutes: Math.round((CACHE_TTL - (now - cache.timestamp)) / 60000),
       source: 'DealNews',
       source_url: 'https://www.dealnews.com',
       attribution: 'Deal data from DealNews.com',
@@ -92,27 +115,26 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    // Fetch the feed — use category-specific or all
-    const feedUrl = DEALNEWS_FEEDS[category] || DEALNEWS_FEEDS.all;
-    const headers = { 'User-Agent': 'SmartScan/1.0 (+https://real-smartscan.vercel.app)', 'Accept': 'application/rss+xml, application/xml, text/xml' };
-    if (cache.etag) headers['If-None-Match'] = cache.etag;
+    const feedUrl = FEEDS[category] || FEEDS.all;
+    const resp = await fetch(feedUrl, {
+      headers: {
+        'User-Agent': 'SmartScan/1.0 (+https://real-smartscan.vercel.app)',
+        'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+      },
+    });
 
-    const feedResp = await fetch(feedUrl, { headers });
+    if (!resp.ok) throw new Error(`DealNews RSS ${resp.status} for ${feedUrl}`);
 
-    if (feedResp.status === 304) {
-      // Not modified — extend cache
-      cache.timestamp = now;
-    } else if (feedResp.ok) {
-      const xml = await feedResp.text();
-      const newEtag = feedResp.headers.get('etag');
-      const items = parseRSS(xml);
-      cache = { data: items, timestamp: now, etag: newEtag };
-    } else {
-      throw new Error(`DealNews RSS error ${feedResp.status}`);
-    }
+    const xml = await resp.text();
+    if (!xml.includes('<item>')) throw new Error('No items in feed');
 
-    let results = cache.data || [];
-    if (q) results = results.filter(d => d.title.toLowerCase().includes(q) || d.description.toLowerCase().includes(q));
+    const items = parseRSS(xml);
+    cache = { data: items, timestamp: now };
+
+    let results = items;
+    if (q) results = results.filter(d =>
+      d.title.toLowerCase().includes(q) || (d.store || '').toLowerCase().includes(q)
+    );
 
     return res.status(200).json({
       deals: results.slice(0, limit),
@@ -120,19 +142,17 @@ module.exports = async function handler(req, res) {
       cached: false,
       source: 'DealNews',
       source_url: 'https://www.dealnews.com',
-      attribution: 'Deal data from DealNews.com — links and content © DealNews',
+      attribution: 'Deal data from DealNews.com — links © DealNews',
     });
 
   } catch (err) {
-    console.error('DealNews RSS error:', err);
-    // Return empty gracefully
+    console.error('DealNews error:', err.message);
     return res.status(200).json({
       deals: [],
       total: 0,
       error: err.message,
       source: 'DealNews',
       source_url: 'https://www.dealnews.com',
-      attribution: 'Deal data from DealNews.com',
     });
   }
 };
