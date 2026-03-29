@@ -722,6 +722,8 @@ img{max-width:100%;display:block}
         <span id="searchingText">Searching live prices...</span>
       </div>
     </div>
+    <div id="serpApiNotice" style="display:none;padding:8px 14px;background:rgba(240,112,32,0.08);border:1px solid rgba(240,112,32,0.25);border-radius:8px;font-size:12px;color:var(--orange);margin-bottom:8px"></div>
+    <div id="searchResultsMeta" style="font-size:12px;color:var(--t3);margin-bottom:8px"></div>
     <div class="results-columns">
       <div class="results-cols-wrap"><div class="deals-col" id="dealsCol">
     <!-- Our Price Card -->
@@ -789,7 +791,27 @@ img{max-width:100%;display:block}
             <div class="score-label">Score</div>
           </div>
         </div>
-        <button class="pp-buy-btn" id="ppBuyBtn">🛒 Buy Now · Best Price</button>
+        <!-- AI Insight Panel (populated by OpenAI explainer, grounded in SerpAPI data) -->
+      <div id="ppAiInsight" style="display:none;margin-bottom:20px;background:var(--purple-dim);border:1px solid rgba(139,92,246,0.2);border-radius:12px;padding:16px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <div style="width:7px;height:7px;background:var(--purple);border-radius:50%;animation:pulse 2s ease infinite"></div>
+          <span style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--purple)">AI Market Insight</span>
+          <span style="font-size:10px;color:var(--t3);margin-left:auto">Powered by OpenAI · Grounded in live data</span>
+        </div>
+        <p id="ppAiInsightText" style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:10px"></p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div style="font-size:12px">
+            <div style="font-weight:700;color:var(--green-2);margin-bottom:4px">✓ Pros</div>
+            <ul id="ppAiPros" style="list-style:none;display:flex;flex-direction:column;gap:3px;color:var(--t2)"></ul>
+          </div>
+          <div style="font-size:12px">
+            <div style="font-weight:700;color:var(--orange);margin-bottom:4px">⚠ Cons</div>
+            <ul id="ppAiCons" style="list-style:none;display:flex;flex-direction:column;gap:3px;color:var(--t2)"></ul>
+          </div>
+        </div>
+        <div id="ppAiBuyTiming" style="font-size:12px;color:var(--cyan);font-weight:600"></div>
+      </div>
+      <button class="pp-buy-btn" id="ppBuyBtn">🛒 Buy Now · Best Price</button>
       </div>
       <div class="pp-section">
         <div class="pp-section-title">30-Day Price History</div>
@@ -1056,7 +1078,7 @@ img{max-width:100%;display:block}
   <aside class="admin-sidebar">
     <div class="admin-logo">
       <div class="admin-logo-text"><span>R.E.A.L.</span> Admin</div>
-      <div class="admin-logo-sub">SmartScan 8.0 · Gemini AI Engine</div>
+      <div class="admin-logo-sub">SmartScan 8.0 · SerpAPI + OpenAI</div>
     </div>
     <div class="admin-nav-item active" onclick="showAdminTab('dashboard')"><span class="admin-nav-icon">📊</span>Dashboard</div>
     <div class="admin-nav-item" onclick="showAdminTab('margins')"><span class="admin-nav-icon">💰</span>Margin Engine</div>
@@ -1164,8 +1186,8 @@ img{max-width:100%;display:block}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
         <div class="chart-card">
           <h3>API Configuration</h3>
-          <div class="admin-form-group"><label class="admin-form-label">Gemini AI Engine API Key</label><input type="text" class="admin-input" value="AIzaSyBeReCvAYTvE7tmRxdoEQGl6TvMpB6OqpY"></div>
-          <div class="admin-form-group"><label class="admin-form-label">Model</label><input type="text" class="admin-input" value="gemini-2.5-flash"></div>
+          <div class="admin-form-group"><label class="admin-form-label">OpenAI API Key (Explainer)</label><input type="text" class="admin-input" value="sk-proj-bpQw••••••••qP8A"></div>
+          <div class="admin-form-group"><label class="admin-form-label">SerpAPI Key (Shopping Data)</label><input type="text" class="admin-input" value="Configured via env var"></div>
           <div class="admin-form-group"><label class="admin-form-label">Search Grounding</label><select class="admin-input"><option>Enabled</option><option>Disabled</option></select></div>
           <button class="btn-admin-primary">Save Settings</button>
         </div>
@@ -1303,8 +1325,7 @@ img{max-width:100%;display:block}
 </div>
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
-const API_KEY = 'AIzaSyBeReCvAYTvE7tmRxdoEQGl6TvMpB6OqpY';
-const endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + API_KEY;
+// SerpAPI + OpenAI handle search (see /api/search and /api/explain serverless functions)
 
 // ── STATE ───────────────────────────────────────────────────
 let currentQuery = '';
@@ -1414,124 +1435,113 @@ function categoryEmoji(cat) {
 }
 
 // ── GEMINI LIVE SEARCH ───────────────────────────────────────
-async function geminiPriceSearch(query) {
-  const prompt = 'You are a price comparison engine. Search for the current best prices for: "' + query + '"\n\nReturn ONLY a JSON object (no markdown, no explanation) in this exact format:\n{\n  "product": {\n    "name": "exact product name with model/variant",\n    "category": "category name",\n    "brand": "brand name",\n    "msrp": 299,\n    "description": "one sentence product description"\n  },\n  "retailers": [\n    {\n      "store": "Amazon",\n      "price": 249.99,\n      "shipping": "Free",\n      "shipping_cost": 0,\n      "stock": "In Stock",\n      "url": "https://amazon.com/",\n      "condition": "New",\n      "notes": "Prime eligible"\n    }\n  ],\n  "market_insight": "one sentence about current pricing trends for this product"\n}\n\nRules:\n- Include 6-10 REAL retailers that actually sell this product\n- Prices must be realistic and current\n- Only include retailers that genuinely carry this product\n- Sort by price ascending\n- For sneakers: include StockX, GOAT, Flight Club if relevant\n- For electronics: include Best Buy, B&H, Newegg if relevant\n- Always include Amazon if they carry it\n- Never include Best Buy for products they do not sell';
+// ── SEARCH ENGINE — PDF Architecture ─────────────────────────
+// Layer 1: SerpAPI Google Shopping → real structured price data
+// Layer 2: Ranking/analytics computed server-side
+// Layer 3: OpenAI explains + summarizes (grounded in real data)
+// Fallback: deterministic mock when APIs unavailable
 
-  const resp = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      tools: [{ google_search: {} }],
-      generationConfig: { temperature: 0.1, responseMimeType: 'text/plain' }
-    })
+const API_BASE = '';  // Same-origin on Vercel, empty = relative URLs
+
+async function smartSearch(query) {
+  // Hit our /api/search endpoint which calls SerpAPI
+  const resp = await fetch(API_BASE + '/api/search?q=' + encodeURIComponent(query), {
+    headers: { 'Accept': 'application/json' }
   });
-
-  if (!resp.ok) throw new Error('Gemini API error ' + resp.status);
+  if (!resp.ok) throw new Error('Search API error ' + resp.status);
   const data = await resp.json();
+  if (data.fallback) throw new Error('API fallback: ' + (data.error || 'unknown'));
   return data;
 }
 
-function parseGeminiResponse(geminiData, query) {
-  const chunks = (geminiData.candidates &&
-    geminiData.candidates[0] &&
-    geminiData.candidates[0].groundingMetadata &&
-    geminiData.candidates[0].groundingMetadata.groundingChunks) || [];
-  const text = (geminiData.candidates &&
-    geminiData.candidates[0] &&
-    geminiData.candidates[0].content &&
-    geminiData.candidates[0].content.parts &&
-    geminiData.candidates[0].content.parts[0] &&
-    geminiData.candidates[0].content.parts[0].text) || '';
+async function getAIExplanation(query, product, analytics, topResults) {
+  try {
+    const resp = await fetch(API_BASE + '/api/explain', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, product, analytics, top_results: topResults.slice(0, 5) })
+    });
+    if (!resp.ok) return null;
+    return await resp.json();
+  } catch (e) {
+    console.warn('AI explain unavailable:', e);
+    return null;
+  }
+}
 
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) throw new Error('No JSON in response');
-  const parsed = JSON.parse(jsonMatch[0]);
+function normalizeSerpResult(serpData, query) {
+  const results = serpData.results || [];
+  if (!results.length) throw new Error('No results from SerpAPI');
 
-  const retailers = (parsed.retailers || []).map(function(r) {
+  const retailers = results.map(function(r) {
     return {
       store: r.store,
-      price: parseFloat(r.price) || 0,
-      ship: r.shipping || 'Free',
-      shipCost: parseFloat(r.shipping_cost) || 0,
-      total: parseFloat(r.price) + (parseFloat(r.shipping_cost) || 0),
-      stock: r.stock || 'In Stock',
-      inStock: (r.stock || '').toLowerCase().indexOf('out') === -1,
-      condition: r.condition || 'New',
-      notes: r.notes || '',
-      url: r.url || '#',
+      price: r.price,
+      ship: r.ship,
+      shipCost: r.ship_cost,
+      total: r.total,
+      stock: r.stock,
+      inStock: r.in_stock,
+      condition: r.condition,
+      url: r.url,
+      thumbnail: r.thumbnail,
+      rating: r.rating,
+      reviews: r.reviews,
+      badge: r.badge,
       icon: storeIcon(r.store),
       type: storeType(r.store),
-      delivery: r.shipping === 'Free' ? '2-day free' : '3-5 day',
-      rating: parseFloat((4.1 + Math.random() * 0.9).toFixed(1))
+      delivery: r.ship_cost === 0 ? '2-day free' : '3-5 day',
     };
-  }).filter(function(r) { return r.price > 0; }).sort(function(a, b) { return a.price - b.price; });
+  });
 
-  const msrp = parseFloat(parsed.product && parsed.product.msrp) || (retailers[0] ? retailers[0].price * 1.3 : 99);
+  const product = serpData.product || {};
+  const analytics = serpData.analytics || {};
 
   return {
     product: {
-      name: (parsed.product && parsed.product.name) || query,
-      category: (parsed.product && parsed.product.category) || 'General',
-      brand: (parsed.product && parsed.product.brand) || '',
-      msrp: msrp,
-      description: (parsed.product && parsed.product.description) || '',
-      emoji: categoryEmoji((parsed.product && parsed.product.category) || '')
+      name: product.name || query,
+      category: detectCategory(query),
+      brand: extractBrand(product.name || query),
+      msrp: product.msrp || (product.best_price ? Math.round(product.best_price * 1.3) : 99),
+      description: '',
+      emoji: categoryEmoji(detectCategory(query)),
+      thumbnail: product.thumbnail || null,
+      best_price: product.best_price || (retailers[0] ? retailers[0].price : 0),
+      save_pct: product.save_pct || 0,
     },
     retailers: retailers,
-    insight: parsed.market_insight || '',
-    sources: chunks.slice(0, 5).map(function(c) {
-      return { title: (c.web && c.web.title) || 'Source', url: (c.web && c.web.uri) || '#' };
-    }),
-    isLive: true
+    analytics: analytics,
+    insight: '',
+    sources: [],
+    isLive: true,
   };
 }
 
-// ── MAIN SEARCH FUNCTION ─────────────────────────────────────
-async function doSearch(query) {
-  query = (query || '').trim();
-  if (!query) return;
-  currentQuery = query;
+function detectCategory(query) {
+  var q = query.toLowerCase();
+  if (/yeezy|jordan|nike|adidas|dunk|air force|sneaker|shoe|boot/.test(q)) return 'Footwear';
+  if (/iphone|samsung|galaxy|pixel|smartphone|android/.test(q)) return 'Smartphones';
+  if (/macbook|laptop|notebook|chromebook|thinkpad|xps/.test(q)) return 'Laptops';
+  if (/ipad|tablet/.test(q)) return 'Tablets';
+  if (/airpods|headphone|earbuds|wh-1000|bose|sony wh|jabra/.test(q)) return 'Audio';
+  if (/ps5|xbox|nintendo|switch|gaming|playstation|gamepad/.test(q)) return 'Gaming';
+  if (/apple watch|garmin|fitbit|oura|whoop|smartwatch/.test(q)) return 'Health Devices';
+  if (/theragun|normatec|hyperice|massage|recovery/.test(q)) return 'Recovery Hardware';
+  if (/protein|supplement|vitamin|creatine|collagen/.test(q)) return 'Supplements';
+  if (/tv|television|monitor|display|qled|oled/.test(q)) return 'Electronics';
+  if (/dyson|vacuum|air purifier|sauna|home/.test(q)) return 'Home';
+  if (/shirt|pants|legging|jacket|apparel|clothing/.test(q)) return 'Apparel';
+  if (/camera|lens|mirrorless|dslr/.test(q)) return 'Cameras';
+  return 'General';
+}
 
-  // Sync nav/hero inputs
-  const navInput = document.getElementById('navSearchInput');
-  const heroInput = document.getElementById('heroSearchInput');
-  if (navInput) navInput.value = query;
-  if (heroInput) heroInput.value = query;
-
-  // Collapse hero
-  const hero = document.getElementById('heroSection');
-  if (hero) hero.classList.add('collapsed');
-
-  // Show results page
-  const resultsPage = document.getElementById('resultsPage');
-  if (resultsPage) resultsPage.classList.add('visible');
-
-  // Show loading state
-  showLoadingState();
-
-  // Show searching banner
-  const banner = document.getElementById('searchingBanner');
-  const bannerText = document.getElementById('searchingText');
-  if (banner) banner.classList.remove('hidden');
-  if (bannerText) bannerText.textContent = 'Searching live prices for "' + query + '"...';
-
-  // Scroll to top
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  try {
-    const geminiData = await geminiPriceSearch(query);
-    const results = parseGeminiResponse(geminiData, query);
-    currentResults = results;
-    renderResults(results);
-    if (banner) banner.classList.add('hidden');
-  } catch (err) {
-    console.warn('Gemini search failed, using fallback:', err);
-    const results = buildFallbackResults(query);
-    currentResults = results;
-    renderResults(results, true);
-    if (banner) banner.classList.add('hidden');
+function extractBrand(name) {
+  if (!name) return '';
+  var brands = ['Apple','Nike','Adidas','Samsung','Sony','Bose','Garmin','Therabody','Hyperice','Nintendo','PlayStation','Xbox','Dyson','Lululemon','GOAT','Jordan'];
+  for (var i = 0; i < brands.length; i++) {
+    if (name.toLowerCase().includes(brands[i].toLowerCase())) return brands[i];
   }
+  return name.split(' ')[0];
 }
 
 function buildFallbackResults(query) {
@@ -1567,6 +1577,83 @@ function showLoadingState() {
   if (ourPriceCard) ourPriceCard.style.display = 'none';
   if (skeletonPanel) skeletonPanel.style.display = 'block';
   if (actualPanel) actualPanel.style.display = 'none';
+}
+
+// ── MAIN SEARCH FLOW — PDF Architecture ─────────────────────
+// 1) SerpAPI → real Google Shopping data
+// 2) Normalize + compute analytics (server-side)
+// 3) OpenAI explains, grounded in real numbers
+async function doSearch(query) {
+  query = (query || '').trim();
+  if (!query) return;
+
+  // Sync inputs
+  var navInput = document.getElementById('navSearchInput');
+  var heroInput = document.getElementById('heroSearchInput');
+  if (navInput) navInput.value = query;
+  if (heroInput) heroInput.value = query;
+
+  // Collapse hero, show results
+  var hero = document.getElementById('heroSection');
+  if (hero) hero.classList.add('collapsed');
+  var resultsPage = document.getElementById('resultsPage');
+  if (resultsPage) resultsPage.classList.add('visible');
+
+  showLoadingState();
+
+  var banner = document.getElementById('searchingBanner');
+  var bannerText = document.getElementById('searchingText');
+  if (banner) banner.classList.remove('hidden');
+  if (bannerText) bannerText.textContent = 'Searching live prices for "' + query + '"…';
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Notice element
+  var notice = document.getElementById('serpApiNotice');
+  if (notice) notice.style.display = 'none';
+
+  try {
+    // Layer 1: SerpAPI — real structured Google Shopping data
+    var serpData = await smartSearch(query);
+    var results = normalizeSerpResult(serpData, query);
+    window.currentResults = results;
+
+    renderResults(results, false);
+    if (banner) banner.classList.add('hidden');
+
+    // Update result meta
+    var meta = document.getElementById('searchResultsMeta');
+    if (meta && serpData.analytics) {
+      var a = serpData.analytics;
+      meta.innerHTML = 'Found <strong style="color:var(--green-2)">' + a.retailer_count + ' prices</strong> across ' + a.retailer_count + ' retailers &nbsp;·&nbsp; Lowest: <strong style="color:var(--green-2)">$' + (serpData.product && serpData.product.best_price ? serpData.product.best_price.toFixed(2) : '–') + '</strong> &nbsp;·&nbsp; <span style="color:var(--cyan)">Live · Google Shopping</span>';
+    }
+
+    // Layer 3: OpenAI explainer — async, grounded in SerpAPI numbers
+    getAIExplanation(query, results.product, serpData.analytics, results.retailers).then(function(aiData) {
+      if (!aiData) return;
+      var insightEl = document.getElementById('ppAiInsight');
+      var insightText = document.getElementById('ppAiInsightText');
+      var prosEl = document.getElementById('ppAiPros');
+      var consEl = document.getElementById('ppAiCons');
+      var timingEl = document.getElementById('ppAiBuyTiming');
+      if (insightText && aiData.insight) insightText.textContent = aiData.insight;
+      if (prosEl && aiData.pros) prosEl.innerHTML = aiData.pros.map(function(p){ return '<li>' + p + '</li>'; }).join('');
+      if (consEl && aiData.cons) consEl.innerHTML = aiData.cons.map(function(c){ return '<li>' + c + '</li>'; }).join('');
+      if (timingEl && aiData.best_time_to_buy) timingEl.textContent = '⏱ ' + aiData.best_time_to_buy;
+      if (insightEl) insightEl.style.display = 'block';
+    });
+
+  } catch (err) {
+    console.warn('Live search failed, using fallback:', err.message);
+    var results = buildFallbackResults(query);
+    window.currentResults = results;
+    renderResults(results, true);
+    if (banner) banner.classList.add('hidden');
+    if (notice) {
+      notice.style.display = 'block';
+      notice.textContent = '⚠ Showing estimated prices — live search initializing. Results update when APIs are configured.';
+    }
+  }
 }
 </script><script>
 // ── COUNT-UP ─────────────────────────────────────────────────
