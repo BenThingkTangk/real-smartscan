@@ -82,6 +82,48 @@ img{max-width:100%;display:block}
 /* Gradient text */
 .grad-text{background:var(--grad-orange);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .grad-text-purple{background:linear-gradient(135deg,#8B5CF6,#00D4FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* ── VARIANT FILTER BAR ──────────────────────────────────── */
+.filter-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--border-0);margin-bottom:12px}
+.filter-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.filter-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);white-space:nowrap}
+.filter-chip{background:var(--bg-glass);border:1px solid var(--border-1);border-radius:var(--r-full);padding:4px 12px;font-size:12px;font-weight:600;color:var(--text-2);cursor:pointer;transition:all var(--t-fast);white-space:nowrap;font-family:var(--font-b)}
+.filter-chip:hover{border-color:var(--orange);color:var(--orange);background:var(--orange-dim)}
+.filter-chip.active{border-color:var(--orange);color:var(--orange);background:var(--orange-dim)}
+.sort-select{background:var(--bg-glass);border:1px solid var(--border-1);border-radius:var(--r-full);padding:4px 12px;font-size:12px;font-weight:600;color:var(--text-2);cursor:pointer;font-family:var(--font-b);outline:none}
+.sort-select:focus{border-color:var(--orange)}
+.filter-divider{width:1px;height:20px;background:var(--border-1);flex-shrink:0}
+/* ── DEALNEWS TRENDING RAIL ──────────────────────────────── */
+.deals-rail{padding:16px 0;border-bottom:1px solid var(--border-0);margin-bottom:12px}
+.deals-rail-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.deals-rail-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}
+.deals-rail-badge{font-size:10px;font-weight:700;background:rgba(239,68,68,0.12);color:var(--red);border:1px solid rgba(239,68,68,0.25);border-radius:var(--r-full);padding:2px 8px}
+.deals-rail-attr{font-size:10px;color:var(--text-4);margin-left:auto}
+.deals-rail-attr a{color:var(--text-4);text-decoration:none}
+.deals-rail-attr a:hover{color:var(--orange)}
+.deal-pill-list{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.deal-pill-list::-webkit-scrollbar{display:none}
+.deal-pill{background:var(--bg-card);border:1px solid var(--border-0);border-radius:var(--r-md);padding:8px 12px;min-width:220px;max-width:260px;flex-shrink:0;cursor:pointer;transition:all var(--t-fast);text-decoration:none;display:block}
+.deal-pill:hover{border-color:var(--orange);transform:translateY(-1px)}
+.deal-pill-store{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--orange);margin-bottom:3px}
+.deal-pill-title{font-size:12px;font-weight:600;color:var(--text-1);line-height:1.35;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.deal-pill-meta{display:flex;align-items:center;gap:6px}
+.deal-pill-price{font-size:13px;font-weight:800;color:var(--green)}
+.deal-pill-age{font-size:10px;color:var(--text-4)}
+.deal-pill-src{font-size:9px;color:var(--text-4);margin-left:auto}
+/* ── COUPON BADGE ON DEAL CARD ───────────────────────────── */
+.dc-coupon{display:inline-flex;align-items:center;gap:4px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700;color:var(--green);margin-top:4px}
+.dc-coupon.unverified{background:rgba(123,92,247,0.08);border-color:rgba(123,92,247,0.2);color:var(--purple)}
+.dc-coupon.auto{background:rgba(0,200,255,0.08);border-color:rgba(0,200,255,0.2);color:var(--cyan)}
+/* ── VARIANT TAG ON RESULT HEADER ────────────────────────── */
+.variant-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.variant-tag{font-size:11px;font-weight:600;background:var(--bg-glass);border:1px solid var(--border-1);border-radius:var(--r-full);padding:3px 10px;color:var(--text-2)}
+/* ── DEAL SCORE BADGE ────────────────────────────────────── */
+.score-badge{display:inline-flex;align-items:center;gap:5px;border-radius:var(--r-full);padding:3px 10px;font-size:11px;font-weight:800}
+.score-badge.high{background:var(--green-dim);color:var(--green)}
+.score-badge.mid{background:var(--orange-dim);color:var(--orange)}
+.score-badge.low{background:var(--bg-glass);color:var(--text-3)}
+
 </style>
 <style>
 /* TICKER */
@@ -724,6 +766,39 @@ img{max-width:100%;display:block}
     </div>
     <div id="serpApiNotice" style="display:none;padding:8px 14px;background:rgba(240,112,32,0.08);border:1px solid rgba(240,112,32,0.25);border-radius:8px;font-size:12px;color:var(--orange);margin-bottom:8px"></div>
     <div id="searchResultsMeta" style="font-size:12px;color:var(--t3);margin-bottom:8px"></div>
+    <!-- VARIANT FILTER BAR -->
+    <div class="filter-bar" id="filterBar" style="display:none">
+      <div class="filter-group">
+        <span class="filter-label">Sort</span>
+        <select class="sort-select" id="sortSelect" onchange="applyFilters()">
+          <option value="best_overall">Best Overall</option>
+          <option value="lowest_delivered">Lowest Delivered</option>
+          <option value="best_trusted">Best Trusted Seller</option>
+          <option value="best_resale">Best Resale Value</option>
+        </select>
+      </div>
+      <div class="filter-divider"></div>
+      <div class="filter-group" id="filterChips">
+        <!-- Populated dynamically from SerpAPI filter metadata + variant parse -->
+      </div>
+      <div class="filter-divider"></div>
+      <div class="filter-group">
+        <button class="filter-chip" id="freeShipChip" onclick="toggleFilter('free_ship')">Free Ship</button>
+        <button class="filter-chip" id="inStockChip" onclick="toggleFilter('in_stock')">In Stock</button>
+        <button class="filter-chip" id="usedChip" onclick="toggleFilter('used')">Used/Refurb</button>
+      </div>
+    </div>
+    <!-- DEALNEWS TRENDING RAIL -->
+    <div class="deals-rail" id="dealsRail" style="display:none">
+      <div class="deals-rail-header">
+        <span class="deals-rail-title">Trending Deals</span>
+        <span class="deals-rail-badge">● LIVE</span>
+        <span class="deals-rail-attr">Data from <a href="https://www.dealnews.com" target="_blank" rel="noopener">DealNews.com</a></span>
+      </div>
+      <div class="deal-pill-list" id="dealPillList"></div>
+    </div>
+    <!-- VARIANT TAGS -->
+    <div class="variant-tags" id="variantTags" style="display:none"></div>
     <div class="results-columns">
       <div class="results-cols-wrap"><div class="deals-col" id="dealsCol">
     <!-- Our Price Card -->
@@ -1443,11 +1518,10 @@ function categoryEmoji(cat) {
 
 const API_BASE = '';  // Same-origin on Vercel, empty = relative URLs
 
-async function smartSearch(query) {
-  // Hit our /api/search endpoint which calls SerpAPI
-  const resp = await fetch(API_BASE + '/api/search?q=' + encodeURIComponent(query), {
-    headers: { 'Accept': 'application/json' }
-  });
+async function smartSearch(query, filterParams) {
+  filterParams = filterParams || '';
+  const url = API_BASE + '/api/search?q=' + encodeURIComponent(query) + filterParams;
+  const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
   if (!resp.ok) throw new Error('Search API error ' + resp.status);
   const data = await resp.json();
   if (data.fallback) throw new Error('API fallback: ' + (data.error || 'unknown'));
@@ -1614,13 +1688,29 @@ async function doSearch(query) {
 
   try {
     // Layer 1: SerpAPI — real structured Google Shopping data
-    var serpData = await smartSearch(query);
+    // Build query string with active filters
+    var filterParams = '';
+    if (window.activeFilters) {
+      if (window.activeFilters.free_ship) filterParams += '&free_ship=1';
+      if (window.activeFilters.used) filterParams += '&condition=used';
+      if (window.activeFilters.size) filterParams += '&size=' + encodeURIComponent(window.activeFilters.size);
+      if (window.activeFilters.color) filterParams += '&color=' + encodeURIComponent(window.activeFilters.color);
+      var sort = document.getElementById('sortSelect');
+      if (sort && sort.value !== 'best_overall') filterParams += '&sort=' + sort.value;
+    }
+    var serpData = await smartSearch(query, filterParams);
     var results = normalizeSerpResult(serpData, query);
     window.currentResults = results;
 
     renderResults(results, false);
     if (banner) banner.classList.add('hidden');
 
+    // Show filter bar with variant data
+    showFilterBar(serpData);
+    // Load DealNews trending deals async
+    loadDealNews(query);
+    // Show variant tags parsed from query
+    showVariantTags(serpData.variant);
     // Update result meta
     var meta = document.getElementById('searchResultsMeta');
     if (meta && serpData.analytics) {
@@ -2980,6 +3070,200 @@ function toggleRTVLive(id) {
   renderRealTV();
 }
 
+
+// ── FILTER ENGINE ─────────────────────────────────────────────
+var activeFilters = { free_ship: false, used: false, size: null, color: null };
+window.activeFilters = activeFilters;
+
+function toggleFilter(type) {
+  if (type === 'free_ship') { activeFilters.free_ship = !activeFilters.free_ship; }
+  else if (type === 'used') { activeFilters.used = !activeFilters.used; }
+  updateFilterUI();
+  if (window.currentQuery) doSearch(window.currentQuery);
+}
+
+function setVariantFilter(key, value) {
+  activeFilters[key] = activeFilters[key] === value ? null : value;
+  updateFilterUI();
+  if (window.currentQuery) doSearch(window.currentQuery);
+}
+
+function updateFilterUI() {
+  var fs = document.getElementById('freeShipChip');
+  var us = document.getElementById('usedChip');
+  if (fs) fs.className = 'filter-chip' + (activeFilters.free_ship ? ' active' : '');
+  if (us) us.className = 'filter-chip' + (activeFilters.used ? ' active' : '');
+  // Update dynamic variant chips
+  document.querySelectorAll('.variant-filter-chip').forEach(function(c) {
+    var k = c.dataset.key, v = c.dataset.value;
+    c.className = 'filter-chip variant-filter-chip' + (activeFilters[k] === v ? ' active' : '');
+  });
+}
+
+function applyFilters() {
+  if (window.currentQuery) doSearch(window.currentQuery);
+}
+
+function showFilterBar(serpData) {
+  var bar = document.getElementById('filterBar');
+  if (bar) bar.style.display = 'flex';
+  var chipsEl = document.getElementById('filterChips');
+  if (!chipsEl) return;
+  var v = serpData.variant || {};
+  var a = serpData.analytics || {};
+  var chips = [];
+  if (v.color) {
+    var colorLabel = v.color.charAt(0).toUpperCase() + v.color.slice(1);
+    var colorBtn = document.createElement('button');
+    colorBtn.className = 'filter-chip variant-filter-chip active';
+    colorBtn.dataset.key = 'color'; colorBtn.dataset.value = v.color;
+    colorBtn.textContent = colorLabel;
+    colorBtn.onclick = function() { setVariantFilter('color', v.color); };
+    chips.push(colorBtn);
+  }
+  if (v.size) {
+    var sizeBtn = document.createElement('button');
+    sizeBtn.className = 'filter-chip variant-filter-chip active';
+    sizeBtn.dataset.key = 'size'; sizeBtn.dataset.value = v.size;
+    sizeBtn.textContent = 'Size ' + v.size;
+    sizeBtn.onclick = function() { setVariantFilter('size', v.size); };
+    chips.push(sizeBtn);
+  }
+  if (v.gender) {
+    var genderBtn = document.createElement('button');
+    genderBtn.className = 'filter-chip variant-filter-chip';
+    genderBtn.dataset.key = 'gender'; genderBtn.dataset.value = v.gender;
+    genderBtn.textContent = v.gender === 'women' ? "Women's" : "Men's";
+    genderBtn.onclick = function() { setVariantFilter('gender', v.gender); };
+    chips.push(genderBtn);
+  }
+  if (a.has_coupons > 0) {
+    var couponBtn = document.createElement('button');
+    couponBtn.className = 'filter-chip';
+    couponBtn.textContent = '🏷 ' + a.has_coupons + ' Coupons';
+    couponBtn.onclick = function() { alert('Coupon codes shown on each deal card below'); };
+    chips.push(couponBtn);
+  }
+  chipsEl.innerHTML = '';
+  chips.forEach(function(b) { chipsEl.appendChild(b); });
+}
+
+function showVariantTags(variant) {
+  var el = document.getElementById('variantTags');
+  if (!el || !variant) return;
+  var tags = [];
+  if (variant.brand) tags.push(variant.brand);
+  if (variant.model) tags.push(variant.model);
+  if (variant.color) tags.push(variant.color.charAt(0).toUpperCase() + variant.color.slice(1));
+  if (variant.size) tags.push('Size ' + variant.size);
+  if (variant.gender) tags.push(variant.gender === 'women' ? "Women's" : "Men's");
+  if (variant.condition === 'used') tags.push('Used');
+  if (!tags.length) { el.style.display = 'none'; return; }
+  el.style.display = 'flex';
+  el.innerHTML = tags.map(function(t) { return '<span class="variant-tag">' + t + '</span>'; }).join('');
+}
+
+// ── DEALNEWS TRENDING RAIL ────────────────────────────────────
+var dealNewsLoaded = false;
+
+async function loadDealNews(query) {
+  var rail = document.getElementById('dealsRail');
+  var list = document.getElementById('dealPillList');
+  if (!rail || !list) return;
+  
+  try {
+    var url = './api/deals?limit=12';
+    // Try to match category from query
+    var q = query.toLowerCase();
+    if (/shoe|sneaker|boot|jordan|yeezy|nike|adidas/.test(q)) url += '&category=shoes';
+    else if (/shirt|pant|legging|jacket|apparel|clothe|lululemon/.test(q)) url += '&category=apparel';
+    else if (/phone|laptop|tv|headphone|tablet|computer|camera/.test(q)) url += '&category=electronics';
+    else if (/protein|supplement|vitamin|health|fitness|theragun/.test(q)) url += '&category=health';
+
+    var resp = await fetch(url);
+    if (!resp.ok) return;
+    var data = await resp.json();
+    if (!data.deals || !data.deals.length) return;
+
+    rail.style.display = 'block';
+    list.innerHTML = data.deals.slice(0, 10).map(function(d) {
+      var ageStr = d.age_minutes < 60 ? d.age_minutes + 'm ago' : Math.floor(d.age_minutes / 60) + 'h ago';
+      var priceStr = d.price ? '<span class="deal-pill-price">$' + d.price.toFixed(2) + '</span>' : '';
+      // Keep DealNews links INTACT — do not modify per their terms
+      return '<a class="deal-pill" href="' + d.url + '" target="_blank" rel="noopener">' +
+        '<div class="deal-pill-store">' + (d.store || 'DealNews') + '</div>' +
+        '<div class="deal-pill-title">' + d.title + '</div>' +
+        '<div class="deal-pill-meta">' + priceStr + '<span class="deal-pill-age">' + ageStr + '</span><span class="deal-pill-src">via DealNews</span></div>' +
+      '</a>';
+    }).join('');
+  } catch (e) {
+    console.warn('DealNews rail error:', e);
+  }
+}
+
+// ── ENHANCED DEAL CARD with coupon badge ─────────────────────
+// Override buildDealCard to add coupon display and deal score badge
+var _origBuildDealCard = typeof buildDealCard === 'function' ? buildDealCard : null;
+
+function buildDealCard(r, index, isLowest, isFallback) {
+  var card = document.createElement('div');
+  card.className = 'deal-card deal-card-anim';
+  card.style.setProperty('--stagger-index', String(index));
+  card.dataset.index = String(index);
+  card.onclick = function() { selectCard(index); };
+
+  var rankClass = isLowest ? 'dc-rank gold' : 'dc-rank';
+  var rankLabel = isLowest ? '★' : String(index + 1);
+  var priceClass = isLowest ? 'dc-price lowest' : 'dc-price';
+
+  // Score badge
+  var score = r.score || 0;
+  var scoreCls = score >= 75 ? 'high' : score >= 50 ? 'mid' : 'low';
+  var scoreBadge = score > 0 ? '<span class="score-badge ' + scoreCls + '">' + score + '</span>' : '';
+
+  // Tags
+  var tagsHTML = '';
+  if (isLowest) tagsHTML += '<span class="dc-tag lowest-tag">Lowest</span>';
+  if (r.ship === 'Free' || r.ship_cost === 0) tagsHTML += '<span class="dc-tag free-tag">Free Ship</span>';
+  if (r.in_stock !== false) tagsHTML += '<span class="dc-tag instock-tag">In Stock</span>';
+  if (r.type === 'resale') tagsHTML += '<span class="dc-tag resale-tag">Resale</span>';
+  if (r.deal_label) tagsHTML += '<span class="dc-tag best-tag">' + r.deal_label + '</span>';
+
+  // Coupon badge
+  var couponHTML = '';
+  if (r.coupon) {
+    var cc = r.coupon;
+    var cls = cc.status === 'verified' ? 'dc-coupon' : cc.status === 'auto' ? 'dc-coupon auto' : 'dc-coupon unverified';
+    var icon = cc.status === 'verified' ? '✓' : cc.status === 'auto' ? '⚡' : '?';
+    var txt = cc.code ? icon + ' ' + cc.code : icon + ' ' + (cc.label || 'Coupon');
+    couponHTML = '<div class="' + cls + '">' + txt + (cc.discount ? ' · ' + cc.discount + ' off' : '') + '</div>';
+  }
+
+  var fallbackBadge = isFallback ? '<div class="deal-card-fallback-badge">Estimated</div>' : '';
+
+  card.innerHTML = '<div class="dc-row">' +
+    '<div class="' + rankClass + '">' + rankLabel + '</div>' +
+    '<div class="dc-icon">' + (r.icon || '🛒') + '</div>' +
+    '<div class="dc-info">' +
+      '<div style="display:flex;align-items:center;gap:6px"><div class="dc-store">' + escHtml(r.store) + '</div>' + scoreBadge + '</div>' +
+      '<div class="dc-sub">' + escHtml(r.delivery || r.ship || '') + '</div>' +
+    '</div>' +
+    '<div class="dc-right">' +
+      '<div class="' + priceClass + '" data-price-target="' + r.price + '">$' + r.price.toFixed(2) + '</div>' +
+      '<div class="dc-ship">' + escHtml(r.ship || '') + '</div>' +
+      (r.delivered_total && r.ship_cost > 0 ? '<div class="dc-sub" style="font-size:10px">Total $' + r.delivered_total.toFixed(2) + '</div>' : '') +
+    '</div>' +
+  '</div>' +
+  (tagsHTML ? '<div class="dc-tags">' + tagsHTML + '</div>' : '') +
+  couponHTML +
+  fallbackBadge;
+
+  // Price count-up
+  var priceEl = card.querySelector('.dc-price');
+  if (priceEl) setTimeout(function() { countUp(priceEl, r.price, 600); }, index * 80);
+
+  return card;
+}
+
 </script>
 </body>
-</html>
