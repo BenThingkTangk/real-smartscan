@@ -1,13 +1,19 @@
 {
   "name": "real-smartscan",
   "version": "8.1.0",
-  "description": "R.E.A.L. SmartScan — SerpAPI + OpenAI Architecture",
+  "description": "R.E.A.L. SmartScan \u2014 SerpAPI + OpenAI Architecture",
   "scripts": {
     "dev": "npx serve public -l 3000",
-    "build": "echo 'Static + serverless — no build step required'",
+    "build": "echo 'Static + serverless \u2014 no build step required'",
     "start": "npx serve public -l 3000"
   },
-  "keywords": ["smartscan", "retail", "ai", "serpapi", "openai"],
+  "keywords": [
+    "smartscan",
+    "retail",
+    "ai",
+    "serpapi",
+    "openai"
+  ],
   "author": "ThingkTangk",
   "license": "UNLICENSED",
   "private": true

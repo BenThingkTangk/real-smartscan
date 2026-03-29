@@ -1,18 +1,11 @@
 {
   "version": 2,
   "functions": {
-    "api/*.js": {
-      "runtime": "@vercel/node@3"
-    }
+    "api/search.js": { "runtime": "@vercel/node@3" },
+    "api/explain.js": { "runtime": "@vercel/node@3" }
   },
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/public/$1"
-    }
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
