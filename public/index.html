@@ -124,6 +124,25 @@ img{max-width:100%;display:block}
 .score-badge.mid{background:var(--orange-dim);color:var(--orange)}
 .score-badge.low{background:var(--bg-glass);color:var(--text-3)}
 
+
+/* ── PRODUCT IDENTITY & SMART FILTERS ───────────────────── */
+.smart-filter-select{width:100%;background:var(--bg-2);border:1px solid var(--border-1);border-radius:8px;color:var(--text-1);font-size:12px;font-weight:600;padding:7px 10px;font-family:var(--font-b);outline:none;cursor:pointer;transition:border-color .15s}
+.smart-filter-select:focus{border-color:var(--orange)}
+.smart-filter-label{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);margin-bottom:4px}
+.variant-confirm-chip{display:inline-flex;align-items:center;gap:4px;background:rgba(240,112,32,0.1);border:1px solid rgba(240,112,32,0.3);border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--orange)}
+.variant-confirm-chip.neutral{background:var(--bg-glass);border-color:var(--border-1);color:var(--text-2)}
+/* ── HOMEPAGE DEALNEWS GRID ──────────────────────────────── */
+.home-deal-card{background:var(--bg-card);border:1px solid var(--border-0);border-radius:12px;padding:14px;cursor:pointer;transition:all .18s;text-decoration:none;display:block;position:relative;overflow:hidden}
+.home-deal-card:hover{border-color:var(--orange);transform:translateY(-2px);box-shadow:0 4px 20px rgba(240,112,32,0.12)}
+.hdc-cat{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--orange);margin-bottom:5px}
+.hdc-title{font-size:13px;font-weight:600;color:var(--text-1);line-height:1.35;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hdc-meta{display:flex;align-items:center;gap:8px}
+.hdc-price{font-size:15px;font-weight:900;color:var(--green)}
+.hdc-store{font-size:11px;color:var(--text-3)}
+.hdc-age{font-size:10px;color:var(--text-4);margin-left:auto}
+.hdc-src{position:absolute;bottom:8px;right:10px;font-size:9px;color:var(--text-4)}
+@keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
 </style>
 <style>
 /* TICKER */
@@ -755,6 +774,41 @@ img{max-width:100%;display:block}
   </div>
 </section>
 
+<!-- HOMEPAGE DEALNEWS LIVE FEED -->
+<section id="dealnewsHomeFeed" style="background:var(--bg-1);border-top:1px solid var(--border-0);border-bottom:1px solid var(--border-0);padding:28px 24px">
+  <div style="max-width:1400px;margin:0 auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="width:8px;height:8px;background:var(--red);border-radius:50%;animation:livePulse 1.2s ease infinite;flex-shrink:0;display:inline-block"></span>
+        <span style="font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text-1)">Trending Deals</span>
+        <span style="font-size:11px;font-weight:600;background:rgba(239,68,68,0.12);color:var(--red);border:1px solid rgba(239,68,68,0.25);border-radius:99px;padding:2px 8px">Live</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <select id="dealNewsCatFilter" onchange="loadHomeDeals()" style="background:var(--bg-glass);border:1px solid var(--border-1);border-radius:99px;color:var(--text-2);font-size:12px;font-weight:600;padding:4px 12px;cursor:pointer;font-family:var(--font-b);outline:none">
+          <option value="all">All Categories</option>
+          <option value="electronics">Electronics</option>
+          <option value="shoes">Shoes</option>
+          <option value="apparel">Apparel</option>
+          <option value="sports">Sports &amp; Outdoors</option>
+          <option value="home">Home &amp; Garden</option>
+          <option value="health">Health &amp; Beauty</option>
+        </select>
+        <span style="font-size:11px;color:var(--text-4)">Data from <a href="https://www.dealnews.com" target="_blank" rel="noopener" style="color:var(--text-4);text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--orange)'" onmouseout="this.style.color='var(--text-4)'">DealNews.com ↗</a></span>
+      </div>
+    </div>
+    <!-- Loading state -->
+    <div id="homeDealsLoading" style="display:flex;gap:12px;overflow:hidden">
+      <div style="min-width:200px;height:90px;background:var(--bg-glass);border-radius:12px;animation:shimmer 1.5s ease-in-out infinite"></div>
+      <div style="min-width:200px;height:90px;background:var(--bg-glass);border-radius:12px;animation:shimmer 1.5s ease-in-out infinite"></div>
+      <div style="min-width:200px;height:90px;background:var(--bg-glass);border-radius:12px;animation:shimmer 1.5s ease-in-out infinite"></div>
+      <div style="min-width:200px;height:90px;background:var(--bg-glass);border-radius:12px;animation:shimmer 1.5s ease-in-out infinite"></div>
+    </div>
+    <!-- Deal pills -->
+    <div id="homeDealsGrid" style="display:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px"></div>
+    <div id="homeDealsEmpty" style="display:none;text-align:center;padding:20px;color:var(--text-3);font-size:13px">No deals loading — check back soon</div>
+  </div>
+</section>
+
 <!-- RESULTS PAGE -->
 <div class="results-page" id="resultsPage">
   <div class="results-inner">
@@ -842,8 +896,31 @@ img{max-width:100%;display:block}
     </div>
     <!-- Actual panel -->
     <div id="actualPanel" style="display:none">
-      <div class="pp-category" id="ppCategory"></div>
-      <div class="pp-name" id="ppName"></div>
+      <!-- PRODUCT IDENTITY HEADER: image + name + variant confirmation -->
+      <div id="productIdentityHeader" style="margin-bottom:20px">
+        <!-- Product image from lowest-price retailer -->
+        <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:16px">
+          <div id="productImageWrap" style="width:120px;height:120px;flex-shrink:0;border-radius:12px;overflow:hidden;background:var(--bg-2);border:1px solid var(--border-1);display:flex;align-items:center;justify-content:center">
+            <img id="productImg" src="" alt="" style="width:100%;height:100%;object-fit:contain;display:none" onerror="this.style.display='none';document.getElementById('productImgFallback').style.display='flex'">
+            <div id="productImgFallback" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:40px" id="productEmojiEl">🛍️</div>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div class="pp-category" id="ppCategory"></div>
+            <div class="pp-name" id="ppName" style="margin-bottom:8px"></div>
+            <!-- WHAT YOU ARE BUYING — variant confirmation chips -->
+            <div id="variantConfirm" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+          </div>
+        </div>
+        <!-- SMART FILTER DROPDOWNS — size, color, gender, condition -->
+        <div id="smartFiltersWrap" style="background:var(--bg-glass);border:1px solid var(--border-1);border-radius:12px;padding:14px;margin-bottom:4px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px">Refine Search</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px" id="smartFilterDropdowns">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+      <!-- price row below identity header -->
+      <div class="pp-price-row">
       <div class="pp-price-row">
         <div class="pp-price" id="ppPrice">$0</div>
         <div class="pp-msrp" id="ppMsrp"></div>
@@ -1705,10 +1782,12 @@ async function doSearch(query) {
     renderResults(results, false);
     if (banner) banner.classList.add('hidden');
 
+    // Populate product image + variant identity panel
+    populateProductIdentity(results, serpData);
     // Show filter bar with variant data
     showFilterBar(serpData);
-    // Load DealNews trending deals async
-    loadDealNews(query);
+    // Load DealNews trending rail in results
+    loadDealNews(query, serpData);
     // Show variant tags parsed from query
     showVariantTags(serpData.variant);
     // Update result meta
@@ -1739,6 +1818,9 @@ async function doSearch(query) {
     window.currentResults = results;
     renderResults(results, true);
     if (banner) banner.classList.add('hidden');
+    // Still populate identity panel from query + fallback result
+    populateProductIdentity(results, { query: query, variant: {}, product: results.product });
+    buildSmartFilters({}, { query: query });
     if (notice) {
       notice.style.display = 'block';
       notice.textContent = '⚠ Showing estimated prices — live search initializing. Results update when APIs are configured.';
@@ -3166,7 +3248,8 @@ function showVariantTags(variant) {
 // ── DEALNEWS TRENDING RAIL ────────────────────────────────────
 var dealNewsLoaded = false;
 
-async function loadDealNews(query) {
+async function loadDealNews(query, serpData) {
+  serpData = serpData || {};
   var rail = document.getElementById('dealsRail');
   var list = document.getElementById('dealPillList');
   if (!rail || !list) return;
@@ -3264,6 +3347,289 @@ function buildDealCard(r, index, isLowest, isFallback) {
 
   return card;
 }
+
+</script>
+<script>
+// ═══════════════════════════════════════════════════════════
+// HOMEPAGE DEALNEWS LIVE FEED
+// ═══════════════════════════════════════════════════════════
+async function loadHomeDeals() {
+  var loading = document.getElementById('homeDealsLoading');
+  var grid = document.getElementById('homeDealsGrid');
+  var empty = document.getElementById('homeDealsEmpty');
+  var cat = document.getElementById('dealNewsCatFilter');
+  var category = cat ? cat.value : 'all';
+
+  if (loading) { loading.style.display = 'flex'; }
+  if (grid) { grid.style.display = 'none'; grid.innerHTML = ''; }
+  if (empty) empty.style.display = 'none';
+
+  try {
+    var resp = await fetch('./api/deals?limit=16&category=' + encodeURIComponent(category));
+    if (!resp.ok) throw new Error('deals API ' + resp.status);
+    var data = await resp.json();
+
+    if (loading) loading.style.display = 'none';
+
+    if (!data.deals || !data.deals.length) {
+      if (empty) empty.style.display = 'block';
+      return;
+    }
+
+    if (grid) {
+      grid.style.display = 'grid';
+      grid.innerHTML = data.deals.slice(0, 12).map(function(d) {
+        var ageStr = d.age_minutes < 60 ? d.age_minutes + 'm ago' : Math.floor(d.age_minutes / 60) + 'h ago';
+        var priceStr = d.price ? '<span class="hdc-price">$' + d.price.toFixed(2) + '</span>' : '';
+        return '<a class="home-deal-card" href="' + d.url + '" target="_blank" rel="noopener">' +
+          '<div class="hdc-cat">' + (d.store || d.category || 'DealNews') + '</div>' +
+          '<div class="hdc-title">' + d.title + '</div>' +
+          '<div class="hdc-meta">' + priceStr + '<span class="hdc-store">' + (d.store || '') + '</span><span class="hdc-age">' + ageStr + '</span></div>' +
+          '<span class="hdc-src">via DealNews</span>' +
+        '</a>';
+      }).join('');
+    }
+  } catch (e) {
+    console.warn('DealNews homepage load error:', e);
+    if (loading) loading.style.display = 'none';
+    if (empty) {
+      empty.style.display = 'block';
+      empty.textContent = 'Trending deals loading…';
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// PRODUCT IMAGE + VARIANT CONFIRMATION
+// ═══════════════════════════════════════════════════════════
+function populateProductIdentity(results, serpData) {
+  var product = results.product || {};
+  var variant = serpData.variant || {};
+  var retailers = results.retailers || [];
+
+  // --- Product image: use thumbnail from best result ---
+  var thumbnail = product.thumbnail || null;
+  if (!thumbnail && retailers.length) {
+    for (var i = 0; i < retailers.length; i++) {
+      if (retailers[i].thumbnail) { thumbnail = retailers[i].thumbnail; break; }
+    }
+  }
+  var img = document.getElementById('productImg');
+  var fallback = document.getElementById('productImgFallback');
+  if (img && thumbnail) {
+    img.src = thumbnail;
+    img.alt = product.name || 'Product';
+    img.style.display = 'block';
+    if (fallback) fallback.style.display = 'none';
+  } else {
+    if (img) img.style.display = 'none';
+    if (fallback) {
+      fallback.style.display = 'flex';
+      fallback.textContent = product.emoji || '🛍️';
+    }
+  }
+
+  // --- Variant confirmation chips: "What you're buying" ---
+  var confirmEl = document.getElementById('variantConfirm');
+  if (confirmEl) {
+    var chips = [];
+    if (variant.brand) chips.push({ label: variant.brand, type: 'neutral' });
+    if (variant.model) chips.push({ label: variant.model, type: 'neutral' });
+    if (variant.gender) chips.push({ label: variant.gender === 'women' ? "Women's" : "Men's", type: 'orange' });
+    if (variant.color) chips.push({ label: variant.color.charAt(0).toUpperCase() + variant.color.slice(1), type: 'orange' });
+    if (variant.size) chips.push({ label: 'Size ' + variant.size, type: 'orange' });
+    if (variant.width) chips.push({ label: 'Width ' + variant.width, type: 'orange' });
+    if (variant.inseam) chips.push({ label: variant.inseam + ' inseam', type: 'orange' });
+    if (variant.condition === 'used') chips.push({ label: 'Used', type: 'neutral' });
+    if (!chips.length) chips.push({ label: product.category || 'General', type: 'neutral' });
+    confirmEl.innerHTML = chips.map(function(c) {
+      return '<span class="variant-confirm-chip ' + (c.type === 'neutral' ? 'neutral' : '') + '">' + c.label + '</span>';
+    }).join('');
+  }
+
+  // --- Smart filter dropdowns ---
+  buildSmartFilters(variant, serpData);
+}
+
+function buildSmartFilters(variant, serpData) {
+  var wrap = document.getElementById('smartFilterDropdowns');
+  if (!wrap) return;
+
+  var filters = [];
+
+  // Gender filter
+  filters.push({
+    key: 'gender',
+    label: 'Gender',
+    current: variant.gender || '',
+    options: [
+      { value: '', label: 'Any Gender' },
+      { value: 'men', label: "Men's" },
+      { value: 'women', label: "Women's" },
+      { value: 'unisex', label: 'Unisex' },
+      { value: 'youth', label: 'Youth/Kids' },
+    ]
+  });
+
+  // Size filter — smart defaults based on category
+  var queryStr = (serpData && serpData.query ? serpData.query : (window.currentQuery || '')).toLowerCase();
+  var cat = (variant.category || (serpData && serpData.product && serpData.product.category ? serpData.product.category : '') || '').toLowerCase();
+  var isFootwear = /shoe|sneak|boot|sandal|heel|jordan|yeezy|nike|adidas|ultra|sneaker/.test(cat + ' ' + queryStr);
+  var isApparel = /legging|pant|shirt|jacket|hoodie|dress|top|bottom|apparel|cloth|lululemon/.test(cat + ' ' + queryStr);
+  
+  if (isFootwear) {
+    var shoeSizes = ['4','4.5','5','5.5','6','6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','11.5','12','12.5','13','14','15'];
+    filters.push({
+      key: 'size',
+      label: 'Shoe Size (US)',
+      current: variant.size || '',
+      options: [{ value: '', label: 'Any Size' }].concat(shoeSizes.map(function(s) { return { value: s, label: 'US ' + s }; }))
+    });
+    filters.push({
+      key: 'width',
+      label: 'Width',
+      current: variant.width || '',
+      options: [
+        { value: '', label: 'Any Width' },
+        { value: 'B', label: 'Narrow (B/2A)' },
+        { value: 'D', label: 'Standard (D/M)' },
+        { value: '2E', label: 'Wide (2E)' },
+        { value: '4E', label: 'Extra Wide (4E)' },
+      ]
+    });
+  } else if (isApparel) {
+    filters.push({
+      key: 'size',
+      label: 'Apparel Size',
+      current: variant.size || '',
+      options: [
+        { value: '', label: 'Any Size' },
+        { value: 'XXS', label: 'XXS' },
+        { value: 'XS', label: 'XS' },
+        { value: 'S', label: 'Small' },
+        { value: 'M', label: 'Medium' },
+        { value: 'L', label: 'Large' },
+        { value: 'XL', label: 'XL' },
+        { value: 'XXL', label: 'XXL' },
+        { value: '3XL', label: '3XL' },
+      ]
+    });
+    filters.push({
+      key: 'inseam',
+      label: 'Inseam',
+      current: variant.inseam || '',
+      options: [
+        { value: '', label: 'Any Inseam' },
+        { value: '25', label: '25"' },
+        { value: '26', label: '26"' },
+        { value: '28', label: '28"' },
+        { value: '30', label: '30"' },
+        { value: '32', label: '32"' },
+        { value: '34', label: '34"' },
+      ]
+    });
+  } else {
+    // Generic size
+    filters.push({
+      key: 'size',
+      label: 'Size',
+      current: variant.size || '',
+      options: [
+        { value: '', label: 'Any Size' },
+        { value: 'XS', label: 'XS' },
+        { value: 'S', label: 'Small' },
+        { value: 'M', label: 'Medium' },
+        { value: 'L', label: 'Large' },
+        { value: 'XL', label: 'XL' },
+        { value: 'XXL', label: 'XXL' },
+      ]
+    });
+  }
+
+  // Color filter
+  filters.push({
+    key: 'color',
+    label: 'Color',
+    current: variant.color || '',
+    options: [
+      { value: '', label: 'Any Color' },
+      { value: 'black', label: 'Black' },
+      { value: 'white', label: 'White' },
+      { value: 'grey', label: 'Grey' },
+      { value: 'navy', label: 'Navy' },
+      { value: 'blue', label: 'Blue' },
+      { value: 'red', label: 'Red' },
+      { value: 'green', label: 'Green' },
+      { value: 'pink', label: 'Pink' },
+      { value: 'brown', label: 'Brown' },
+      { value: 'beige', label: 'Beige' },
+      { value: 'olive', label: 'Olive' },
+      { value: 'purple', label: 'Purple' },
+      { value: 'orange', label: 'Orange' },
+    ]
+  });
+
+  // Condition filter
+  filters.push({
+    key: 'condition',
+    label: 'Condition',
+    current: variant.condition || 'new',
+    options: [
+      { value: 'new', label: 'New' },
+      { value: 'used', label: 'Used / Pre-owned' },
+      { value: 'refurbished', label: 'Refurbished' },
+    ]
+  });
+
+  // Shipping filter
+  filters.push({
+    key: 'shipping',
+    label: 'Shipping',
+    current: '',
+    options: [
+      { value: '', label: 'Any Shipping' },
+      { value: 'free', label: 'Free Shipping' },
+      { value: 'fast', label: '2-Day or Faster' },
+    ]
+  });
+
+  // Build HTML
+  wrap.innerHTML = filters.map(function(f) {
+    var opts = f.options.map(function(o) {
+      return '<option value="' + o.value + '"' + (o.value === f.current ? ' selected' : '') + '>' + o.label + '</option>';
+    }).join('');
+    return '<div>' +
+      '<div class="smart-filter-label">' + f.label + '</div>' +
+      '<select class="smart-filter-select" data-filter-key="' + f.key + '" onchange="applySmartFilter(this)">' + opts + '</select>' +
+    '</div>';
+  }).join('');
+}
+
+function applySmartFilter(selectEl) {
+  var key = selectEl.dataset.filterKey;
+  var value = selectEl.value;
+
+  if (!window.activeFilters) window.activeFilters = {};
+
+  if (key === 'gender' || key === 'color' || key === 'size' || key === 'width' || key === 'inseam') {
+    window.activeFilters[key] = value || null;
+  } else if (key === 'condition') {
+    window.activeFilters.used = value === 'used' || value === 'refurbished';
+  } else if (key === 'shipping') {
+    window.activeFilters.free_ship = value === 'free';
+  }
+
+  // Re-run search with updated filters
+  if (window.currentQuery) doSearch(window.currentQuery);
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT: Load DealNews on page load
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  // Load DealNews feed on homepage
+  loadHomeDeals();
+});
 
 </script>
 </body>
