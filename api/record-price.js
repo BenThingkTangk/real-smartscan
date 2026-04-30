@@ -5,8 +5,10 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SER
 function slugify(q) { return q.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0,60); }
 
 module.exports = async (req, res) => {
-  // Secret key check
-  if (req.headers['x-cron-secret'] !== process.env.CRON_SECRET) return res.status(401).end();
+  // Allow either x-cron-secret OR Vercel's own cron header
+  const isVercelCron = req.headers['x-vercel-cron'] === '1';
+  const hasSecret = req.headers['x-cron-secret'] === process.env.CRON_SECRET;
+  if (!isVercelCron && !hasSecret) return res.status(401).end();
   
   const query = req.query.q || '';
   if (!query) return res.status(400).json({ error: 'Missing q' });

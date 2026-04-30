@@ -1168,7 +1168,7 @@ html,body{height:100%;font-family:var(--font-body);background:var(--navy);color:
 <script>
 'use strict';
 const PASS = 'REAL2026';
-const BASE = 'https://real-smartscan.vercel.app';
+const BASE = window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://real-smartscan.vercel.app';
 
 // ─── AUTH ──────────────────────────────────────────────
 function tryLogin() {

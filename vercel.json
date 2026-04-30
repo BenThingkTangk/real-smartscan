@@ -92,8 +92,69 @@
       "dest": "/api/smartcast-confirm.js"
     },
     {
+      "src": "/sw.js",
+      "dest": "/public/sw.js",
+      "headers": {
+        "Service-Worker-Allowed": "/"
+      }
+    },
+    {
+      "src": "/api/subscribe",
+      "dest": "/api/subscribe.js"
+    },
+    {
+      "src": "/api/webhook",
+      "dest": "/api/webhook.js"
+    },
+    {
+      "src": "/api/check-alerts",
+      "dest": "/api/check-alerts.js"
+    },
+    {
+      "src": "/api/send-email",
+      "dest": "/api/send-email.js"
+    },
+    {
       "src": "/((?!api/).*)",
       "dest": "/public/index.html"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/record-price?q=macbook+air+m3",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/record-price?q=iphone+16+pro",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/record-price?q=airpods+pro",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/record-price?q=nike+air+max",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/record-price?q=ps5",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/record-price?q=dyson+v15",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/record-price?q=samsung+65+tv",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/record-price?q=theragun+pro",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/check-alerts",
+      "schedule": "0 3 * * *"
     }
   ]
 }

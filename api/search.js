@@ -3,6 +3,32 @@
 
 const SERP_API_KEY = process.env.SERP_API_KEY || '';
 
+// ── REDIS CACHE (Upstash REST API — no npm needed) ──────────────────
+async function cacheGet(key) {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+  try {
+    const r = await fetch(`${url}/get/${encodeURIComponent(key)}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const d = await r.json();
+    return d.result ? JSON.parse(d.result) : null;
+  } catch { return null; }
+}
+
+async function cacheSet(key, value, ttlSeconds = 300) {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return;
+  try {
+    await fetch(`${url}/set/${encodeURIComponent(key)}/${encodeURIComponent(JSON.stringify(value))}/ex/${ttlSeconds}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  } catch {}
+}
+
 // Simple in-memory rate limiter (100 req/min per IP)
 const rateMap = new Map();
 function rateLimit(ip) {
@@ -95,6 +121,11 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    // Check Redis cache before calling SerpAPI
+    const cacheKey = `search:${q}:${req.query.free_ship||''}:${req.query.condition||''}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) return res.json({ ...cached, source: 'cache' });
+
     const url = new URL('https://serpapi.com/search.json');
     url.searchParams.set('engine', 'google_shopping');
     url.searchParams.set('q', q);
@@ -144,7 +175,7 @@ module.exports = async function handler(req, res) {
     const takeRate = categoryRate[cat] || 0.08;
     const smartscanPrice = +(marketBest * (1 + takeRate)).toFixed(2);
 
-    res.json({
+    const responseObj = {
       results, query: q, source: 'serpapi',
       product: {
         name: raw[0]?.title || q, thumbnail: raw[0]?.thumbnail || null,
@@ -162,8 +193,22 @@ module.exports = async function handler(req, res) {
         take_rate: takeRate,
         label: 'R.E.A.L. Price — includes our service fee',
       },
-    });
+    };
+    await cacheSet(cacheKey, responseObj, 300); // 5 min cache
+    res.json(responseObj);
   } catch (e) {
+    // Report to Sentry via fetch (no SDK needed)
+    const sentryDsn = process.env.SENTRY_DSN;
+    if (sentryDsn && e.message !== 'Rate limit exceeded') {
+      const [, proj] = sentryDsn.match(/sentry\.io\/([\w]+)/) || [];
+      if (proj) {
+        fetch(`https://sentry.io/api/${proj}/store/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Sentry-Auth': `Sentry sentry_version=7,sentry_key=${sentryDsn.split('@')[0].split('//')[1]},sentry_client=custom/1.0` },
+          body: JSON.stringify({ message: e.message, level: 'error', platform: 'node', logger: 'api/search' }),
+        }).catch(() => {});
+      }
+    }
     res.status(500).json({ error: e.message, fallback: true });
   }
 };
