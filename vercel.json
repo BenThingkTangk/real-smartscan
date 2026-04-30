@@ -44,6 +44,14 @@
       "dest": "/public/favicon.png"
     },
     {
+      "src": "/admin.html",
+      "dest": "/public/admin.html"
+    },
+    {
+      "src": "/launch.html",
+      "dest": "/public/launch.html"
+    },
+    {
       "src": "/((?!api/).*)",
       "dest": "/public/index.html"
     }
