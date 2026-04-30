@@ -663,6 +663,14 @@ html,body{height:100%;font-family:var(--font-body);background:var(--navy);color:
           <div class="indicator-dot dot-grey" id="dot-search"></div>
           <span id="ind-search-label">Search API</span>
         </div>
+        <div class="indicator" id="ind-supabase">
+          <div class="indicator-dot dot-grey" id="dot-supabase"></div>
+          <span id="ind-supabase-label">Supabase</span>
+        </div>
+        <div class="indicator" id="ind-linode">
+          <div class="indicator-dot" style="background:#06B6D4"></div>
+          <span>Linode CDN</span>
+        </div>
         <span class="badge-live" id="badge-live" style="display:none">LIVE</span>
         <span class="badge-sim" id="badge-sim">SIM</span>
       </div>
@@ -2039,6 +2047,26 @@ function addFeedRow(isInit) {
 }
 
 // ─── INIT ───────────────────────────────────────────────
+async function pingSupabase() {
+  try {
+    const SUPABASE_URL = 'https://ncnolokpqnrwwedbxlhq.supabase.co';
+    const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jbm9sb2twcW5yd3dlZGJ4bGhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1MjQ5MjcsImV4cCI6MjA5MzEwMDkyN30.CAMV3Tddb2glxIhXhJBPJNEMpUSgC8c8B4syZluhNII';
+    const res = await fetch(SUPABASE_URL + '/rest/v1/profiles?select=count&limit=1', {
+      headers: { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY }
+    });
+    if (res.ok || res.status === 406) { // 406 = RLS blocked but DB is alive
+      document.getElementById('dot-supabase').className = 'indicator-dot dot-green';
+      document.getElementById('ind-supabase-label').textContent = 'Supabase ✓';
+      // Update supabase KPIs if elements exist
+      const dbEl = document.getElementById('kpi-db');
+      if (dbEl) dbEl.innerHTML = '<span class="mono" style="color:var(--green)">Online</span>';
+    }
+  } catch(e) {
+    document.getElementById('dot-supabase').className = 'indicator-dot dot-red';
+    document.getElementById('ind-supabase-label').textContent = 'Supabase ✗';
+  }
+}
+
 function initAll() {
   updateClock();
   renderMargin();
@@ -2049,6 +2077,7 @@ function initAll() {
   // Load live API data
   fetchDeals();
   fetchSearch('electronics');
+  pingSupabase();
 }
 </script>
 </body>
