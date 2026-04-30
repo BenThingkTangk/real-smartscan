@@ -3,476 +3,1150 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>R.E.A.L. Admin Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<title>R.E.A.L. SmartScan — Admin Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg0:#060a14;--bg1:#0b1020;--bg2:#101828;--bg3:#151e30;--bgc:#0d1525;
-  --b0:rgba(255,255,255,0.05);--b1:rgba(255,255,255,0.09);--b2:rgba(255,255,255,0.16);
-  --orange:#F07020;--og:linear-gradient(135deg,#F07020,#FF8C42);--odim:rgba(240,112,32,0.1);--oglow:rgba(240,112,32,0.3);
-  --cyan:#00D4FF;--cdim:rgba(0,212,255,0.08);
-  --green:#10B981;--gdim:rgba(16,185,129,0.1);--green2:#34D399;
-  --red:#EF4444;--rdim:rgba(239,68,68,0.1);
-  --purple:#8B5CF6;--pdim:rgba(139,92,246,0.1);
-  --t1:#F8FAFC;--t2:rgba(248,250,252,0.70);--t3:rgba(248,250,252,0.42);--t4:rgba(248,250,252,0.22);
-  --font:'Inter',system-ui,sans-serif;
+  /* Brand colors */
+  --navy:      #0F172A;
+  --card:      #1E293B;
+  --elevated:  #334155;
+  --blue-deep: #1E3A8A;
+  --blue:      #2563EB;
+  --cyan:      #06B6D4;
+  --cyan-lt:   #22D3EE;
+  --orange:    #F97316;
+  --orange-hv: #EA580C;
+  --body:      #E2E8F0;
+  --muted:     #94A3B8;
+  --divider:   #1E3A5F;
+  --green:     #10B981;
+  --red:       #EF4444;
+  --sidebar:   #0A1628;
+  /* Dim variants */
+  --cyan-dim:   rgba(6,182,212,0.12);
+  --orange-dim: rgba(249,115,22,0.12);
+  --green-dim:  rgba(16,185,129,0.10);
+  --red-dim:    rgba(239,68,68,0.10);
+  --blue-dim:   rgba(37,99,235,0.12);
+  --purple:     #8B5CF6;
+  --purple-dim: rgba(139,92,246,0.10);
+  /* Radius */
   --r4:4px;--r8:8px;--r12:12px;--r16:16px;--r24:24px;--rfull:9999px;
-  --ease:cubic-bezier(0.16,1,0.3,1);
+  --ease: cubic-bezier(0.16,1,0.3,1);
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 }
-html,body{height:100%;font-family:var(--font);background:var(--bg0);color:var(--t1);overflow:hidden}
+html,body{height:100%;font-family:var(--font-body);background:var(--navy);color:var(--body);overflow:hidden;font-size:16px;line-height:1.5}
 
-/* ── GATE ── */
-#gate{position:fixed;inset:0;background:var(--bg0);z-index:9999;display:flex;align-items:center;justify-content:center}
-.gate-box{background:var(--bg1);border:1px solid var(--b2);border-radius:var(--r24);padding:48px 40px;width:100%;max-width:400px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,0.7)}
-.gate-logo{width:56px;height:56px;background:var(--og);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:#fff;margin:0 auto 20px}
-.gate-title{font-size:26px;font-weight:800;margin-bottom:6px}
-.gate-sub{font-size:14px;color:var(--t3);margin-bottom:32px}
-.gate-input{width:100%;background:var(--bg3);border:1.5px solid var(--b1);border-radius:var(--r12);color:var(--t1);font-size:18px;font-family:var(--font);padding:14px 18px;text-align:center;letter-spacing:4px;outline:none;transition:border-color .2s,box-shadow .2s;margin-bottom:12px}
-.gate-input:focus{border-color:var(--orange);box-shadow:0 0 0 4px var(--odim)}
+/* ── CUSTOM SCROLLBAR ── */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:#0A1628}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:99px}
+
+/* ── MONO CLASS ── */
+.mono{font-family:var(--font-mono)}
+
+/* ─────────────────────────────────────────────────────────
+   PASSWORD GATE
+───────────────────────────────────────────────────────── */
+#gate{
+  position:fixed;inset:0;background:var(--navy);z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  background-image:radial-gradient(ellipse at 30% 20%, rgba(30,58,138,0.3) 0%, transparent 60%),
+                   radial-gradient(ellipse at 70% 80%, rgba(6,182,212,0.08) 0%, transparent 60%)
+}
+.gate-card{
+  background:var(--card);
+  border:1px solid var(--divider);
+  border-radius:var(--r24);
+  padding:48px 44px;
+  width:100%;max-width:420px;
+  text-align:center;
+  box-shadow:0 40px 100px rgba(0,0,0,0.6);
+  position:relative;overflow:hidden
+}
+.gate-card::before{
+  content:'';position:absolute;top:-1px;left:20%;right:20%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent)
+}
+.gate-logo-wrap{
+  width:64px;height:64px;
+  background:var(--blue-deep);
+  border:1.5px solid var(--blue);
+  border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 24px;
+  box-shadow:0 0 32px rgba(37,99,235,0.35)
+}
+.gate-logo-wrap svg{width:32px;height:32px}
+.gate-title{font-size:22px;font-weight:800;color:var(--body);letter-spacing:-0.02em;margin-bottom:4px}
+.gate-title span{color:var(--cyan)}
+.gate-sub{font-size:14px;color:var(--muted);margin-bottom:32px}
+.gate-input{
+  width:100%;
+  background:var(--elevated);
+  border:1.5px solid var(--divider);
+  border-radius:var(--r12);
+  color:var(--body);
+  font-size:18px;
+  font-family:var(--font-mono);
+  padding:14px 18px;
+  text-align:center;
+  letter-spacing:6px;
+  outline:none;
+  transition:border-color .2s,box-shadow .2s;
+  margin-bottom:12px
+}
+.gate-input:focus{border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-dim)}
 .gate-input.shake{animation:shake .4s var(--ease)}
 @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
-.gate-btn{width:100%;background:var(--og);border:none;color:#fff;font-size:15px;font-weight:800;font-family:var(--font);padding:15px;border-radius:var(--r12);cursor:pointer;transition:opacity .15s,box-shadow .15s}
-.gate-btn:hover{opacity:.9;box-shadow:0 4px 24px var(--oglow)}
-.gate-error{font-size:13px;color:var(--red);margin-top:12px;min-height:20px}
+.gate-btn{
+  width:100%;
+  background:var(--orange);
+  border:none;color:#fff;
+  font-size:15px;font-weight:700;
+  font-family:var(--font-body);
+  padding:15px 24px;
+  min-height:50px;
+  border-radius:var(--r12);
+  cursor:pointer;
+  transition:background .15s,box-shadow .15s;
+  letter-spacing:0.01em
+}
+.gate-btn:hover{background:var(--orange-hv);box-shadow:0 8px 24px rgba(249,115,22,0.4)}
+.gate-error{font-size:13px;color:var(--red);margin-top:10px;min-height:20px}
+.gate-back{display:inline-block;margin-top:20px;font-size:13px;color:var(--muted);text-decoration:none;transition:color .15s}
+.gate-back:hover{color:var(--body)}
 
-/* ── LAYOUT ── */
+/* ─────────────────────────────────────────────────────────
+   APP LAYOUT
+───────────────────────────────────────────────────────── */
 #app{display:none;height:100vh;overflow:hidden}
 #app.visible{display:flex}
 
-/* Sidebar */
-.sidebar{width:220px;flex-shrink:0;background:var(--bg1);border-right:1px solid var(--b0);display:flex;flex-direction:column;height:100vh;overflow-y:auto}
-.sb-logo{padding:20px 20px 16px;border-bottom:1px solid var(--b0);margin-bottom:8px}
-.sb-logo-mark{font-size:13px;font-weight:800;color:var(--t1)}.sb-logo-mark span{color:var(--orange)}
-.sb-logo-sub{font-size:10px;color:var(--t3);margin-top:2px;letter-spacing:.04em}
-.sb-nav{flex:1;padding:4px 8px;display:flex;flex-direction:column;gap:2px}
-.sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r8);cursor:pointer;font-size:13px;font-weight:500;color:var(--t3);transition:all .15s;border:none;background:transparent;width:100%;text-align:left}
-.sb-item:hover{background:var(--bg2);color:var(--t1)}
-.sb-item.active{background:var(--odim);color:var(--orange);border:1px solid var(--oglow);font-weight:700}
-.sb-icon{font-size:15px;flex-shrink:0}
-.sb-footer{padding:12px 8px;border-top:1px solid var(--b0)}
-.sb-back{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:var(--r8);cursor:pointer;font-size:13px;color:var(--t3);transition:all .15s;border:none;background:transparent;width:100%}
-.sb-back:hover{background:var(--bg2);color:var(--t1)}
+/* ── SIDEBAR ── */
+.sidebar{
+  width:232px;flex-shrink:0;
+  background:var(--sidebar);
+  border-right:1px solid var(--divider);
+  display:flex;flex-direction:column;
+  height:100vh;overflow-y:auto;
+  scrollbar-width:thin
+}
+.sb-logo{padding:24px 20px 16px;border-bottom:1px solid var(--divider);margin-bottom:8px}
+.sb-logo-mark{font-size:14px;font-weight:800;color:var(--body);letter-spacing:-0.01em}
+.sb-logo-mark .brand-cyan{color:var(--cyan)}
+.sb-logo-sub{font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.05em;text-transform:uppercase}
+.sb-nav{flex:1;padding:6px 10px;display:flex;flex-direction:column;gap:2px}
+.sb-section{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:10px 10px 4px;opacity:0.6}
+.sb-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:var(--r8);
+  cursor:pointer;font-size:13px;font-weight:500;
+  color:var(--muted);transition:all .15s;
+  border:none;background:transparent;width:100%;text-align:left;
+  border-left:2px solid transparent;
+  position:relative
+}
+.sb-item:hover{background:rgba(255,255,255,0.04);color:var(--body)}
+.sb-item.active{
+  background:var(--cyan-dim);
+  color:var(--cyan);
+  border-left-color:var(--cyan);
+  font-weight:700
+}
+.sb-icon{font-size:15px;flex-shrink:0;width:18px;text-align:center}
+.sb-footer{padding:12px 10px;border-top:1px solid var(--divider)}
+.sb-footer-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 12px;border-radius:var(--r8);
+  cursor:pointer;font-size:13px;color:var(--muted);
+  transition:all .15s;border:none;background:transparent;width:100%;
+}
+.sb-footer-btn:hover{background:rgba(255,255,255,0.04);color:var(--body)}
 
-/* Main area */
+/* ── MAIN ── */
 .main{flex:1;display:flex;flex-direction:column;min-width:0;height:100vh;overflow:hidden}
-.topbar{height:56px;background:var(--bg1);border-bottom:1px solid var(--b0);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0}
-.topbar-title{font-size:15px;font-weight:700;flex:1}
-.topbar-clock{font-size:12px;color:var(--t3)}
-.topbar-logout{background:transparent;border:1px solid var(--b1);color:var(--t3);font-size:12px;font-weight:600;font-family:var(--font);padding:6px 12px;border-radius:var(--rfull);cursor:pointer;transition:all .15s}
+
+/* ── TOPBAR ── */
+.topbar{
+  height:56px;
+  background:var(--card);
+  border-bottom:1px solid var(--divider);
+  display:flex;align-items:center;
+  padding:0 28px;gap:16px;flex-shrink:0
+}
+.topbar-title{font-size:15px;font-weight:700;flex:1;letter-spacing:-0.01em}
+.topbar-indicators{display:flex;align-items:center;gap:12px}
+.indicator{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--muted)}
+.indicator-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dot-green{background:var(--green);box-shadow:0 0 6px var(--green)}
+.dot-grey{background:var(--muted);opacity:0.4}
+.dot-pulse{animation:dotpulse 1.4s ease infinite}
+@keyframes dotpulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.badge-live{background:rgba(16,185,129,0.15);color:var(--green);font-size:10px;font-weight:800;padding:2px 8px;border-radius:99px;border:1px solid rgba(16,185,129,0.3);letter-spacing:.06em}
+.badge-sim{background:rgba(251,191,36,0.15);color:#FBBF24;font-size:10px;font-weight:800;padding:2px 8px;border-radius:99px;border:1px solid rgba(251,191,36,0.3);letter-spacing:.06em;display:none}
+.topbar-clock{font-size:11px;color:var(--muted);font-family:var(--font-mono)}
+.topbar-logout{
+  background:transparent;border:1px solid var(--divider);
+  color:var(--muted);font-size:12px;font-weight:600;
+  font-family:var(--font-body);padding:6px 14px;
+  border-radius:var(--rfull);cursor:pointer;transition:all .15s;min-height:32px
+}
 .topbar-logout:hover{border-color:var(--red);color:var(--red)}
 
-/* Content */
-.content{flex:1;overflow-y:auto;padding:24px}
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;padding:32px;scrollbar-width:thin}
 
-/* Tabs */
+/* ── SIM BANNER ── */
+.sim-banner{
+  display:none;
+  background:rgba(251,191,36,0.1);
+  border:1px solid rgba(251,191,36,0.25);
+  border-radius:var(--r8);
+  padding:10px 16px;
+  margin-bottom:20px;
+  font-size:13px;font-weight:600;color:#FBBF24;
+  display:none;align-items:center;gap:8px
+}
+.sim-banner.visible{display:flex}
+
+/* ── TABS ── */
 .tab{display:none}.tab.active{display:block}
 
-/* KPI Grid */
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-.kpi{background:var(--bgc);border:1px solid var(--b0);border-radius:var(--r16);padding:20px}
-.kpi-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:8px}
-.kpi-val{font-size:28px;font-weight:900;line-height:1}
-.kpi-change{font-size:12px;font-weight:600;margin-top:6px}
+/* ─────────────────────────────────────────────────────────
+   CARDS & SHARED COMPONENTS
+───────────────────────────────────────────────────────── */
+.card{
+  background:var(--card);
+  border:1px solid var(--divider);
+  border-radius:var(--r16);
+  padding:28px 32px
+}
+.card-sm{padding:20px 24px}
+.card-title{font-size:13px;font-weight:700;color:var(--body);letter-spacing:-.01em;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+
+/* ── SECTION HEADER ── */
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.sec-title{font-size:16px;font-weight:700;color:var(--body);letter-spacing:-.02em}
+.sec-sub{font-size:13px;color:var(--muted);margin-top:2px}
+
+/* ── KPI GRID ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.kpi{
+  background:var(--card);
+  border:1px solid var(--divider);
+  border-radius:var(--r16);
+  padding:24px;
+  position:relative;overflow:hidden
+}
+.kpi::after{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:2px
+}
+.kpi-orange::after{background:linear-gradient(90deg,transparent,var(--orange),transparent)}
+.kpi-cyan::after{background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+.kpi-green::after{background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.kpi-blue::after{background:linear-gradient(90deg,transparent,var(--blue),transparent)}
+.kpi-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.kpi-val{font-size:30px;font-weight:900;line-height:1;font-family:var(--font-mono);letter-spacing:-.02em}
+.kpi-val.empty{font-size:24px;color:var(--muted)}
+.kpi-change{font-size:12px;font-weight:600;margin-top:8px;color:var(--muted)}
+.kpi-loading{display:flex;gap:6px;margin-top:10px}
+.skel{background:var(--elevated);border-radius:4px;animation:skelpulse 1.4s ease infinite}
+@keyframes skelpulse{0%,100%{opacity:0.3}50%{opacity:0.7}}
+.skel-val{height:30px;width:100px}
+.skel-sub{height:12px;width:80px}
 .up{color:var(--green)}.down{color:var(--red)}
 
-/* Charts */
-.chart-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px}
-.card{background:var(--bgc);border:1px solid var(--b0);border-radius:var(--r16);padding:20px}
-.card h3{font-size:13px;font-weight:700;color:var(--t2);margin-bottom:16px}
-.chart-wrap{position:relative;height:180px}
+/* ── EMPTY STATES ── */
+.empty-state{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:56px 24px;text-align:center;gap:12px
+}
+.empty-icon{font-size:36px;opacity:0.4}
+.empty-title{font-size:15px;font-weight:600;color:var(--body)}
+.empty-desc{font-size:13px;color:var(--muted);max-width:320px;line-height:1.6}
 
-/* Live feed */
-.live-feed{background:var(--bgc);border:1px solid var(--b0);border-radius:var(--r16);padding:20px;margin-bottom:24px}
-.live-feed-header{display:flex;align-items:center;gap:8px;margin-bottom:14px}
-.live-dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:lp 1.4s ease infinite;flex-shrink:0}
+/* ── BUTTONS ── */
+.btn-primary{
+  background:var(--orange);
+  border:none;color:#fff;
+  font-size:14px;font-weight:700;
+  font-family:var(--font-body);
+  padding:11px 22px;min-height:44px;
+  border-radius:var(--r8);
+  cursor:pointer;transition:background .15s,box-shadow .15s;
+  display:inline-flex;align-items:center;gap:7px
+}
+.btn-primary:hover{background:var(--orange-hv);box-shadow:0 4px 16px rgba(249,115,22,0.35)}
+.btn-simulate{
+  background:transparent;
+  border:1.5px solid var(--cyan);
+  color:var(--cyan);
+  font-size:13px;font-weight:700;
+  font-family:var(--font-body);
+  padding:10px 20px;min-height:44px;
+  border-radius:var(--r8);
+  cursor:pointer;transition:all .15s;
+  display:inline-flex;align-items:center;gap:7px
+}
+.btn-simulate:hover{background:var(--cyan-dim);box-shadow:0 0 16px rgba(6,182,212,0.2)}
+.btn-secondary{
+  background:var(--elevated);
+  border:1px solid var(--divider);
+  color:var(--body);
+  font-size:13px;font-weight:600;
+  font-family:var(--font-body);
+  padding:9px 16px;min-height:40px;
+  border-radius:var(--r8);
+  cursor:pointer;transition:all .15s;
+  display:inline-flex;align-items:center;gap:6px
+}
+.btn-secondary:hover{background:rgba(255,255,255,0.06);border-color:var(--muted)}
+.btn-clear{
+  background:transparent;border:none;
+  color:var(--muted);font-size:12px;font-weight:600;
+  font-family:var(--font-body);
+  padding:6px 12px;border-radius:var(--rfull);
+  cursor:pointer;transition:color .15s
+}
+.btn-clear:hover{color:var(--red)}
+.btn-danger{
+  background:var(--red-dim);border:1px solid rgba(239,68,68,0.25);
+  color:var(--red);font-size:11px;font-weight:700;
+  font-family:var(--font-body);
+  padding:6px 10px;border-radius:var(--r8);cursor:pointer;min-height:32px
+}
+.btn-blue{
+  background:var(--blue);border:none;color:#fff;
+  font-size:13px;font-weight:700;
+  font-family:var(--font-body);
+  padding:10px 20px;min-height:44px;
+  border-radius:var(--r8);cursor:pointer;
+  transition:background .15s;
+  display:inline-flex;align-items:center;gap:6px
+}
+.btn-blue:hover{background:#1d4ed8}
+
+/* ── FORMS ── */
+.form-label{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;display:block}
+.form-input{
+  background:var(--elevated);
+  border:1.5px solid var(--divider);
+  border-radius:var(--r8);
+  color:var(--body);font-size:14px;
+  font-family:var(--font-body);
+  padding:10px 14px;outline:none;
+  transition:border-color .15s,box-shadow .15s;width:100%
+}
+.form-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-dim)}
+.form-select{
+  background:var(--elevated);border:1.5px solid var(--divider);
+  border-radius:var(--r8);color:var(--body);
+  font-size:14px;font-family:var(--font-body);
+  padding:10px 14px;outline:none;cursor:pointer;width:100%
+}
+
+/* ── STATUS BADGES ── */
+.badge{display:inline-flex;padding:3px 9px;border-radius:var(--rfull);font-size:10px;font-weight:700;letter-spacing:.04em}
+.badge-complete{background:var(--green-dim);color:var(--green);border:1px solid rgba(16,185,129,0.2)}
+.badge-pending{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(249,115,22,0.2)}
+.badge-processing{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(139,92,246,0.2)}
+.badge-live-pill{background:rgba(239,68,68,0.12);color:var(--red);font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;border:1px solid rgba(239,68,68,0.25)}
+.badge-rec-pill{background:var(--elevated);color:var(--muted);font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;border:1px solid var(--divider)}
+
+/* ── TABLES ── */
+.rtable{width:100%;border-collapse:collapse}
+.rthead th{
+  font-size:10px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);
+  padding:10px 16px;border-bottom:1px solid var(--divider);
+  text-align:left;white-space:nowrap
+}
+.rtr td{padding:12px 16px;border-bottom:1px solid rgba(30,58,95,0.5);font-size:13px;vertical-align:middle}
+.rtr:last-child td{border-bottom:none}
+.rtr:hover td{background:rgba(255,255,255,0.02)}
+
+/* ── CHARTS ── */
+.chart-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:28px}
+.chart-wrap{position:relative;height:200px}
+.chart-wrap-tall{position:relative;height:240px}
+
+/* ─────────────────────────────────────────────────────────
+   DASHBOARD
+───────────────────────────────────────────────────────── */
+.live-feed-card{
+  background:var(--card);border:1px solid var(--divider);
+  border-radius:var(--r16);padding:24px 28px;margin-bottom:24px
+}
+.live-feed-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.live-dot{
+  width:8px;height:8px;background:var(--green);
+  border-radius:50%;animation:lp 1.4s ease infinite;flex-shrink:0
+}
 @keyframes lp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
-.feed-row{display:grid;grid-template-columns:1fr 100px 80px 64px 52px;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--b0);font-size:12px;animation:slideIn .35s var(--ease)}
-@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.feed-table-header{
+  display:grid;
+  grid-template-columns:1fr 100px 90px 72px 56px;
+  gap:8px;padding:6px 0;
+  border-bottom:1px solid var(--divider);margin-bottom:4px
+}
+.feed-th{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.feed-th:nth-child(n+3){text-align:right}
+.feed-row{
+  display:grid;grid-template-columns:1fr 100px 90px 72px 56px;
+  gap:8px;padding:9px 0;
+  border-bottom:1px solid rgba(30,58,95,0.35);
+  font-size:13px;animation:feedIn .3s var(--ease)
+}
+@keyframes feedIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
 .feed-row:last-child{border-bottom:none}
-.feed-prod{font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.feed-store{color:var(--t3)}
-.feed-price{font-weight:700;text-align:right}
-.feed-margin{font-weight:800;color:var(--green);text-align:right}
-.feed-time{color:var(--t4);text-align:right}
+.feed-prod{font-weight:600;color:var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feed-store{color:var(--muted);font-size:12px}
+.feed-price{font-family:var(--font-mono);font-weight:600;text-align:right}
+.feed-margin{font-family:var(--font-mono);font-weight:700;color:var(--green);text-align:right}
+.feed-time{color:var(--muted);font-size:11px;text-align:right}
+.feed-empty{
+  display:flex;flex-direction:column;align-items:center;
+  padding:32px;text-align:center;gap:10px;color:var(--muted)
+}
+.feed-empty-icon{font-size:28px;opacity:0.4}
 
-/* Section title */
-.sec-title{font-size:15px;font-weight:700;color:var(--t1);margin-bottom:16px;display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--b0)}
+/* ── DASHBOARD KPI BUTTONS ── */
+.kpi-actions{display:flex;gap:10px;margin-bottom:28px;align-items:center}
 
-/* Margin table */
-.mtable{width:100%;border-collapse:collapse}
-.mthead th{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);padding:8px 14px;border-bottom:1px solid var(--b0);text-align:left}
-.mtr td{padding:11px 14px;border-bottom:1px solid var(--b0);font-size:13px;vertical-align:middle}
-.mtr:last-child td{border-bottom:none}
-.mtr:hover{background:var(--bg2)}
-.mtr-cat{font-weight:700}
-.mtr-rate{font-weight:800;color:var(--cyan);min-width:44px}
-.mrate-slider{-webkit-appearance:none;width:120px;height:4px;border-radius:99px;background:var(--bg3);outline:none;cursor:pointer;vertical-align:middle}
-.mrate-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--orange);cursor:pointer;border:2px solid #fff}
-.mtr-preview{font-size:11px;color:var(--t3);font-style:italic}
+/* ─────────────────────────────────────────────────────────
+   REVENUE / CHARTS
+───────────────────────────────────────────────────────── */
+.rev-streams{display:flex;flex-direction:column;gap:16px}
+.rev-stream .rs-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+.rev-stream .rs-name{color:var(--body)}
+.rev-stream .rs-val{font-weight:700;font-family:var(--font-mono)}
+.rs-track{height:6px;background:var(--elevated);border-radius:99px;overflow:hidden}
+.rs-fill{height:100%;border-radius:99px;transition:width 0.6s var(--ease)}
 
-/* Revenue bars */
-.rev-streams{display:flex;flex-direction:column;gap:14px;margin-top:4px}
-.rev-stream .rs-header{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
-.rev-stream .rs-name{color:var(--t2)}
-.rev-stream .rs-val{font-weight:800}
-.rs-bar{height:7px;background:var(--bg3);border-radius:99px;overflow:hidden}
-.rs-fill{height:100%;border-radius:99px}
+/* ─────────────────────────────────────────────────────────
+   MARGIN ENGINE
+───────────────────────────────────────────────────────── */
+.margin-slider{
+  -webkit-appearance:none;width:140px;height:4px;
+  border-radius:99px;background:var(--elevated);
+  outline:none;cursor:pointer;vertical-align:middle;accent-color:var(--orange)
+}
+.margin-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;width:16px;height:16px;
+  border-radius:50%;background:var(--orange);
+  cursor:pointer;border:2px solid var(--card);
+  box-shadow:0 0 8px rgba(249,115,22,0.4)
+}
+.gmv-chip{
+  font-size:11px;font-family:var(--font-mono);
+  background:var(--green-dim);color:var(--green);
+  border:1px solid rgba(16,185,129,0.2);
+  padding:2px 8px;border-radius:var(--rfull)
+}
+.apply-modal{
+  display:none;position:fixed;inset:0;z-index:8000;
+  background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center
+}
+.apply-modal.open{display:flex}
+.apply-modal-box{
+  background:var(--card);border:1px solid var(--divider);
+  border-radius:var(--r16);padding:32px;width:100%;max-width:440px
+}
 
-/* Orders table */
-.otable{width:100%;border-collapse:collapse;font-size:12px}
-.othead th{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);padding:8px 10px;border-bottom:1px solid var(--b0);text-align:left;white-space:nowrap}
-.otr td{padding:9px 10px;border-bottom:1px solid var(--b0)}
-.otr:hover{background:var(--bg2)}
-.status-badge{display:inline-flex;padding:2px 8px;border-radius:var(--rfull);font-size:10px;font-weight:700}
-.status-complete{background:var(--gdim);color:var(--green)}
-.status-pending{background:var(--odim);color:var(--orange)}
-.status-processing{background:var(--pdim);color:var(--purple)}
-.export-btn{background:var(--bg2);border:1px solid var(--b1);color:var(--t2);font-size:12px;font-weight:700;font-family:var(--font);padding:7px 14px;border-radius:var(--r8);cursor:pointer;transition:all .15s}
-.export-btn:hover{border-color:var(--green);color:var(--green)}
+/* ─────────────────────────────────────────────────────────
+   PRODUCTS
+───────────────────────────────────────────────────────── */
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.product-card{
+  background:var(--card);border:1px solid var(--divider);
+  border-radius:var(--r16);overflow:hidden;
+  transition:transform .2s var(--ease),box-shadow .2s
+}
+.product-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.3)}
+.product-thumb{
+  aspect-ratio:1;background:var(--elevated);
+  display:flex;align-items:center;justify-content:center;
+  font-size:52px;border-bottom:1px solid var(--divider);
+  position:relative
+}
+.product-margin-badge{
+  position:absolute;top:8px;left:8px;
+  background:var(--green);color:#fff;
+  font-size:10px;font-weight:800;
+  padding:2px 8px;border-radius:99px
+}
+.product-cat{font-size:10px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.product-name{font-size:13px;font-weight:700;line-height:1.3;margin-bottom:8px}
+.product-price{font-size:17px;font-weight:800;font-family:var(--font-mono)}
+.product-earn{font-size:11px;color:var(--green);margin-top:2px}
+.product-msrp{font-size:12px;color:var(--muted);text-decoration:line-through;font-family:var(--font-mono)}
+.product-search-bar{display:flex;gap:10px;margin-bottom:24px}
+.product-search-bar .form-input{flex:1}
+.skeleton-card{background:var(--card);border:1px solid var(--divider);border-radius:var(--r16);overflow:hidden}
+.skeleton-thumb{aspect-ratio:1;background:var(--elevated);animation:skelpulse 1.4s ease infinite}
 
-/* Analytics */
-.funnel-step{margin-bottom:12px}
-.funnel-header{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;color:var(--t2)}
-.funnel-bar{height:7px;background:var(--bg3);border-radius:99px}
+/* ─────────────────────────────────────────────────────────
+   ANALYTICS
+───────────────────────────────────────────────────────── */
+.funnel-step{margin-bottom:14px}
+.funnel-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;color:var(--body)}
+.funnel-track{height:6px;background:var(--elevated);border-radius:99px}
 .funnel-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--purple),var(--cyan))}
-.atab{width:100%;border-collapse:collapse}
-.athead th{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);padding:8px 12px;border-bottom:1px solid var(--b0);text-align:left}
-.atr td{padding:9px 12px;border-bottom:1px solid var(--b0);font-size:13px}
-.atr:hover{background:var(--bg2)}
+.live-metric{
+  background:var(--cyan-dim);border:1px solid rgba(6,182,212,0.2);
+  border-radius:var(--r8);padding:10px 14px;
+  display:flex;align-items:center;gap:10px;margin-bottom:12px
+}
+.live-metric-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:lp 1.4s ease infinite;flex-shrink:0}
+.live-metric-text{font-size:13px;color:var(--cyan)}
+.live-metric-val{font-family:var(--font-mono);font-weight:700;margin-left:auto}
 
-/* Real TV */
-.rtv-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-.form-group{display:flex;flex-direction:column;gap:4px}
-.form-label{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t3)}
-.form-input{background:var(--bg3);border:1px solid var(--b1);border-radius:var(--r8);color:var(--t1);font-size:14px;font-family:var(--font);padding:10px 12px;outline:none;transition:border-color .15s}
-.form-input:focus{border-color:var(--orange)}
-.form-select{background:var(--bg3);border:1px solid var(--b1);border-radius:var(--r8);color:var(--t1);font-size:14px;font-family:var(--font);padding:10px 12px;outline:none;cursor:pointer}
-.btn-primary{background:var(--og);border:none;color:#fff;font-size:13px;font-weight:700;font-family:var(--font);padding:10px 20px;border-radius:var(--r8);cursor:pointer;transition:opacity .15s}
-.btn-primary:hover{opacity:.9}
-.btn-secondary{background:var(--bg3);border:1px solid var(--b1);color:var(--t2);font-size:12px;font-weight:600;font-family:var(--font);padding:8px 14px;border-radius:var(--r8);cursor:pointer;transition:all .15s}
-.btn-secondary:hover{border-color:var(--b2);color:var(--t1)}
-.btn-danger{background:var(--rdim);border:1px solid rgba(239,68,68,0.25);color:var(--red);font-size:11px;font-weight:700;font-family:var(--font);padding:6px 10px;border-radius:var(--r8);cursor:pointer}
+/* ─────────────────────────────────────────────────────────
+   CUSTOMERS
+───────────────────────────────────────────────────────── */
 
-/* RTV item */
-.rtv-item{display:flex;align-items:center;gap:14px;padding:14px;background:var(--bg2);border:1px solid var(--b0);border-radius:var(--r12);margin-bottom:8px}
-.rtv-thumb{font-size:30px;flex-shrink:0;width:48px;text-align:center}
+/* ─────────────────────────────────────────────────────────
+   REAL TV
+───────────────────────────────────────────────────────── */
+.rtv-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rtv-item{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 18px;
+  background:var(--elevated);
+  border:1px solid var(--divider);
+  border-radius:var(--r12);margin-bottom:8px
+}
+.rtv-thumb{font-size:28px;flex-shrink:0;width:44px;text-align:center}
 .rtv-info{flex:1;min-width:0}
-.rtv-badges{display:flex;gap:6px;margin-bottom:4px}
-.badge-live{background:rgba(239,68,68,0.15);color:var(--red);font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;border:1px solid rgba(239,68,68,0.3)}
-.badge-rec{background:var(--bg3);color:var(--t3);font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;border:1px solid var(--b0)}
-.badge-cat{color:var(--orange);font-size:11px;font-weight:600}
+.rtv-badges{display:flex;gap:6px;margin-bottom:5px;align-items:center}
+.rtv-cat{color:var(--orange);font-size:11px;font-weight:600}
 .rtv-title{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rtv-url{font-size:11px;color:var(--cyan);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rtv-url{font-size:11px;color:var(--cyan);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rtv-actions{display:flex;gap:6px;flex-shrink:0}
 
-/* Ecosystem */
-.eco-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-.eco-kpi{background:var(--bgc);border:1px solid var(--b0);border-radius:var(--r16);padding:18px;text-align:center}
-.eco-kpi-val{font-size:22px;font-weight:900;margin-bottom:4px}
-.eco-kpi-lbl{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.07em}
+/* ─────────────────────────────────────────────────────────
+   ECOSYSTEM
+───────────────────────────────────────────────────────── */
+.eco-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.eco-kpi{
+  background:var(--card);border:1px solid var(--divider);
+  border-radius:var(--r16);padding:22px;text-align:center
+}
+.eco-kpi-val{font-size:22px;font-weight:900;line-height:1.1;font-family:var(--font-mono);margin-bottom:5px}
+.eco-kpi-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.eco-component{
+  padding:14px 16px;background:var(--elevated);
+  border-radius:var(--r8);border-left:3px solid var(--cyan);
+  margin-bottom:8px
+}
+.eco-component:last-child{margin-bottom:0}
 
-/* Settings */
-.api-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg2);border:1px solid var(--b0);border-radius:var(--r8);margin-bottom:8px}
-.api-name{flex:1;font-size:13px;font-weight:600}
-.api-val{font-family:monospace;font-size:12px;color:var(--t3)}
-.embed-code{background:var(--bg0);border:1px solid var(--b1);border-radius:var(--r8);padding:14px;font-family:monospace;font-size:12px;color:var(--cyan);line-height:1.7;white-space:pre;overflow-x:auto;margin:8px 0}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--b0)}
-.toggle-label{font-size:13px;color:var(--t2)}
-.toggle{width:40px;height:22px;background:var(--orange);border-radius:99px;position:relative;cursor:pointer;flex-shrink:0}
-.toggle-off{background:var(--bg3)}
-.toggle::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .2s}
-.toggle:not(.toggle-off)::after{transform:translateX(18px)}
+/* ─────────────────────────────────────────────────────────
+   TOGGLE
+───────────────────────────────────────────────────────── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(30,58,95,0.4)}
+.toggle-row:last-of-type{border-bottom:none}
+.toggle-label{font-size:14px;color:var(--body)}
+.toggle-switch{width:40px;height:22px;border-radius:99px;position:relative;cursor:pointer;flex-shrink:0;background:var(--cyan);transition:background .2s}
+.toggle-switch.off{background:var(--elevated)}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .2s}
+.toggle-switch:not(.off)::after{transform:translateX(18px)}
+.embed-code{
+  background:var(--sidebar);border:1px solid var(--divider);
+  border-radius:var(--r8);padding:16px;
+  font-family:var(--font-mono);font-size:12px;color:var(--cyan);
+  line-height:1.8;white-space:pre;overflow-x:auto;margin:10px 0
+}
+.api-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;background:var(--elevated);
+  border:1px solid var(--divider);
+  border-radius:var(--r8);margin-bottom:8px
+}
+.api-name{flex:1;font-size:13px;font-weight:600;color:var(--body)}
+.api-val{font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.api-status{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0}
 
-/* Customers */
-.cust-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-
-/* Scrollbar */
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg1)}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:99px}
-
-/* Responsive */
-@media(max-width:900px){.sidebar{display:none}.kpi-grid{grid-template-columns:1fr 1fr}.chart-grid{grid-template-columns:1fr}}
+/* ─────────────────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────────────────── */
+@media(max-width:1100px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .chart-grid{grid-template-columns:1fr}
+  .eco-kpi-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:820px){
+  .sidebar{display:none}
+  .content{padding:20px}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .card{padding:20px 18px}
+}
 </style>
 </head>
 <body>
 
-<!-- PASSWORD GATE -->
+<!-- ═══════════════════════════════════════════════════════
+     PASSWORD GATE
+════════════════════════════════════════════════════════ -->
 <div id="gate">
-  <div class="gate-box">
-    <div class="gate-logo">R</div>
-    <div class="gate-title">Admin Portal</div>
-    <div class="gate-sub">R.E.A.L. SmartScan · Business Intelligence</div>
+  <div class="gate-card">
+    <div class="gate-logo-wrap">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="R.E.A.L.">
+        <rect x="3" y="3" width="11" height="11" rx="2" fill="#2563EB"/>
+        <rect x="18" y="3" width="11" height="11" rx="2" fill="#06B6D4" opacity="0.7"/>
+        <rect x="3" y="18" width="11" height="11" rx="2" fill="#06B6D4" opacity="0.7"/>
+        <rect x="18" y="18" width="11" height="11" rx="2" fill="#1E3A8A"/>
+      </svg>
+    </div>
+    <div class="gate-title">R.E.A.L. <span>SmartScan</span></div>
+    <div class="gate-sub">Admin Portal · Business Intelligence</div>
     <input type="password" class="gate-input" id="gateInput" placeholder="••••••••"
       onkeydown="if(event.key==='Enter')tryLogin()" autocomplete="current-password">
     <div class="gate-error" id="gateError"></div>
     <button class="gate-btn" onclick="tryLogin()">Access Portal →</button>
-    <div style="margin-top:20px">
-      <a href="/" style="font-size:12px;color:var(--t4);text-decoration:none" 
-        onmouseover="this.style.color='var(--t2)'" onmouseout="this.style.color='var(--t4)'">← Back to store</a>
-    </div>
+    <a href="/" class="gate-back">← Back to store</a>
   </div>
 </div>
 
-<!-- ADMIN APP -->
+<!-- ═══════════════════════════════════════════════════════
+     ADMIN APP
+════════════════════════════════════════════════════════ -->
 <div id="app">
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sb-logo">
-      <div class="sb-logo-mark"><span>R.E.A.L.</span> Admin</div>
-      <div class="sb-logo-sub">Business Intelligence Portal</div>
+      <div class="sb-logo-mark">R.E.A.L. <span class="brand-cyan">SmartScan</span></div>
+      <div class="sb-logo-sub">Admin Portal</div>
     </div>
     <nav class="sb-nav">
-      <button class="sb-item active" onclick="showTab('dashboard',this)"><span class="sb-icon">📊</span>Dashboard</button>
-      <button class="sb-item" onclick="showTab('orders',this)"><span class="sb-icon">📦</span>Orders</button>
-      <button class="sb-item" onclick="showTab('margin',this)"><span class="sb-icon">💰</span>Margin Engine</button>
-      <button class="sb-item" onclick="showTab('analytics',this)"><span class="sb-icon">📈</span>Analytics</button>
-      <button class="sb-item" onclick="showTab('products',this)"><span class="sb-icon">🏷️</span>Products</button>
-      <button class="sb-item" onclick="showTab('customers',this)"><span class="sb-icon">👥</span>Customers</button>
-      <button class="sb-item" onclick="showTab('realtv',this)"><span class="sb-icon">📺</span>Real TV</button>
-      <button class="sb-item" onclick="showTab('ecosystem',this)"><span class="sb-icon">🌐</span>Ecosystem / IR</button>
-      <button class="sb-item" onclick="showTab('settings',this)"><span class="sb-icon">⚙️</span>Settings</button>
+      <div class="sb-section">Overview</div>
+      <button class="sb-item active" onclick="showTab('dashboard',this)"><span class="sb-icon">⬡</span>Dashboard</button>
+      <button class="sb-item" onclick="showTab('revenue',this)"><span class="sb-icon">◈</span>Revenue</button>
+      <button class="sb-item" onclick="showTab('orders',this)"><span class="sb-icon">◻</span>Orders</button>
+      <div class="sb-section">Intelligence</div>
+      <button class="sb-item" onclick="showTab('analytics',this)"><span class="sb-icon">◈</span>Analytics</button>
+      <button class="sb-item" onclick="showTab('margin',this)"><span class="sb-icon">◈</span>Margin Engine</button>
+      <div class="sb-section">Catalog</div>
+      <button class="sb-item" onclick="showTab('products',this)"><span class="sb-icon">◻</span>Products</button>
+      <button class="sb-item" onclick="showTab('customers',this)"><span class="sb-icon">◈</span>Customers</button>
+      <div class="sb-section">Content</div>
+      <button class="sb-item" onclick="showTab('realtv',this)"><span class="sb-icon">▷</span>REAL TV</button>
+      <button class="sb-item" onclick="showTab('ecosystem',this)"><span class="sb-icon">◈</span>Ecosystem</button>
     </nav>
     <div class="sb-footer">
-      <button class="sb-back" onclick="window.location.href='/'">🏠 Back to Store</button>
-      <button class="sb-back" onclick="logout()" style="color:var(--red)">🚪 Logout</button>
+      <button class="sb-footer-btn" onclick="window.location.href='/'">← Back to Store</button>
+      <button class="sb-footer-btn" onclick="logout()" style="color:var(--red)">⏻ Logout</button>
     </div>
   </aside>
 
   <!-- MAIN -->
   <div class="main">
+    <!-- TOPBAR -->
     <div class="topbar">
       <div class="topbar-title" id="tabTitle">Dashboard</div>
-      <div class="topbar-clock" id="clock"></div>
+      <div class="topbar-indicators">
+        <div class="indicator" id="ind-deals">
+          <div class="indicator-dot dot-grey" id="dot-deals"></div>
+          <span id="ind-deals-label">Deals API</span>
+        </div>
+        <div class="indicator" id="ind-search">
+          <div class="indicator-dot dot-grey" id="dot-search"></div>
+          <span id="ind-search-label">Search API</span>
+        </div>
+        <span class="badge-live" id="badge-live" style="display:none">LIVE</span>
+        <span class="badge-sim" id="badge-sim">SIM</span>
+      </div>
+      <div class="topbar-clock mono" id="clock"></div>
       <button class="topbar-logout" onclick="logout()">Logout</button>
     </div>
+
+    <!-- CONTENT -->
     <div class="content" id="content">
 
-      <!-- DASHBOARD -->
+      <!-- ═══════════════════════════════════════════════
+           DASHBOARD TAB
+      ═══════════════════════════════════════════════════ -->
       <div class="tab active" id="tab-dashboard">
-        <div class="kpi-grid">
-          <div class="kpi"><div class="kpi-label">Total Revenue</div><div class="kpi-val" style="color:var(--orange)">$2,847,392</div><div class="kpi-change up">↑ 18.3% vs last month</div></div>
-          <div class="kpi"><div class="kpi-label">Orders Today</div><div class="kpi-val" style="color:var(--cyan)" id="kpiOrders">1,247</div><div class="kpi-change up" id="kpiOrdersSub">+24 this hour</div></div>
-          <div class="kpi"><div class="kpi-label">Avg Order Value</div><div class="kpi-val">$127.40</div><div class="kpi-change up">↑ $8.20 vs last month</div></div>
-          <div class="kpi"><div class="kpi-label">Margin Today</div><div class="kpi-val" style="color:var(--green)" id="kpiMargin">$34,821</div><div class="kpi-change up">9.2% avg take-rate</div></div>
+        <div id="dash-sim-banner" class="sim-banner">
+          <span>⚠</span>
+          <span>SIMULATION MODE — Data is illustrative only</span>
+          <button class="btn-clear" onclick="clearDashSim()" style="margin-left:auto">Clear Simulation</button>
         </div>
-        <div class="chart-grid">
-          <div class="card"><div class="card h3">Monthly Revenue (12 months)</div><div class="chart-wrap"><canvas id="revenueChart"></canvas></div></div>
-          <div class="card"><div class="card h3">Revenue Streams</div><div class="chart-wrap"><canvas id="streamsChart"></canvas></div></div>
+
+        <!-- KPI Grid -->
+        <div class="kpi-grid" id="kpiGrid">
+          <div class="kpi kpi-orange">
+            <div class="kpi-label">Total Revenue</div>
+            <div class="kpi-val empty mono" id="kpi-revenue">—</div>
+            <div class="kpi-change" id="kpi-revenue-sub">No data connected yet</div>
+          </div>
+          <div class="kpi kpi-cyan">
+            <div class="kpi-label">Live Deals Tracked</div>
+            <div class="kpi-val mono" id="kpi-deals">
+              <div class="kpi-loading"><div class="skel skel-val"></div></div>
+            </div>
+            <div class="kpi-change" id="kpi-deals-sub">Fetching from API…</div>
+          </div>
+          <div class="kpi kpi-green">
+            <div class="kpi-label">Search Results</div>
+            <div class="kpi-val mono" id="kpi-search">
+              <div class="kpi-loading"><div class="skel skel-val"></div></div>
+            </div>
+            <div class="kpi-change" id="kpi-search-sub">Fetching from API…</div>
+          </div>
+          <div class="kpi kpi-blue">
+            <div class="kpi-label">Avg Margin Today</div>
+            <div class="kpi-val empty mono" id="kpi-margin">—</div>
+            <div class="kpi-change" id="kpi-margin-sub">No data connected yet</div>
+          </div>
         </div>
-        <div class="live-feed">
+
+        <div class="kpi-actions">
+          <button class="btn-simulate" onclick="simulateDash()">▶ Simulate Demo Data</button>
+          <span style="font-size:13px;color:var(--muted)">Revenue & order KPIs require payment processor</span>
+        </div>
+
+        <!-- Charts -->
+        <div class="chart-grid" id="revenueChartArea">
+          <div class="card card-sm">
+            <div class="card-title">Monthly Revenue
+              <span id="rev-live-badge" style="display:none;margin-left:auto;font-size:10px;color:var(--muted);font-weight:400">Simulated data</span>
+            </div>
+            <div id="revenueChartEmpty" class="empty-state" style="padding:32px">
+              <div class="empty-icon">📊</div>
+              <div class="empty-title">Connect payment processor</div>
+              <div class="empty-desc">Revenue chart appears here once orders flow through.</div>
+            </div>
+            <div class="chart-wrap" id="revenueChartWrap" style="display:none">
+              <canvas id="revenueChart"></canvas>
+            </div>
+          </div>
+          <div class="card card-sm">
+            <div class="card-title">Revenue Streams</div>
+            <div id="streamsChartEmpty" class="empty-state" style="padding:32px">
+              <div class="empty-icon">◎</div>
+              <div class="empty-title">No stream data yet</div>
+            </div>
+            <div class="chart-wrap" id="streamsChartWrap" style="display:none">
+              <canvas id="streamsChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Order Feed -->
+        <div class="live-feed-card">
           <div class="live-feed-header">
-            <div class="live-dot"></div>
-            <span style="font-size:14px;font-weight:700">Live Orders</span>
-            <span style="font-size:12px;color:var(--t3);margin-left:8px">Updates every 5s</span>
+            <div class="live-dot" id="feedDot" style="background:var(--muted)"></div>
+            <span style="font-size:15px;font-weight:700">Live Orders</span>
+            <span id="feedStatus" style="font-size:12px;color:var(--muted);margin-left:4px">Not connected</span>
+            <button class="btn-simulate" id="feedSimBtn" onclick="startFeedSim()" style="margin-left:auto;font-size:12px;padding:7px 14px;min-height:36px">▶ Simulate Live Orders</button>
+            <button class="btn-clear" id="feedStopBtn" onclick="stopFeedSim()" style="display:none">■ Stop</button>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 100px 80px 64px 52px;gap:8px;padding:6px 0;border-bottom:1px solid var(--b0);margin-bottom:4px">
-            <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t4)">Product</div>
-            <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t4)">Store</div>
-            <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t4);text-align:right">Price</div>
-            <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t4);text-align:right">Margin</div>
-            <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t4);text-align:right">Time</div>
+          <div id="feedEmpty" class="feed-empty">
+            <div class="feed-empty-icon">📦</div>
+            <div style="color:var(--muted);font-size:13px">No live orders yet — connect payment processor</div>
           </div>
-          <div id="liveFeed"></div>
+          <div id="feedTableWrap" style="display:none">
+            <div class="feed-table-header">
+              <div class="feed-th">Product</div>
+              <div class="feed-th">Store</div>
+              <div class="feed-th" style="text-align:right">Price</div>
+              <div class="feed-th" style="text-align:right">Margin</div>
+              <div class="feed-th" style="text-align:right">Time</div>
+            </div>
+            <div id="liveFeed"></div>
+          </div>
         </div>
       </div>
 
-      <!-- ORDERS -->
+      <!-- ═══════════════════════════════════════════════
+           REVENUE TAB
+      ═══════════════════════════════════════════════════ -->
+      <div class="tab" id="tab-revenue">
+        <div id="rev-sim-banner" class="sim-banner">
+          <span>⚠</span><span>SIMULATION MODE — Data is illustrative only</span>
+          <button class="btn-clear" onclick="clearRevSim()" style="margin-left:auto">Clear Simulation</button>
+        </div>
+        <div class="sec-header">
+          <div><div class="sec-title">Revenue Overview</div><div class="sec-sub">Monthly trends and stream breakdown</div></div>
+          <button class="btn-simulate" onclick="simulateRevenue()">▶ Simulate Demo Data</button>
+        </div>
+
+        <div id="revEmpty" class="card" style="margin-bottom:24px">
+          <div class="empty-state">
+            <div class="empty-icon">💳</div>
+            <div class="empty-title">Connect your payment processor</div>
+            <div class="empty-desc">Real revenue data appears here once you connect Stripe, PayPal, or your merchant processor.</div>
+            <button class="btn-simulate" onclick="simulateRevenue()" style="margin-top:8px">▶ Simulate Demo Data</button>
+          </div>
+        </div>
+
+        <div id="revData" style="display:none">
+          <div class="chart-grid" style="margin-bottom:24px">
+            <div class="card card-sm">
+              <div class="card-title">Monthly Revenue (12 months)</div>
+              <div class="chart-wrap-tall"><canvas id="revMainChart"></canvas></div>
+            </div>
+            <div class="card card-sm">
+              <div class="card-title">Revenue Streams</div>
+              <div class="rev-streams" id="revStreamsMain" style="margin-top:4px"></div>
+            </div>
+          </div>
+          <div class="card card-sm">
+            <div class="card-title">How Hidden Margin Works</div>
+            <div style="font-size:14px;color:var(--body);line-height:1.8">
+              When a customer searches for <strong style="color:var(--cyan)">Sony WH-1000XM5</strong>, we find the market best at <strong class="mono">$248</strong>.<br>
+              We apply a <strong style="color:var(--orange)">9% take-rate</strong> → SmartScan price shown: <strong class="mono" style="color:var(--orange)">$270.32</strong><br>
+              The customer sees <em>"All-in price · Free shipping · No redirect"</em> — zero mention of margin.<br>
+              We earn <strong class="mono" style="color:var(--green)">$22.32</strong> per transaction. At 1,247 orders/day = <strong class="mono" style="color:var(--green)">$27,849/day gross margin</strong>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════
+           ORDERS TAB
+      ═══════════════════════════════════════════════════ -->
       <div class="tab" id="tab-orders">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-          <div class="sec-title" style="border:none;margin:0;padding:0">Order History</div>
-          <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+        <div id="ord-sim-banner" class="sim-banner">
+          <span>⚠</span><span>SIMULATION MODE — Data is illustrative only</span>
+          <button class="btn-clear" onclick="clearOrdSim()" style="margin-left:auto">Clear Simulation</button>
         </div>
-        <div class="card" style="overflow-x:auto">
-          <table class="otable"><thead><tr class="othead">
-            <th>Order ID</th><th>Customer</th><th>Product</th><th>Mkt Price</th><th>Our Price</th><th>Margin $</th><th>Margin %</th><th>Status</th><th>Date</th>
-          </tr></thead><tbody id="ordersBody"></tbody></table>
+        <div class="sec-header">
+          <div><div class="sec-title">Order History</div><div class="sec-sub" id="ordCount">No orders yet</div></div>
+          <div style="display:flex;gap:10px">
+            <button class="btn-simulate" onclick="simulateOrders()">▶ Simulate Demo Data</button>
+            <button class="btn-secondary" onclick="exportCSV()" id="exportBtn" style="display:none">↓ Export CSV</button>
+          </div>
         </div>
-      </div>
 
-      <!-- MARGIN ENGINE -->
-      <div class="tab" id="tab-margin">
-        <div class="sec-title">💰 Take-Rate Controls</div>
-        <p style="font-size:13px;color:var(--t3);margin-bottom:16px">Adjust per-category margin rates. The customer only sees the final SmartScan price — margin is completely invisible.</p>
-        <div class="card" style="margin-bottom:20px;overflow-x:auto">
-          <table class="mtable"><thead><tr class="mthead"><th>Category</th><th>Rate</th><th>Adjust</th><th>Live Preview</th></tr></thead>
-          <tbody id="marginBody"></tbody></table>
+        <div id="ordEmpty" class="card" style="margin-bottom:24px">
+          <div class="empty-state">
+            <div class="empty-icon">📦</div>
+            <div class="empty-title">No orders yet</div>
+            <div class="empty-desc">Orders appear here once you connect a payment processor. For now, simulate to see how the interface looks with data.</div>
+            <button class="btn-simulate" onclick="simulateOrders()" style="margin-top:8px">▶ Simulate Demo Data</button>
+          </div>
         </div>
-        <div class="sec-title" style="margin-top:8px">Revenue Stream Breakdown</div>
-        <div class="card">
-          <div class="rev-streams" id="revStreams"></div>
-        </div>
-        <div class="card" style="margin-top:16px;padding:16px 20px">
-          <div style="font-size:12px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">How Hidden Margin Works</div>
-          <div style="font-size:13px;color:var(--t2);line-height:1.75">
-            When a customer searches for <strong style="color:var(--cyan)">Sony WH-1000XM5</strong>, we find the market best at <strong>$248</strong>.<br>
-            We apply a <strong style="color:var(--orange)">9% take-rate</strong> → SmartScan Price shown to user: <strong style="color:var(--orange)">$270.32</strong><br>
-            The customer sees <em>"All-in price · Free shipping · No redirect"</em> — zero mention of margin.<br>
-            We earn <strong style="color:var(--green)">$22.32</strong> per transaction. At 1,247 orders/day = <strong style="color:var(--green)">$27,849/day gross margin</strong>.
+
+        <div id="ordData" style="display:none">
+          <div class="card" style="overflow-x:auto">
+            <table class="rtable">
+              <thead><tr class="rthead">
+                <th>Order ID</th><th>Customer</th><th>Product</th>
+                <th>Mkt Price</th><th>SS Price</th><th>Margin $</th><th>Margin %</th>
+                <th>Status</th><th>Date</th>
+              </tr></thead>
+              <tbody id="ordersBody"></tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      <!-- ANALYTICS -->
+      <!-- ═══════════════════════════════════════════════
+           ANALYTICS TAB
+      ═══════════════════════════════════════════════════ -->
       <div class="tab" id="tab-analytics">
-        <div class="sec-title">🔥 Top Searched Products</div>
+        <div id="ana-sim-banner" class="sim-banner">
+          <span>⚠</span><span>SIMULATION MODE — Data is illustrative only</span>
+          <button class="btn-clear" onclick="clearAnaSim()" style="margin-left:auto">Clear Simulation</button>
+        </div>
+        <div class="sec-header">
+          <div><div class="sec-title">Analytics</div><div class="sec-sub">Search trends, conversions, and category performance</div></div>
+          <button class="btn-simulate" id="anaSimBtn" onclick="simulateAnalytics()">▶ Simulate Demo Data</button>
+        </div>
+
+        <!-- Live metrics from API -->
+        <div id="liveMetricsSection" style="margin-bottom:24px">
+          <div class="live-metric" id="liveMetricDeals">
+            <div class="live-metric-dot"></div>
+            <span class="live-metric-text">Live Deals Indexed</span>
+            <span class="live-metric-val mono" id="liveDealsCount">fetching…</span>
+          </div>
+          <div class="live-metric" id="liveMetricSearch">
+            <div class="live-metric-dot"></div>
+            <span class="live-metric-text">iPhone search results</span>
+            <span class="live-metric-val mono" id="liveSearchCount">fetching…</span>
+          </div>
+        </div>
+
+        <div id="anaEmpty" class="card" style="margin-bottom:24px;display:none">
+          <div class="empty-state">
+            <div class="empty-icon">📈</div>
+            <div class="empty-title">Limited data available</div>
+            <div class="empty-desc">Live API metrics shown above. Simulate to see full analytics dashboard.</div>
+          </div>
+        </div>
+
+        <div id="anaData" style="display:none">
+          <div class="card" style="margin-bottom:20px;overflow-x:auto">
+            <div class="card-title">Top Searched Products</div>
+            <table class="rtable">
+              <thead><tr class="rthead">
+                <th>Product</th><th>Searches</th><th>Conversions</th><th>Conv. Rate</th><th>Revenue</th>
+              </tr></thead>
+              <tbody id="analyticsBody"></tbody>
+            </table>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="card card-sm">
+              <div class="card-title">Conversion Funnel</div>
+              <div id="funnelSection"></div>
+            </div>
+            <div class="card card-sm">
+              <div class="card-title">Category Performance</div>
+              <div class="chart-wrap-tall"><canvas id="catChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════
+           MARGIN ENGINE TAB
+      ═══════════════════════════════════════════════════ -->
+      <div class="tab" id="tab-margin">
+        <div class="sec-header">
+          <div>
+            <div class="sec-title">Margin Engine</div>
+            <div class="sec-sub">Per-category take-rate controls — margin is invisible to customers</div>
+          </div>
+          <button class="btn-blue" onclick="openApplyModal()">Apply to Live Pricing</button>
+        </div>
+
         <div class="card" style="margin-bottom:20px;overflow-x:auto">
-          <table class="atab"><thead><tr class="athead"><th>Product</th><th>Searches</th><th>Conversions</th><th>Conv. Rate</th><th>Revenue</th></tr></thead>
-          <tbody id="analyticsBody"></tbody></table>
+          <table class="rtable" id="marginTable">
+            <thead><tr class="rthead">
+              <th>Category</th><th>Rate</th><th>Adjust</th><th>Example Price</th><th>SS Price</th><th>GMV Est.</th>
+            </tr></thead>
+            <tbody id="marginBody"></tbody>
+          </table>
         </div>
+
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-          <div class="card">
-            <h3>Conversion Funnel</h3>
-            <div id="funnelSection" style="margin-top:8px"></div>
+          <div class="card card-sm">
+            <div class="card-title">Revenue Stream Breakdown</div>
+            <div class="rev-streams" id="revStreamsMargin"></div>
           </div>
-          <div class="card">
-            <h3>Category Performance</h3>
-            <div class="chart-wrap"><canvas id="catChart"></canvas></div>
+          <div class="card card-sm">
+            <div class="card-title">Margin Mechanics</div>
+            <div style="font-size:14px;color:var(--body);line-height:1.8">
+              When a customer searches for <strong style="color:var(--cyan)">Sony WH-1000XM5</strong>, market best is <strong class="mono">$248</strong>.<br>
+              Apply <strong style="color:var(--orange)">9% take-rate</strong> → SmartScan shows <strong class="mono" style="color:var(--orange)">$270.32</strong>.<br>
+              Customer sees <em>"All-in · Free shipping"</em> — margin invisible.<br>
+              We earn <strong class="mono" style="color:var(--green)">$22.32</strong> per sale.
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- PRODUCTS -->
+      <!-- APPLY MODAL -->
+      <div class="apply-modal" id="applyModal">
+        <div class="apply-modal-box">
+          <div style="font-size:17px;font-weight:800;margin-bottom:8px">Apply to Live Pricing?</div>
+          <div style="font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.6">This will update take-rates across all live product results on SmartScan. Changes take effect within 60 seconds.</div>
+          <div id="applyRatePreview" style="background:var(--elevated);border-radius:var(--r8);padding:14px;margin-bottom:20px;font-size:13px;font-family:var(--font-mono);color:var(--cyan);line-height:1.8"></div>
+          <div style="display:flex;gap:10px;justify-content:flex-end">
+            <button class="btn-secondary" onclick="closeApplyModal()">Cancel</button>
+            <button class="btn-primary" onclick="confirmApply()">✓ Apply Rates</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════
+           PRODUCTS TAB
+      ═══════════════════════════════════════════════════ -->
       <div class="tab" id="tab-products">
-        <div class="sec-title">🏷️ Product Catalog</div>
-        <div id="productGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px"></div>
+        <div class="sec-header">
+          <div><div class="sec-title">Products</div><div class="sec-sub" id="productSubtitle">Live data from SerpAPI</div></div>
+        </div>
+
+        <div class="product-search-bar">
+          <input type="text" class="form-input" id="productSearch" placeholder="Search products via SerpAPI (e.g. laptop, sneakers…)"
+            onkeydown="if(event.key==='Enter')searchProducts()">
+          <button class="btn-blue" onclick="searchProducts()">Search</button>
+          <button class="btn-secondary" onclick="loadTrending()">↺ Trending</button>
+        </div>
+
+        <div id="productGrid" class="product-grid"></div>
       </div>
 
-      <!-- CUSTOMERS -->
+      <!-- ═══════════════════════════════════════════════
+           CUSTOMERS TAB
+      ═══════════════════════════════════════════════════ -->
       <div class="tab" id="tab-customers">
-        <div class="kpi-grid cust-kpis">
-          <div class="kpi"><div class="kpi-label">Total Customers</div><div class="kpi-val" style="color:var(--cyan)">84,291</div><div class="kpi-change up">↑ 2,847 this month</div></div>
-          <div class="kpi"><div class="kpi-label">Prime Elite Members</div><div class="kpi-val" style="color:var(--orange)">50,847</div><div class="kpi-change up">60.3% conversion</div></div>
-          <div class="kpi"><div class="kpi-label">Avg LTV</div><div class="kpi-val">$847</div><div class="kpi-change up">↑ $124 YoY</div></div>
-          <div class="kpi"><div class="kpi-label">Repeat Rate</div><div class="kpi-val" style="color:var(--green)">68%</div><div class="kpi-change up">Industry avg: 32%</div></div>
+        <div id="cust-sim-banner" class="sim-banner">
+          <span>⚠</span><span>SIMULATION MODE — Data is illustrative only</span>
+          <button class="btn-clear" onclick="clearCustSim()" style="margin-left:auto">Clear Simulation</button>
         </div>
-        <div class="card" style="overflow-x:auto">
-          <table class="atab"><thead><tr class="athead"><th>Customer</th><th>Email</th><th>Orders</th><th>Total Spend</th><th>Plan</th><th>Joined</th></tr></thead>
-          <tbody id="custBody"></tbody></table>
+        <div class="sec-header">
+          <div><div class="sec-title">Customers</div><div class="sec-sub">Requires Supabase auth for live data</div></div>
+          <button class="btn-simulate" onclick="simulateCustomers()">▶ Simulate Demo Data</button>
+        </div>
+
+        <div id="custKpis" style="display:none">
+          <div class="kpi-grid" style="margin-bottom:24px">
+            <div class="kpi kpi-cyan"><div class="kpi-label">Total Customers</div><div class="kpi-val mono" style="color:var(--cyan)">84,291</div><div class="kpi-change up">↑ 2,847 this month</div></div>
+            <div class="kpi kpi-orange"><div class="kpi-label">Prime Elite Members</div><div class="kpi-val mono" style="color:var(--orange)">50,847</div><div class="kpi-change up">60.3% conversion</div></div>
+            <div class="kpi kpi-green"><div class="kpi-label">Avg LTV</div><div class="kpi-val mono">$847</div><div class="kpi-change up">↑ $124 YoY</div></div>
+            <div class="kpi kpi-blue"><div class="kpi-label">Repeat Rate</div><div class="kpi-val mono" style="color:var(--green)">68%</div><div class="kpi-change">Industry avg: 32%</div></div>
+          </div>
+        </div>
+
+        <div id="custEmpty">
+          <div class="card">
+            <div class="empty-state">
+              <div class="empty-icon">👥</div>
+              <div class="empty-title">No customer data yet</div>
+              <div class="empty-desc">Customer data requires Supabase authentication to be configured. Simulate to preview the interface.</div>
+              <button class="btn-simulate" onclick="simulateCustomers()" style="margin-top:8px">▶ Simulate Demo Data</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="custData" style="display:none">
+          <div class="card" style="overflow-x:auto">
+            <table class="rtable">
+              <thead><tr class="rthead">
+                <th>Customer</th><th>Email</th><th>Orders</th><th>Total Spend</th><th>Plan</th><th>Joined</th>
+              </tr></thead>
+              <tbody id="custBody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      <!-- REAL TV -->
+      <!-- ═══════════════════════════════════════════════
+           REAL TV TAB
+      ═══════════════════════════════════════════════════ -->
       <div class="tab" id="tab-realtv">
-        <div class="sec-title">📺 Real TV — Content Manager</div>
-        <div class="card" style="margin-bottom:16px">
-          <h3>Add New Content</h3>
-          <div class="rtv-form-grid" style="margin-top:14px">
+        <div class="sec-header">
+          <div><div class="sec-title">REAL TV</div><div class="sec-sub">Live stream & content management</div></div>
+        </div>
+
+        <div class="card card-sm" style="margin-bottom:16px">
+          <div class="card-title">Add New Content</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:4px">
             <div>
-              <div class="form-group" style="margin-bottom:12px">
+              <div style="margin-bottom:14px">
                 <label class="form-label">Type</label>
-                <select class="form-select" id="rtvType"><option value="live">🔴 Live Stream</option><option value="recorded">📹 Recorded</option></select>
+                <select class="form-select" id="rtvType">
+                  <option value="live">🔴 Live Stream</option>
+                  <option value="recorded">📹 Recorded</option>
+                </select>
               </div>
-              <div class="form-group" style="margin-bottom:12px">
+              <div style="margin-bottom:14px">
                 <label class="form-label">Title</label>
                 <input class="form-input" id="rtvTitle" placeholder="e.g. Nike Flash Sale — Live Deals">
               </div>
-              <div class="form-group">
+              <div>
                 <label class="form-label">Category</label>
-                <input class="form-input" id="rtvCat" placeholder="e.g. Sneakers, Gaming, Health...">
+                <input class="form-input" id="rtvCat" placeholder="e.g. Sneakers, Gaming, Health…">
               </div>
             </div>
             <div>
-              <div class="form-group" style="margin-bottom:12px">
+              <div style="margin-bottom:14px">
                 <label class="form-label">Video / Stream URL</label>
-                <input class="form-input" id="rtvUrl" type="url" placeholder="https://youtube.com/...">
+                <input class="form-input" id="rtvUrl" type="url" placeholder="https://youtube.com/…">
               </div>
-              <div class="form-group" style="margin-bottom:12px">
-                <label class="form-label">Thumbnail (emoji)</label>
+              <div style="margin-bottom:14px">
+                <label class="form-label">Thumbnail Emoji</label>
                 <input class="form-input" id="rtvEmoji" placeholder="🎮 👟 📱" maxlength="4" style="font-size:22px">
               </div>
-              <div class="form-group">
+              <div>
                 <label class="form-label">Description</label>
-                <input class="form-input" id="rtvDesc" placeholder="Brief description...">
+                <input class="form-input" id="rtvDesc" placeholder="Brief description…">
               </div>
             </div>
           </div>
-          <div style="display:flex;align-items:center;gap:12px;margin-top:4px">
-            <button class="btn-primary" onclick="addRTV()">+ Add to Real TV</button>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:18px">
+            <button class="btn-primary" onclick="addRTV()">+ Add to REAL TV</button>
             <div id="rtvMsg" style="font-size:13px;display:none"></div>
           </div>
         </div>
-        <div class="card">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-            <h3>Content Library (<span id="rtvCount">4</span>)</h3>
+
+        <div class="card card-sm">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <div class="card-title" style="margin-bottom:0">Content Library (<span id="rtvCount">4</span>)</div>
             <div style="display:flex;gap:6px">
-              <button class="btn-primary" id="rtvAll" onclick="filterRTV('all',this)" style="font-size:11px;padding:6px 10px">All</button>
-              <button class="btn-secondary" id="rtvLive" onclick="filterRTV('live',this)" style="font-size:11px;padding:6px 10px">Live</button>
-              <button class="btn-secondary" id="rtvRec" onclick="filterRTV('recorded',this)" style="font-size:11px;padding:6px 10px">Recorded</button>
+              <button class="btn-secondary" id="btnRtvAll" onclick="filterRTV('all',this)" style="font-size:11px;padding:6px 12px;min-height:32px">All</button>
+              <button class="btn-secondary" id="btnRtvLive" onclick="filterRTV('live',this)" style="font-size:11px;padding:6px 12px;min-height:32px">Live</button>
+              <button class="btn-secondary" id="btnRtvRec" onclick="filterRTV('recorded',this)" style="font-size:11px;padding:6px 12px;min-height:32px">Recorded</button>
             </div>
           </div>
           <div id="rtvList"></div>
         </div>
       </div>
 
-      <!-- ECOSYSTEM / IR -->
+      <!-- ═══════════════════════════════════════════════
+           ECOSYSTEM TAB
+      ═══════════════════════════════════════════════════ -->
       <div class="tab" id="tab-ecosystem">
-        <div class="eco-kpis">
+        <div class="sec-header">
+          <div><div class="sec-title">Ecosystem &amp; IR</div><div class="sec-sub">Investor relations, projections, and component overview</div></div>
+        </div>
+
+        <div class="eco-kpi-grid">
           <div class="eco-kpi"><div class="eco-kpi-val" style="color:var(--cyan)">$2–5M</div><div class="eco-kpi-lbl">Series Seed Target</div></div>
           <div class="eco-kpi"><div class="eco-kpi-val" style="color:var(--cyan)">$20–30M</div><div class="eco-kpi-lbl">Pre-Money Val.</div></div>
           <div class="eco-kpi"><div class="eco-kpi-val" style="color:var(--orange)">$74–213M</div><div class="eco-kpi-lbl">Year 3 Revenue</div></div>
           <div class="eco-kpi"><div class="eco-kpi-val" style="color:var(--orange)">$1.2–2.5B</div><div class="eco-kpi-lbl">10-Year Exit</div></div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-          <div class="card">
-            <h3>Revenue Stream Breakdown</h3>
-            <div class="rev-streams" style="margin-top:8px" id="ecoRevStreams"></div>
-          </div>
-          <div class="card">
-            <h3>Ecosystem Components</h3>
-            <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px" id="ecoComponents"></div>
-          </div>
-        </div>
-        <div class="card" style="margin-bottom:16px">
-          <h3>Financial Projections</h3>
-          <div style="overflow-x:auto;margin-top:12px">
-            <table class="otable"><thead><tr class="othead"><th>Year</th><th>Revenue</th><th>Details</th><th>Milestone</th></tr></thead>
-            <tbody>
-              <tr class="otr"><td style="font-weight:700">Year 1</td><td style="font-weight:800;color:var(--cyan)">$2–5M</td><td style="color:var(--t3)">1,000 deals/month @ 30% margin</td><td>Greenville + SmartScan launch</td></tr>
-              <tr class="otr"><td style="font-weight:700">Year 2</td><td style="font-weight:800;color:var(--cyan)">$15–30M</td><td style="color:var(--t3)">5,000 deals/month + SaaS</td><td>Clinix AI + HCA pilot</td></tr>
-              <tr class="otr"><td style="font-weight:700">Year 3</td><td style="font-weight:800;color:var(--orange)">$50–100M</td><td style="color:var(--t3)">Wholesale + marketplace</td><td>Series B + national expansion</td></tr>
-              <tr class="otr"><td style="font-weight:700">Exit</td><td style="font-weight:800;color:var(--orange)">$200–500M</td><td style="color:var(--t3)">Amazon / Walmart / CVS acquisition</td><td>10-year: $1.2–2.5B</td></tr>
-            </tbody></table>
-          </div>
-        </div>
-        <div class="card">
-          <h3>Investor Contact</h3>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0 16px">
-            <div style="text-align:center;padding:14px;background:var(--bg2);border-radius:10px"><div style="font-size:20px;font-weight:900;color:var(--cyan)">$1–3M</div><div style="font-size:11px;color:var(--t3);margin-top:3px">Seed Round</div></div>
-            <div style="text-align:center;padding:14px;background:var(--bg2);border-radius:10px"><div style="font-size:20px;font-weight:900;color:var(--orange)">4–6×</div><div style="font-size:11px;color:var(--t3);margin-top:3px">Target ROIC Y2</div></div>
-            <div style="text-align:center;padding:14px;background:var(--bg2);border-radius:10px"><div style="font-size:20px;font-weight:900;color:var(--green)">$8–12M</div><div style="font-size:11px;color:var(--t3);margin-top:3px">Pre-Money Val.</div></div>
-          </div>
-          <div style="font-size:13px;color:var(--t2)">
-            <a href="mailto:invest@realecosystem.com" style="color:var(--orange)">invest@realecosystem.com</a>&nbsp; · &nbsp;
-            <a href="https://real-smart-retail-concept.vercel.app" target="_blank" style="color:var(--cyan)">View Investor Deck →</a>&nbsp; · &nbsp;
-            <a href="https://real-pt.com" target="_blank" style="color:var(--t3)">real-pt.com</a>
-          </div>
-        </div>
-      </div>
 
-      <!-- SETTINGS -->
-      <div class="tab" id="tab-settings">
-        <div class="sec-title">🔑 API Configuration</div>
-        <div class="card" style="margin-bottom:20px">
-          <div class="api-row"><span class="api-name">Gemini AI Engine (Search Grounding)</span><span class="api-val">AIzaSy••••••••••••OqpY</span></div>
-          <div class="api-row"><span class="api-name">Barcode Lookup API</span><span class="api-val">bk_••••••••9c11</span></div>
-          <div class="api-row"><span class="api-name">Real-Time Product Search (RapidAPI)</span><span class="api-val">rt_••••••••F3a2</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+          <div class="card card-sm">
+            <div class="card-title">Revenue Stream Breakdown</div>
+            <div class="rev-streams" id="ecoRevStreams"></div>
+          </div>
+          <div class="card card-sm">
+            <div class="card-title">Ecosystem Components</div>
+            <div id="ecoComponents"></div>
+          </div>
         </div>
-        <div class="sec-title">🌐 Website Embed</div>
-        <div class="card" style="margin-bottom:20px">
-          <p style="font-size:13px;color:var(--t3);margin-bottom:10px">Embed SmartScan price intelligence on any website:</p>
-          <div class="embed-code">&lt;script src="https://smartscan.real-pt.com/embed.js"
-  data-key="YOUR_API_KEY"
-  data-theme="dark"
-  data-position="bottom-right"&gt;&lt;/script&gt;</div>
+
+        <div class="card card-sm" style="margin-bottom:20px;overflow-x:auto">
+          <div class="card-title">Financial Projections</div>
+          <table class="rtable">
+            <thead><tr class="rthead"><th>Year</th><th>Revenue</th><th>Details</th><th>Milestone</th></tr></thead>
+            <tbody>
+              <tr class="rtr"><td style="font-weight:700">Year 1</td><td class="mono" style="font-weight:800;color:var(--cyan)">$2–5M</td><td style="color:var(--muted)">1,000 deals/month @ 30% margin</td><td>Greenville + SmartScan launch</td></tr>
+              <tr class="rtr"><td style="font-weight:700">Year 2</td><td class="mono" style="font-weight:800;color:var(--cyan)">$15–30M</td><td style="color:var(--muted)">5,000 deals/month + SaaS</td><td>Clinix AI + HCA pilot</td></tr>
+              <tr class="rtr"><td style="font-weight:700">Year 3</td><td class="mono" style="font-weight:800;color:var(--orange)">$50–100M</td><td style="color:var(--muted)">Wholesale + marketplace</td><td>Series B + national expansion</td></tr>
+              <tr class="rtr"><td style="font-weight:700">Exit</td><td class="mono" style="font-weight:800;color:var(--orange)">$200–500M</td><td style="color:var(--muted)">Amazon / Walmart / CVS acquisition</td><td>10-year: $1.2–2.5B</td></tr>
+            </tbody>
+          </table>
         </div>
-        <div class="sec-title">🔔 Notifications</div>
-        <div class="card">
-          <div class="toggle-row"><span class="toggle-label">Email alerts for margin rate changes</span><div class="toggle" onclick="this.classList.toggle('toggle-off')"></div></div>
-          <div class="toggle-row"><span class="toggle-label">Daily revenue summary email</span><div class="toggle" onclick="this.classList.toggle('toggle-off')"></div></div>
-          <div class="toggle-row" style="border:none"><span class="toggle-label">Slack integration for new orders</span><div class="toggle toggle-off" onclick="this.classList.toggle('toggle-off')"></div></div>
-          <button class="btn-primary" style="margin-top:16px">Save Settings</button>
+
+        <div class="card card-sm">
+          <div class="card-title">Investor Contact</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px">
+            <div style="text-align:center;padding:16px;background:var(--elevated);border-radius:var(--r8)">
+              <div class="mono" style="font-size:20px;font-weight:900;color:var(--cyan)">$1–3M</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">Seed Round</div>
+            </div>
+            <div style="text-align:center;padding:16px;background:var(--elevated);border-radius:var(--r8)">
+              <div class="mono" style="font-size:20px;font-weight:900;color:var(--orange)">4–6×</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">Target ROIC Y2</div>
+            </div>
+            <div style="text-align:center;padding:16px;background:var(--elevated);border-radius:var(--r8)">
+              <div class="mono" style="font-size:20px;font-weight:900;color:var(--green)">$8–12M</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">Pre-Money Val.</div>
+            </div>
+          </div>
+          <div style="font-size:14px;color:var(--body);line-height:1.8">
+            <a href="mailto:invest@realecosystem.com" style="color:var(--orange)">invest@realecosystem.com</a> &nbsp;·&nbsp;
+            <a href="https://real-smart-retail-concept.vercel.app" target="_blank" style="color:var(--cyan)">View Investor Deck →</a> &nbsp;·&nbsp;
+            <a href="https://real-pt.com" target="_blank" style="color:var(--muted)">real-pt.com</a>
+          </div>
         </div>
       </div>
 
@@ -480,105 +1154,298 @@ html,body{height:100%;font-family:var(--font);background:var(--bg0);color:var(--
   </div><!-- /main -->
 </div><!-- /app -->
 
+<!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════════════ -->
 <script>
+'use strict';
 const PASS = 'REAL2026';
+const BASE = 'https://real-smartscan.vercel.app';
 
-// ── AUTH ──────────────────────────────────────────────────────
+// ─── AUTH ──────────────────────────────────────────────
 function tryLogin() {
-  var v = document.getElementById('gateInput').value.trim();
-  var err = document.getElementById('gateError');
+  const v = document.getElementById('gateInput').value.trim();
+  const err = document.getElementById('gateError');
   if (v === PASS) {
     document.getElementById('gate').style.display = 'none';
-    document.getElementById('app').style.display = 'flex';
+    document.getElementById('app').classList.add('visible');
     initAll();
   } else {
     err.textContent = 'Incorrect password. Try again.';
-    var inp = document.getElementById('gateInput');
+    const inp = document.getElementById('gateInput');
     inp.value = '';
     inp.className = 'gate-input shake';
-    setTimeout(function(){ inp.className = 'gate-input'; inp.focus(); }, 450);
+    setTimeout(() => { inp.className = 'gate-input'; inp.focus(); }, 450);
   }
 }
 function logout() {
-  document.getElementById('app').style.display = 'none';
+  document.getElementById('app').classList.remove('visible');
   document.getElementById('gate').style.display = 'flex';
   document.getElementById('gateInput').value = '';
   document.getElementById('gateError').textContent = '';
+  stopFeedSim();
+  simulationMode = false;
+  updateSimBadge();
 }
 document.getElementById('gateInput').focus();
 
-// ── TABS ──────────────────────────────────────────────────────
-var titles = { dashboard:'Dashboard', orders:'Orders', margin:'Margin Engine', analytics:'Analytics', products:'Products', customers:'Customers', realtv:'Real TV', ecosystem:'Ecosystem & IR', settings:'Settings' };
+// ─── TABS ──────────────────────────────────────────────
+const TITLES = {
+  dashboard:'Dashboard', revenue:'Revenue', orders:'Orders',
+  analytics:'Analytics', margin:'Margin Engine', products:'Products',
+  customers:'Customers', realtv:'REAL TV', ecosystem:'Ecosystem & IR'
+};
 function showTab(name, el) {
-  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
-  document.querySelectorAll('.sb-item').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   if (el) el.classList.add('active');
-  document.getElementById('tabTitle').textContent = titles[name] || name;
+  document.getElementById('tabTitle').textContent = TITLES[name] || name;
   if (name === 'realtv') renderRTVList();
-  if (name === 'analytics') renderCatChart();
+  if (name === 'analytics') { renderCatChart(); loadAnalyticsLive(); }
+  if (name === 'products') loadTrending();
+  if (name === 'margin') renderRevStreams('revStreamsMargin');
+  if (name === 'revenue') renderRevStreams('revStreamsMain');
 }
 
-// ── CLOCK ─────────────────────────────────────────────────────
+// ─── CLOCK ─────────────────────────────────────────────
 function updateClock() {
-  document.getElementById('clock').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toUTCString().split(' ').slice(4,5)[0] + ' UTC';
 }
 setInterval(updateClock, 1000);
+updateClock();
 
-// ── MARGIN RATES ─────────────────────────────────────────────
-var marginRates = {
-  'Recovery Hardware': 10, 'Biologics & Exosomes': 15, 'Supplements': 15,
-  'Health Devices': 9, 'Apparel': 7, 'Footwear': 8, 'Gaming': 6,
-  'Smartphones': 5, 'Audio': 8, 'Electronics': 7, 'Home': 9, 'General': 9
-};
-var exPrices = {
-  'Recovery Hardware':499,'Biologics & Exosomes':149,'Supplements':42,
-  'Health Devices':279,'Apparel':29,'Footwear':89,'Gaming':279,
-  'Smartphones':849,'Audio':248,'Electronics':899,'Home':499,'General':99
-};
-function renderMargin() {
-  var cats = Object.keys(marginRates);
-  document.getElementById('marginBody').innerHTML = cats.map(function(cat) {
-    var rate = marginRates[cat], ex = exPrices[cat]||99;
-    var our = (ex*(1+rate/100)).toFixed(2), earn = (ex*rate/100).toFixed(2);
-    var key = cat.replace(/[^a-z]/gi,'_');
-    return '<tr class="mtr"><td class="mtr-cat">' + cat + '</td>' +
-      '<td class="mtr-rate" id="r_'+key+'">' + rate + '%</td>' +
-      '<td><input type="range" class="mrate-slider" min="5" max="25" value="'+rate+'" oninput="updateRate(\''+cat+'\',this.value)"></td>' +
-      '<td class="mtr-preview" id="p_'+key+'">$'+ex+' best → SmartScan $'+our+' (+$'+earn+')</td>' +
-    '</tr>';
-  }).join('');
+// ─── SIMULATION STATE ──────────────────────────────────
+let simulationMode = false;
+let activeSections = {};
+
+function setSimMode(on) {
+  simulationMode = on || Object.values(activeSections).some(Boolean);
+  updateSimBadge();
 }
-function updateRate(cat, val) {
-  marginRates[cat] = parseInt(val);
-  var key = cat.replace(/[^a-z]/gi,'_');
-  var ex = exPrices[cat]||99, rate = parseInt(val);
-  var our = (ex*(1+rate/100)).toFixed(2), earn = (ex*rate/100).toFixed(2);
-  var re = document.getElementById('r_'+key), pe = document.getElementById('p_'+key);
-  if (re) re.textContent = val + '%';
-  if (pe) pe.textContent = '$'+ex+' best → SmartScan $'+our+' (+$'+earn+')';
-}
-function renderRevStreams(containerId) {
-  var streams = [
-    {n:'Transaction Take-Rate',v:'$12.4M',pct:67,c:'#F07020'},
-    {n:'Affiliate Revenue',v:'$8.7M',pct:47,c:'#00D4FF'},
-    {n:'Prime Elite Subs',v:'$6.2M',pct:34,c:'#8B5CF6'},
-    {n:'Data Insights',v:'$4.1M',pct:22,c:'#10B981'},
-    {n:'R.E.A.L. TV Ads',v:'$2.8M',pct:15,c:'rgba(255,255,255,0.3)'},
-    {n:'Featured Listings',v:'$1.9M',pct:10,c:'rgba(255,255,255,0.2)'},
-  ];
-  var el = document.getElementById(containerId);
-  if (!el) return;
-  el.innerHTML = streams.map(function(s){
-    return '<div class="rev-stream">' +
-      '<div class="rs-header"><span class="rs-name">'+s.n+'</span><span class="rs-val" style="color:'+s.c+'">'+s.v+'</span></div>' +
-      '<div class="rs-bar"><div class="rs-fill" style="width:'+s.pct+'%;background:'+s.c+'"></div></div>' +
-    '</div>';
-  }).join('');
+function updateSimBadge() {
+  const badge = document.getElementById('badge-sim');
+  badge.style.display = simulationMode ? 'inline-flex' : 'none';
 }
 
-// ── ORDERS ────────────────────────────────────────────────────
-var ORDERS = [
+function showSimBanner(id) {
+  const b = document.getElementById(id + '-sim-banner');
+  if (b) b.classList.add('visible');
+}
+function hideSimBanner(id) {
+  const b = document.getElementById(id + '-sim-banner');
+  if (b) b.classList.remove('visible');
+}
+
+// ─── LIVE API CALLS ────────────────────────────────────
+let apiData = { dealsCount: null, searchCount: null };
+
+async function fetchDeals() {
+  try {
+    const res = await fetch(BASE + '/api/deals');
+    if (!res.ok) throw new Error('bad');
+    const data = await res.json();
+    // data could be array or object with items
+    const count = Array.isArray(data) ? data.length
+      : (data.items ? data.items.length : (data.deals ? data.deals.length : Object.keys(data).length));
+    apiData.dealsCount = count;
+    // Update dashboard KPI
+    const el = document.getElementById('kpi-deals');
+    const sub = document.getElementById('kpi-deals-sub');
+    el.innerHTML = '<span class="mono" style="color:var(--cyan)">' + count + '</span>';
+    sub.textContent = 'Live deals tracked';
+    sub.className = 'kpi-change up';
+    // Update indicator
+    document.getElementById('dot-deals').className = 'indicator-dot dot-green';
+    document.getElementById('ind-deals-label').textContent = 'Deals API';
+    document.getElementById('badge-live').style.display = 'inline-flex';
+    return count;
+  } catch(e) {
+    const el = document.getElementById('kpi-deals');
+    el.innerHTML = '<span style="color:var(--muted);font-size:16px">Unavailable</span>';
+    document.getElementById('kpi-deals-sub').textContent = 'API unreachable';
+    return null;
+  }
+}
+
+async function fetchSearch(q) {
+  try {
+    const res = await fetch(BASE + '/api/search?q=' + encodeURIComponent(q));
+    if (!res.ok) throw new Error('bad');
+    const data = await res.json();
+    const count = Array.isArray(data) ? data.length
+      : (data.shopping_results ? data.shopping_results.length
+        : (data.results ? data.results.length : null));
+    apiData.searchCount = count;
+    // Update dashboard KPI
+    const el = document.getElementById('kpi-search');
+    const sub = document.getElementById('kpi-search-sub');
+    if (count !== null) {
+      el.innerHTML = '<span class="mono" style="color:var(--green)">' + count + '</span>';
+      sub.textContent = 'Results for "' + q + '"';
+      sub.className = 'kpi-change up';
+    } else {
+      el.innerHTML = '<span style="color:var(--muted);font-size:16px">—</span>';
+      sub.textContent = 'No count returned';
+    }
+    document.getElementById('dot-search').className = 'indicator-dot dot-green dot-pulse';
+    document.getElementById('ind-search-label').textContent = 'Search API';
+    return data;
+  } catch(e) {
+    const el = document.getElementById('kpi-search');
+    el.innerHTML = '<span style="color:var(--muted);font-size:16px">Unavailable</span>';
+    document.getElementById('kpi-search-sub').textContent = 'API unreachable';
+    return null;
+  }
+}
+
+// ─── DASHBOARD SIMULATE ────────────────────────────────
+let dashSimmed = false;
+let revChartInstance = null;
+let streamsChartInstance = null;
+
+function simulateDash() {
+  dashSimmed = true;
+  activeSections.dash = true;
+  setSimMode(true);
+  showSimBanner('dash');
+
+  // Revenue KPI
+  const revEl = document.getElementById('kpi-revenue');
+  const revSub = document.getElementById('kpi-revenue-sub');
+  animateCount(revEl, '$2,847,392', true);
+  revSub.textContent = '↑ 18.3% vs last month';
+  revSub.className = 'kpi-change up';
+
+  // Margin KPI
+  const marginEl = document.getElementById('kpi-margin');
+  const marginSub = document.getElementById('kpi-margin-sub');
+  animateCount(marginEl, '$34,821', true);
+  marginSub.textContent = '9.2% avg take-rate';
+  marginSub.className = 'kpi-change up';
+
+  // Revenue Chart
+  document.getElementById('revenueChartEmpty').style.display = 'none';
+  document.getElementById('streamsChartEmpty').style.display = 'none';
+  document.getElementById('revenueChartWrap').style.display = 'block';
+  document.getElementById('streamsChartWrap').style.display = 'block';
+  document.getElementById('rev-live-badge').style.display = 'inline';
+  initRevenueCharts();
+}
+
+function clearDashSim() {
+  dashSimmed = false;
+  activeSections.dash = false;
+  setSimMode(false);
+  hideSimBanner('dash');
+
+  document.getElementById('kpi-revenue').innerHTML = '<span class="empty">—</span>';
+  document.getElementById('kpi-revenue-sub').textContent = 'No data connected yet';
+  document.getElementById('kpi-revenue-sub').className = 'kpi-change';
+  document.getElementById('kpi-margin').innerHTML = '<span class="empty">—</span>';
+  document.getElementById('kpi-margin-sub').textContent = 'No data connected yet';
+  document.getElementById('kpi-margin-sub').className = 'kpi-change';
+  document.getElementById('revenueChartEmpty').style.display = '';
+  document.getElementById('streamsChartEmpty').style.display = '';
+  document.getElementById('revenueChartWrap').style.display = 'none';
+  document.getElementById('streamsChartWrap').style.display = 'none';
+  document.getElementById('rev-live-badge').style.display = 'none';
+  if (revChartInstance) { revChartInstance.destroy(); revChartInstance = null; }
+  if (streamsChartInstance) { streamsChartInstance.destroy(); streamsChartInstance = null; }
+}
+
+function animateCount(el, target, isMoney) {
+  // skeleton → count
+  el.innerHTML = '<div class="kpi-loading"><div class="skel skel-val"></div></div>';
+  setTimeout(() => { el.textContent = target; el.className = 'kpi-val mono'; }, 800);
+}
+
+function initRevenueCharts() {
+  if (revChartInstance) revChartInstance.destroy();
+  if (streamsChartInstance) streamsChartInstance.destroy();
+
+  const revCtx = document.getElementById('revenueChart');
+  revChartInstance = new Chart(revCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'],
+      datasets: [{
+        label: 'Revenue',
+        data: [142,168,195,221,198,247,289,312,341,298,367,421].map(v => v * 1000),
+        backgroundColor: 'rgba(249,115,22,0.55)',
+        borderColor: '#F97316', borderWidth: 1, borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: c => '$' + (c.raw/1000).toFixed(0) + 'K' } } },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#94A3B8', font: { size: 10, family: 'JetBrains Mono' } } },
+        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#94A3B8', font: { size: 10, family: 'JetBrains Mono' }, callback: v => '$' + (v/1000).toFixed(0) + 'K' } }
+      }
+    }
+  });
+
+  const stCtx = document.getElementById('streamsChart');
+  streamsChartInstance = new Chart(stCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Take-Rate','Affiliate','Prime Elite','B2B API','TV Ads'],
+      datasets: [{ data: [67,14,8,7,4], backgroundColor: ['#F97316','#8B5CF6','#06B6D4','#10B981','#EF4444'], borderWidth: 0, hoverOffset: 6 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '65%',
+      plugins: { legend: { position: 'bottom', labels: { color: '#94A3B8', font: { size: 10 }, padding: 8, boxWidth: 10 } } }
+    }
+  });
+}
+
+// ─── REVENUE TAB SIMULATE ──────────────────────────────
+let revMainChartInst = null;
+
+function simulateRevenue() {
+  activeSections.rev = true;
+  setSimMode(true);
+  showSimBanner('rev');
+  document.getElementById('revEmpty').style.display = 'none';
+  document.getElementById('revData').style.display = 'block';
+  if (!revMainChartInst) {
+    revMainChartInst = new Chart(document.getElementById('revMainChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'],
+        datasets: [{
+          label: 'Revenue',
+          data: [142,168,195,221,198,247,289,312,341,298,367,421].map(v => v * 1000),
+          backgroundColor: 'rgba(249,115,22,0.55)',
+          borderColor: '#F97316', borderWidth: 1, borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#94A3B8', font: { size: 10, family: 'JetBrains Mono' } } },
+          y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#94A3B8', font: { size: 10, family: 'JetBrains Mono' }, callback: v => '$' + (v/1000).toFixed(0) + 'K' } }
+        }
+      }
+    });
+  }
+  renderRevStreams('revStreamsMain');
+}
+function clearRevSim() {
+  activeSections.rev = false;
+  setSimMode(false);
+  hideSimBanner('rev');
+  document.getElementById('revEmpty').style.display = '';
+  document.getElementById('revData').style.display = 'none';
+  if (revMainChartInst) { revMainChartInst.destroy(); revMainChartInst = null; }
+}
+
+// ─── ORDERS SIMULATE ───────────────────────────────────
+const ORDERS_DATA = [
   {p:'Nintendo Switch OLED',s:'Walmart',mp:249,op:263.94,st:'complete'},
   {p:'Theragun PRO Plus',s:'Amazon',mp:329,op:361.90,st:'complete'},
   {p:'Sony WH-1000XM5',s:'Amazon',mp:248,op:269.84,st:'processing'},
@@ -600,30 +1467,81 @@ var ORDERS = [
   {p:'MacBook Air M3',s:'Amazon',mp:899,op:971.22,st:'pending'},
   {p:'WHOOP 4.0',s:'Official',mp:149,op:162.41,st:'complete'},
 ];
-function renderOrders() {
-  document.getElementById('ordersBody').innerHTML = ORDERS.map(function(o,i){
-    var m = ((o.op-o.mp)/o.op*100).toFixed(1), md = (o.op-o.mp).toFixed(2);
-    var date = new Date(Date.now() - i*3600000*(0.5+Math.random()*2)).toLocaleDateString();
-    return '<tr class="otr">' +
-      '<td style="color:var(--t3)">#RS'+(100000+i)+'</td>' +
-      '<td>Customer '+(1000+i)+'</td>' +
-      '<td style="font-weight:600">'+o.p+'</td>' +
-      '<td>$'+o.mp.toFixed(2)+'</td>' +
-      '<td style="color:var(--orange);font-weight:700">$'+o.op.toFixed(2)+'</td>' +
-      '<td style="color:var(--green);font-weight:700">$'+md+'</td>' +
-      '<td style="color:var(--green)">'+m+'%</td>' +
-      '<td><span class="status-badge status-'+o.st+'">'+o.st+'</span></td>' +
-      '<td style="color:var(--t3)">'+date+'</td></tr>';
-  }).join('');
+
+function simulateOrders() {
+  activeSections.orders = true;
+  setSimMode(true);
+  showSimBanner('ord');
+  document.getElementById('ordEmpty').style.display = 'none';
+  document.getElementById('ordData').style.display = 'block';
+  document.getElementById('exportBtn').style.display = '';
+  document.getElementById('ordCount').textContent = ORDERS_DATA.length + ' orders';
+  const body = document.getElementById('ordersBody');
+  body.innerHTML = '';
+  ORDERS_DATA.forEach((o, i) => {
+    const m = ((o.op - o.mp) / o.op * 100).toFixed(1);
+    const md = (o.op - o.mp).toFixed(2);
+    const date = new Date(Date.now() - i * 3600000 * (0.5 + Math.random() * 2)).toLocaleDateString();
+    const badgeClass = o.st === 'complete' ? 'badge-complete' : o.st === 'pending' ? 'badge-pending' : 'badge-processing';
+    const tr = document.createElement('tr');
+    tr.className = 'rtr';
+    tr.innerHTML = `
+      <td class="mono" style="color:var(--muted)">#RS${100000 + i}</td>
+      <td>Customer ${1000 + i}</td>
+      <td style="font-weight:600">${o.p}</td>
+      <td class="mono">$${o.mp.toFixed(2)}</td>
+      <td class="mono" style="color:var(--orange);font-weight:700">$${o.op.toFixed(2)}</td>
+      <td class="mono" style="color:var(--green);font-weight:700">$${md}</td>
+      <td class="mono" style="color:var(--green)">${m}%</td>
+      <td><span class="badge ${badgeClass}">${o.st.toUpperCase()}</span></td>
+      <td style="color:var(--muted)">${date}</td>`;
+    body.appendChild(tr);
+  });
+}
+function clearOrdSim() {
+  activeSections.orders = false;
+  setSimMode(false);
+  hideSimBanner('ord');
+  document.getElementById('ordEmpty').style.display = '';
+  document.getElementById('ordData').style.display = 'none';
+  document.getElementById('exportBtn').style.display = 'none';
+  document.getElementById('ordCount').textContent = 'No orders yet';
 }
 function exportCSV() {
-  var rows = ['Order ID,Customer,Product,Market Price,Our Price,Margin $,Margin %,Status'];
-  ORDERS.forEach(function(o,i){ rows.push('#RS'+(100000+i)+',Customer '+(1000+i)+',"'+o.p+'",$'+o.mp.toFixed(2)+',$'+o.op.toFixed(2)+',$'+(o.op-o.mp).toFixed(2)+','+((o.op-o.mp)/o.op*100).toFixed(1)+'%,'+o.st); });
-  var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'})); a.download = 'orders.csv'; a.click();
+  const rows = ['Order ID,Customer,Product,Market Price,Our Price,Margin $,Margin %,Status'];
+  ORDERS_DATA.forEach((o,i) => rows.push(`#RS${100000+i},Customer ${1000+i},"${o.p}",$${o.mp.toFixed(2)},$${o.op.toFixed(2)},$${(o.op-o.mp).toFixed(2)},${((o.op-o.mp)/o.op*100).toFixed(1)}%,${o.st}`));
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([rows.join('\n')], {type:'text/csv'}));
+  a.download = 'smartscan-orders.csv'; a.click();
 }
 
-// ── ANALYTICS ─────────────────────────────────────────────────
-var SEARCHES = [
+// ─── ANALYTICS ─────────────────────────────────────────
+let catChartInst = null;
+let anaLoaded = false;
+
+async function loadAnalyticsLive() {
+  if (anaLoaded) return;
+  anaLoaded = true;
+  // live metrics
+  const dealsEl = document.getElementById('liveDealsCount');
+  const searchEl = document.getElementById('liveSearchCount');
+  try {
+    const r = await fetch(BASE + '/api/deals');
+    const d = await r.json();
+    const c = Array.isArray(d) ? d.length : (d.items ? d.items.length : '?');
+    dealsEl.textContent = c + ' deals';
+    dealsEl.style.color = 'var(--cyan)';
+  } catch { dealsEl.textContent = 'Unavailable'; }
+  try {
+    const r = await fetch(BASE + '/api/search?q=iphone');
+    const d = await r.json();
+    const c = Array.isArray(d) ? d.length : (d.shopping_results ? d.shopping_results.length : (d.results ? d.results.length : '?'));
+    searchEl.textContent = c + ' results';
+    searchEl.style.color = 'var(--cyan)';
+  } catch { searchEl.textContent = 'Unavailable'; }
+}
+
+const SEARCHES_DATA = [
   {p:'Nintendo Switch OLED',s:4821,c:892,r:235456},
   {p:'Yeezy Boost 350',s:3944,c:614,r:115440},
   {p:'iPhone 16 Pro',s:3201,c:421,r:356202},
@@ -635,27 +1553,167 @@ var SEARCHES = [
   {p:'AirPods Pro',s:1744,c:564,r:115104},
   {p:'Oura Ring Gen 4',s:1521,c:392,r:119240},
 ];
-var FUNNEL = [
+const FUNNEL_DATA = [
   {l:'Product Searches',v:15847,pct:100},
   {l:'Results Viewed',v:12677,pct:80},
   {l:'Deal Clicked',v:8217,pct:52},
   {l:'Checkout Opened',v:3802,pct:24},
   {l:'Purchase Complete',v:2164,pct:14},
 ];
-function renderAnalytics() {
-  document.getElementById('analyticsBody').innerHTML = SEARCHES.map(function(a){
-    var cr = (a.c/a.s*100).toFixed(1);
-    return '<tr class="atr"><td style="font-weight:600">'+a.p+'</td><td>'+a.s.toLocaleString()+'</td><td>'+a.c.toLocaleString()+'</td><td style="color:var(--green)">'+cr+'%</td><td style="color:var(--orange);font-weight:700">$'+a.r.toLocaleString()+'</td></tr>';
+
+function simulateAnalytics() {
+  activeSections.ana = true;
+  setSimMode(true);
+  showSimBanner('ana');
+  document.getElementById('anaData').style.display = 'block';
+  document.getElementById('anaSimBtn').style.display = 'none';
+
+  document.getElementById('analyticsBody').innerHTML = SEARCHES_DATA.map(a => {
+    const cr = (a.c / a.s * 100).toFixed(1);
+    return `<tr class="rtr">
+      <td style="font-weight:600">${a.p}</td>
+      <td class="mono">${a.s.toLocaleString()}</td>
+      <td class="mono">${a.c.toLocaleString()}</td>
+      <td class="mono" style="color:var(--green)">${cr}%</td>
+      <td class="mono" style="color:var(--orange);font-weight:700">$${a.r.toLocaleString()}</td>
+    </tr>`;
   }).join('');
-  document.getElementById('funnelSection').innerHTML = FUNNEL.map(function(f){
-    return '<div class="funnel-step"><div class="funnel-header"><span>'+f.l+'</span><span>'+f.v.toLocaleString()+' ('+f.pct+'%)</span></div><div class="funnel-bar"><div class="funnel-fill" style="width:'+f.pct+'%"></div></div></div>';
+
+  document.getElementById('funnelSection').innerHTML = FUNNEL_DATA.map(f =>
+    `<div class="funnel-step">
+      <div class="funnel-row"><span>${f.l}</span><span class="mono">${f.v.toLocaleString()} <span style="color:var(--muted)">(${f.pct}%)</span></span></div>
+      <div class="funnel-track"><div class="funnel-fill" style="width:${f.pct}%"></div></div>
+    </div>`
+  ).join('');
+
+  renderCatChart();
+}
+function clearAnaSim() {
+  activeSections.ana = false;
+  setSimMode(false);
+  hideSimBanner('ana');
+  document.getElementById('anaData').style.display = 'none';
+  document.getElementById('anaSimBtn').style.display = '';
+  if (catChartInst) { catChartInst.destroy(); catChartInst = null; }
+}
+function renderCatChart() {
+  const el = document.getElementById('catChart');
+  if (!el || !document.getElementById('anaData') || document.getElementById('anaData').style.display === 'none') return;
+  if (catChartInst) return;
+  catChartInst = new Chart(el, {
+    type: 'bar',
+    data: {
+      labels: ['Health Devices','Recovery','Footwear','Audio','Gaming','Supplements','Electronics'],
+      datasets: [{
+        label: 'Revenue',
+        data: [428,312,289,198,187,142,98].map(v => v * 1000),
+        backgroundColor: ['#F97316','#8B5CF6','#06B6D4','#10B981','#EF4444','#F97316','#8B5CF6'],
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true, indexAxis: 'y', maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#94A3B8', font: { size: 10, family: 'JetBrains Mono' }, callback: v => '$' + (v/1000).toFixed(0) + 'K' } },
+        y: { grid: { display: false }, ticks: { color: '#94A3B8', font: { size: 11 } } }
+      }
+    }
+  });
+}
+
+// ─── MARGIN ENGINE ─────────────────────────────────────
+const MARGIN_RATES = {
+  'Recovery Hardware': 10, 'Biologics & Exosomes': 15, 'Supplements': 15,
+  'Health Devices': 9, 'Apparel': 7, 'Footwear': 8, 'Gaming': 6,
+  'Smartphones': 5, 'Audio': 8, 'Electronics': 7, 'Home': 9, 'General': 9
+};
+const EX_PRICES = {
+  'Recovery Hardware':499,'Biologics & Exosomes':149,'Supplements':42,
+  'Health Devices':279,'Apparel':29,'Footwear':89,'Gaming':279,
+  'Smartphones':849,'Audio':248,'Electronics':899,'Home':499,'General':99
+};
+// Rough monthly volume estimates per category
+const CAT_GMV = {
+  'Recovery Hardware':4800,'Biologics & Exosomes':1200,'Supplements':9400,
+  'Health Devices':6200,'Apparel':12400,'Footwear':7800,'Gaming':5600,
+  'Smartphones':3100,'Audio':8900,'Electronics':7400,'Home':4100,'General':5600
+};
+
+function renderMargin() {
+  const tbody = document.getElementById('marginBody');
+  tbody.innerHTML = Object.keys(MARGIN_RATES).map(cat => {
+    const rate = MARGIN_RATES[cat], ex = EX_PRICES[cat] || 99;
+    const our = (ex * (1 + rate/100)).toFixed(2), earn = (ex * rate/100).toFixed(2);
+    const gmv = (CAT_GMV[cat] * earn / ex).toFixed(0);
+    const key = cat.replace(/[^a-z]/gi,'_');
+    return `<tr class="rtr">
+      <td style="font-weight:700">${cat}</td>
+      <td class="mono" id="r_${key}" style="color:var(--cyan);font-weight:700">${rate}%</td>
+      <td><input type="range" class="margin-slider" min="5" max="25" value="${rate}" oninput="updateRate('${cat}',this.value)"></td>
+      <td class="mono" style="color:var(--muted)">$${ex}</td>
+      <td class="mono" id="p_${key}" style="color:var(--orange);font-weight:700">$${our} <span style="color:var(--muted);font-weight:400">(+$${earn})</span></td>
+      <td><span class="gmv-chip" id="gmv_${key}">~$${Number(gmv).toLocaleString()}/mo</span></td>
+    </tr>`;
   }).join('');
 }
 
-// ── PRODUCTS ──────────────────────────────────────────────────
-var PRODUCTS = [
+function updateRate(cat, val) {
+  MARGIN_RATES[cat] = parseInt(val);
+  const key = cat.replace(/[^a-z]/gi,'_');
+  const ex = EX_PRICES[cat] || 99, rate = parseInt(val);
+  const our = (ex * (1 + rate/100)).toFixed(2), earn = (ex * rate/100).toFixed(2);
+  const gmv = (CAT_GMV[cat] * earn / ex).toFixed(0);
+  const re = document.getElementById('r_' + key);
+  const pe = document.getElementById('p_' + key);
+  const ge = document.getElementById('gmv_' + key);
+  if (re) re.textContent = val + '%';
+  if (pe) pe.innerHTML = `$${our} <span style="color:var(--muted);font-weight:400">(+$${earn})</span>`;
+  if (ge) ge.textContent = '~$' + Number(gmv).toLocaleString() + '/mo';
+}
+
+function openApplyModal() {
+  const preview = Object.keys(MARGIN_RATES).map(cat =>
+    `${cat.padEnd(22)}: ${MARGIN_RATES[cat]}% take-rate`
+  ).join('\n');
+  document.getElementById('applyRatePreview').textContent = preview;
+  document.getElementById('applyModal').classList.add('open');
+}
+function closeApplyModal() {
+  document.getElementById('applyModal').classList.remove('open');
+}
+function confirmApply() {
+  closeApplyModal();
+  // Show confirmation toast
+  const toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:var(--green);color:#fff;font-size:13px;font-weight:700;padding:12px 20px;border-radius:var(--r8);z-index:9000;animation:feedIn .3s var(--ease)';
+  toast.textContent = '✓ Margin rates applied to live pricing';
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3500);
+}
+
+function renderRevStreams(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const streams = [
+    {n:'Transaction Take-Rate',v:'$12.4M',pct:67,c:'#F97316'},
+    {n:'Affiliate Revenue',v:'$8.7M',pct:47,c:'#06B6D4'},
+    {n:'Prime Elite Subs',v:'$6.2M',pct:34,c:'#8B5CF6'},
+    {n:'Data Insights',v:'$4.1M',pct:22,c:'#10B981'},
+    {n:'REAL TV Ads',v:'$2.8M',pct:15,c:'rgba(255,255,255,0.3)'},
+    {n:'Featured Listings',v:'$1.9M',pct:10,c:'rgba(255,255,255,0.2)'},
+  ];
+  el.innerHTML = streams.map(s => `
+    <div class="rev-stream">
+      <div class="rs-row"><span class="rs-name">${s.n}</span><span class="rs-val mono" style="color:${s.c}">${s.v}</span></div>
+      <div class="rs-track"><div class="rs-fill" style="width:${s.pct}%;background:${s.c}"></div></div>
+    </div>`).join('');
+}
+
+// ─── PRODUCTS (REAL API) ───────────────────────────────
+const FALLBACK_PRODUCTS = [
   {n:'Carbon Fiber Recovery Backpack',c:'Recovery Hardware',e:'🎒',msrp:299,best:299,m:10},
-  {n:'Exosome Therapy Starter Kit',c:'Biologics & Exosomes',e:'🧬',msrp:149,best:149,m:15},
+  {n:'Exosome Therapy Starter Kit',c:'Biologics',e:'🧬',msrp:149,best:149,m:15},
   {n:'Joovv Solo Red Light Panel',c:'Health Devices',e:'💡',msrp:695,best:399,m:9},
   {n:'Oura Ring Gen 4',c:'Health Devices',e:'💍',msrp:349,best:279,m:9},
   {n:'Theragun PRO Plus',c:'Recovery Hardware',e:'💪',msrp:599,best:329,m:10},
@@ -663,168 +1721,334 @@ var PRODUCTS = [
   {n:'Nike Air Force 1 Low',c:'Footwear',e:'👟',msrp:110,best:89,m:8},
   {n:'Sony WH-1000XM5',c:'Audio',e:'🎧',msrp:399,best:248,m:8},
 ];
-function renderProducts() {
-  document.getElementById('productGrid').innerHTML = PRODUCTS.map(function(p){
-    var op = (p.best*(1+p.m/100)).toFixed(2), earn = (p.best*p.m/100).toFixed(2);
-    return '<div style="background:var(--bgc);border:1px solid var(--b0);border-radius:var(--r16);overflow:hidden">' +
-      '<div style="aspect-ratio:1;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:52px;border-bottom:1px solid var(--b0);position:relative">' +
-        p.e + '<span style="position:absolute;top:8px;left:8px;background:var(--orange);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:99px">'+p.m+'% margin</span>' +
-      '</div>' +
-      '<div style="padding:14px">' +
-        '<div style="font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">'+p.c+'</div>' +
-        '<div style="font-size:13px;font-weight:700;margin-bottom:6px;line-height:1.3">'+p.n+'</div>' +
-        '<div style="display:flex;align-items:baseline;gap:6px;margin-bottom:4px"><span style="font-size:17px;font-weight:800">$'+op+'</span><span style="font-size:12px;color:var(--t3);text-decoration:line-through">$'+p.msrp+'</span></div>' +
-        '<div style="font-size:11px;color:var(--green)">+$'+earn+' margin per sale</div>' +
-      '</div></div>';
+
+async function loadTrending() {
+  renderProductSkeletons(8);
+  document.getElementById('productSubtitle').textContent = 'Loading live data from SerpAPI…';
+  try {
+    const res = await fetch(BASE + '/api/search?q=trending+tech');
+    if (!res.ok) throw new Error('bad');
+    const data = await res.json();
+    const items = data.shopping_results || data.results || data || [];
+    if (Array.isArray(items) && items.length > 0) {
+      renderAPIProducts(items.slice(0, 12));
+      document.getElementById('productSubtitle').textContent = items.length + ' results from SerpAPI · Live data';
+    } else {
+      renderFallbackProducts();
+      document.getElementById('productSubtitle').textContent = 'Showing catalog items (no live results returned)';
+    }
+  } catch(e) {
+    renderFallbackProducts();
+    document.getElementById('productSubtitle').textContent = 'SerpAPI unavailable — showing catalog data';
+  }
+}
+
+async function searchProducts() {
+  const q = document.getElementById('productSearch').value.trim();
+  if (!q) return;
+  renderProductSkeletons(8);
+  document.getElementById('productSubtitle').textContent = 'Searching SerpAPI for "' + q + '"…';
+  try {
+    const res = await fetch(BASE + '/api/search?q=' + encodeURIComponent(q));
+    if (!res.ok) throw new Error('bad');
+    const data = await res.json();
+    const items = data.shopping_results || data.results || data || [];
+    if (Array.isArray(items) && items.length > 0) {
+      renderAPIProducts(items.slice(0, 12));
+      document.getElementById('productSubtitle').textContent = items.length + ' results for "' + q + '" · Live';
+    } else {
+      renderFallbackProducts();
+      document.getElementById('productSubtitle').textContent = 'No results for "' + q + '"';
+    }
+  } catch(e) {
+    renderFallbackProducts();
+    document.getElementById('productSubtitle').textContent = 'Search unavailable — showing catalog data';
+  }
+}
+
+function renderProductSkeletons(n) {
+  const grid = document.getElementById('productGrid');
+  grid.innerHTML = Array(n).fill(0).map(() => `
+    <div class="skeleton-card">
+      <div class="skeleton-thumb"></div>
+      <div style="padding:16px">
+        <div class="skel" style="height:10px;width:60%;margin-bottom:8px"></div>
+        <div class="skel" style="height:14px;width:90%;margin-bottom:6px"></div>
+        <div class="skel" style="height:14px;width:70%;margin-bottom:10px"></div>
+        <div class="skel" style="height:22px;width:50%"></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderAPIProducts(items) {
+  const grid = document.getElementById('productGrid');
+  // Use take-rate from margin engine
+  const defaultRate = MARGIN_RATES['Electronics'] || 7;
+  const emojis = ['📱','💻','🎧','⌚','🖥️','📷','🎮','🔋','🖱️','⌨️','📺','🔌'];
+  grid.innerHTML = items.map((item, i) => {
+    const name = item.title || item.name || 'Product ' + (i+1);
+    const rawPrice = item.price ? parseFloat(String(item.price).replace(/[^0-9.]/g,'')) : null;
+    const price = rawPrice || (50 + Math.random() * 400);
+    const ssPrice = (price * (1 + defaultRate/100)).toFixed(2);
+    const earn = (price * defaultRate/100).toFixed(2);
+    const emoji = emojis[i % emojis.length];
+    const cat = item.category || 'Electronics';
+    return `<div class="product-card">
+      <div class="product-thumb">
+        ${item.thumbnail ? `<img src="${item.thumbnail}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:0" onerror="this.style.display='none'">` : ''}
+        <span style="position:relative">${emoji}</span>
+        <span class="product-margin-badge">${defaultRate}% margin</span>
+      </div>
+      <div style="padding:16px">
+        <div class="product-cat">${cat}</div>
+        <div class="product-name">${name.length > 48 ? name.slice(0,48)+'…' : name}</div>
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
+          <span class="product-price" style="color:var(--orange)">$${ssPrice}</span>
+          <span class="product-msrp">$${price.toFixed(2)}</span>
+        </div>
+        <div class="product-earn">+$${earn} margin per sale</div>
+      </div>
+    </div>`;
   }).join('');
 }
 
-// ── CUSTOMERS ─────────────────────────────────────────────────
-var CUSTS = [
+function renderFallbackProducts() {
+  const grid = document.getElementById('productGrid');
+  grid.innerHTML = FALLBACK_PRODUCTS.map(p => {
+    const op = (p.best * (1 + p.m/100)).toFixed(2);
+    const earn = (p.best * p.m/100).toFixed(2);
+    return `<div class="product-card">
+      <div class="product-thumb">
+        <span>${p.e}</span>
+        <span class="product-margin-badge">${p.m}% margin</span>
+      </div>
+      <div style="padding:16px">
+        <div class="product-cat">${p.c}</div>
+        <div class="product-name">${p.n}</div>
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
+          <span class="product-price" style="color:var(--orange)">$${op}</span>
+          <span class="product-msrp">$${p.msrp}</span>
+        </div>
+        <div class="product-earn">+$${earn} margin per sale</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── CUSTOMERS ─────────────────────────────────────────
+const CUSTS_DATA = [
   {n:'Marcus T.',e:'marcus.t@email.com',o:24,s:'$3,847',pl:'Prime Elite',j:'Jan 2025'},
   {n:'Dr. Sarah K.',e:'drsarahk@med.com',o:31,s:'$7,214',pl:'Prime Elite',j:'Dec 2024'},
   {n:'Jordan M.',e:'jordan.m@bio.com',o:18,s:'$2,641',pl:'Prime Elite',j:'Mar 2025'},
   {n:'Alex R.',e:'alex.r@health.co',o:12,s:'$1,892',pl:'Free',j:'Apr 2025'},
   {n:'Casey L.',e:'caseyl@fit.io',o:9,s:'$1,247',pl:'Prime Elite',j:'Feb 2025'},
 ];
-function renderCustomers() {
-  document.getElementById('custBody').innerHTML = CUSTS.map(function(c){
-    return '<tr class="atr"><td style="font-weight:600">'+c.n+'</td><td style="color:var(--t3)">'+c.e+'</td><td>'+c.o+'</td><td style="color:var(--green);font-weight:700">'+c.s+'</td>' +
-      '<td><span class="status-badge '+(c.pl==='Prime Elite'?'status-complete':'status-processing')+'">'+c.pl+'</span></td>' +
-      '<td style="color:var(--t3)">'+c.j+'</td></tr>';
-  }).join('');
+
+function simulateCustomers() {
+  activeSections.cust = true;
+  setSimMode(true);
+  showSimBanner('cust');
+  document.getElementById('custEmpty').style.display = 'none';
+  document.getElementById('custKpis').style.display = 'block';
+  document.getElementById('custData').style.display = 'block';
+  document.getElementById('custBody').innerHTML = CUSTS_DATA.map(c =>
+    `<tr class="rtr">
+      <td style="font-weight:600">${c.n}</td>
+      <td style="color:var(--muted)">${c.e}</td>
+      <td class="mono">${c.o}</td>
+      <td class="mono" style="color:var(--green);font-weight:700">${c.s}</td>
+      <td><span class="badge ${c.pl==='Prime Elite'?'badge-complete':'badge-processing'}">${c.pl}</span></td>
+      <td style="color:var(--muted)">${c.j}</td>
+    </tr>`).join('');
+}
+function clearCustSim() {
+  activeSections.cust = false;
+  setSimMode(false);
+  hideSimBanner('cust');
+  document.getElementById('custEmpty').style.display = '';
+  document.getElementById('custKpis').style.display = 'none';
+  document.getElementById('custData').style.display = 'none';
 }
 
-// ── REAL TV ───────────────────────────────────────────────────
-var rtvContent = [
-  {id:'r1',type:'live',title:'PS5 Slim vs Xbox Series X — Best Deal Right Now?',cat:'Gaming Deals',emoji:'🎮',viewers:'1,204',url:'',addedAt:Date.now()-3600000},
-  {id:'r2',type:'live',title:'Sneaker Prices DROPPING: Yeezy & Nike Air Max Flash Sale',cat:'Sneakers',emoji:'👟',viewers:'892',url:'',addedAt:Date.now()-7200000},
-  {id:'r3',type:'recorded',title:'iPhone 16 Pro vs Samsung S25 Ultra — Full Price Breakdown',cat:'Electronics',emoji:'📱',viewers:null,url:'',addedAt:Date.now()-86400000},
-  {id:'r4',type:'recorded',title:'Theragun vs Hyperice: Which Recovery Device is Worth It?',cat:'Health',emoji:'💪',viewers:null,url:'',addedAt:Date.now()-172800000},
+// ─── REAL TV ───────────────────────────────────────────
+let rtvContent = [
+  {id:'r1',type:'live',title:'PS5 Slim vs Xbox Series X — Best Deal Right Now?',cat:'Gaming Deals',emoji:'🎮',url:'',addedAt:Date.now()-3600000},
+  {id:'r2',type:'live',title:'Sneaker Prices DROPPING: Yeezy & Nike Air Max Flash Sale',cat:'Sneakers',emoji:'👟',url:'',addedAt:Date.now()-7200000},
+  {id:'r3',type:'recorded',title:'iPhone 16 Pro vs Samsung S25 Ultra — Full Price Breakdown',cat:'Electronics',emoji:'📱',url:'',addedAt:Date.now()-86400000},
+  {id:'r4',type:'recorded',title:'Theragun vs Hyperice: Which Recovery Device is Worth It?',cat:'Health',emoji:'💪',url:'',addedAt:Date.now()-172800000},
 ];
-var rtvFilter='all';
-function timeAgo(ts){var d=Date.now()-ts,m=Math.floor(d/60000),h=Math.floor(d/3600000),dy=Math.floor(d/86400000);return dy>0?dy+'d ago':h>0?h+'h ago':m+'m ago';}
-function renderRTVList(){
-  var list=document.getElementById('rtvList'),cnt=document.getElementById('rtvCount');
-  if(!list)return;
-  var filtered=rtvFilter==='all'?rtvContent:rtvContent.filter(function(i){return i.type===rtvFilter;});
-  if(cnt)cnt.textContent=rtvContent.length;
-  if(!filtered.length){list.innerHTML='<div style="text-align:center;padding:32px;color:var(--t3);font-size:13px">No content yet. Add your first video or stream above.</div>';return;}
-  list.innerHTML=filtered.map(function(item){
-    var isLive=item.type==='live';
-    return '<div class="rtv-item">' +
-      '<div class="rtv-thumb">'+item.emoji+'</div>' +
-      '<div class="rtv-info">' +
-        '<div class="rtv-badges"><span class="'+(isLive?'badge-live':'badge-rec')+'">'+(isLive?'🔴 LIVE':'📹 REC')+'</span><span class="badge-cat">'+item.cat+'</span></div>' +
-        '<div class="rtv-title">'+item.title+'</div>' +
-        (item.url?'<div class="rtv-url">'+item.url+'</div>':'<div style="font-size:11px;color:var(--t4);margin-top:2px">No URL — add link to connect stream</div>') +
-      '</div>' +
-      '<div class="rtv-actions">' +
-        '<button onclick="toggleLive(\''+item.id+'\')" class="btn-secondary" style="font-size:11px;padding:5px 9px;color:'+(isLive?'var(--red)':'var(--t3)')+'">'+(isLive?'⏹ Stop':'🔴 Go Live')+'</button>' +
-        '<button onclick="delRTV(\''+item.id+'\')" class="btn-danger">✕</button>' +
-      '</div>' +
-    '</div>';
+let rtvFilter = 'all';
+
+function timeAgo(ts) {
+  const d = Date.now() - ts, m = Math.floor(d/60000), h = Math.floor(d/3600000), dy = Math.floor(d/86400000);
+  return dy > 0 ? dy+'d ago' : h > 0 ? h+'h ago' : m+'m ago';
+}
+function renderRTVList() {
+  const list = document.getElementById('rtvList');
+  const cnt = document.getElementById('rtvCount');
+  if (!list) return;
+  const filtered = rtvFilter === 'all' ? rtvContent : rtvContent.filter(i => i.type === rtvFilter);
+  if (cnt) cnt.textContent = rtvContent.length;
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty-state" style="padding:32px"><div class="empty-icon">📺</div><div style="color:var(--muted);font-size:13px">No content yet. Add your first video or stream above.</div></div>';
+    return;
+  }
+  list.innerHTML = filtered.map(item => {
+    const isLive = item.type === 'live';
+    return `<div class="rtv-item">
+      <div class="rtv-thumb">${item.emoji || '📺'}</div>
+      <div class="rtv-info">
+        <div class="rtv-badges">
+          <span class="${isLive ? 'badge-live-pill' : 'badge-rec-pill'}">${isLive ? '🔴 LIVE' : '📹 REC'}</span>
+          <span class="rtv-cat">${item.cat}</span>
+          <span style="color:var(--muted);font-size:11px;margin-left:4px">${timeAgo(item.addedAt)}</span>
+        </div>
+        <div class="rtv-title">${item.title}</div>
+        ${item.url ? `<div class="rtv-url">${item.url}</div>` : '<div style="font-size:11px;color:var(--muted);margin-top:2px">No URL — add link to connect stream</div>'}
+      </div>
+      <div class="rtv-actions">
+        <button onclick="toggleLive('${item.id}')" class="btn-secondary" style="font-size:11px;padding:5px 10px;min-height:32px;color:${isLive?'var(--red)':'var(--muted)'}">${isLive ? '⏹ Stop' : '🔴 Go Live'}</button>
+        <button onclick="delRTV('${item.id}')" class="btn-danger">✕</button>
+      </div>
+    </div>`;
   }).join('');
 }
-function filterRTV(f,btn){
-  rtvFilter=f;
-  ['rtvAll','rtvLive','rtvRec'].forEach(function(id){var el=document.getElementById(id);if(el){el.className=id==='rtv'+f.charAt(0).toUpperCase()+f.slice(1)||f==='all'&&id==='rtvAll'?'btn-primary':'btn-secondary';el.style.cssText='font-size:11px;padding:6px 10px'}});
+function filterRTV(f, btn) {
+  rtvFilter = f;
+  document.querySelectorAll('#tab-realtv .btn-secondary, #tab-realtv .btn-primary').forEach(b => {
+    if (b.id && b.id.startsWith('btnRtv')) b.className = 'btn-secondary';
+  });
+  const map = {all:'btnRtvAll', live:'btnRtvLive', recorded:'btnRtvRec'};
+  if (map[f]) {
+    const el = document.getElementById(map[f]);
+    if (el) { el.className = 'btn-blue'; el.style.cssText = 'font-size:11px;padding:6px 12px;min-height:32px'; }
+  }
   renderRTVList();
 }
-function addRTV(){
-  var title=document.getElementById('rtvTitle').value.trim();
-  if(!title){alert('Please enter a title.');return;}
-  rtvContent.unshift({id:'r'+Date.now(),type:document.getElementById('rtvType').value,title:title,cat:document.getElementById('rtvCat').value||'General',emoji:document.getElementById('rtvEmoji').value||'📺',viewers:null,url:document.getElementById('rtvUrl').value,addedAt:Date.now()});
-  ['rtvTitle','rtvCat','rtvUrl','rtvEmoji','rtvDesc'].forEach(function(id){document.getElementById(id).value='';});
-  var msg=document.getElementById('rtvMsg');
-  msg.style.display='block';msg.style.color='var(--green)';msg.textContent='✓ Added to Real TV!';
-  setTimeout(function(){msg.style.display='none';},2500);
+function addRTV() {
+  const title = document.getElementById('rtvTitle').value.trim();
+  if (!title) { alert('Please enter a title.'); return; }
+  rtvContent.unshift({
+    id:'r'+Date.now(), type:document.getElementById('rtvType').value, title,
+    cat:document.getElementById('rtvCat').value || 'General',
+    emoji:document.getElementById('rtvEmoji').value || '📺',
+    url:document.getElementById('rtvUrl').value, addedAt:Date.now()
+  });
+  ['rtvTitle','rtvCat','rtvUrl','rtvEmoji','rtvDesc'].forEach(id => document.getElementById(id).value = '');
+  const msg = document.getElementById('rtvMsg');
+  msg.style.display = 'block'; msg.style.color = 'var(--green)'; msg.textContent = '✓ Added to REAL TV!';
+  setTimeout(() => msg.style.display = 'none', 2500);
   renderRTVList();
 }
-function toggleLive(id){var item=rtvContent.find(function(i){return i.id===id;});if(item){item.type=item.type==='live'?'recorded':'live';renderRTVList();}}
-function delRTV(id){if(!confirm('Remove this content?'))return;rtvContent=rtvContent.filter(function(i){return i.id!==id;});renderRTVList();}
+function toggleLive(id) {
+  const item = rtvContent.find(i => i.id === id);
+  if (item) { item.type = item.type === 'live' ? 'recorded' : 'live'; renderRTVList(); }
+}
+function delRTV(id) {
+  if (!confirm('Remove this content?')) return;
+  rtvContent = rtvContent.filter(i => i.id !== id);
+  renderRTVList();
+}
 
-// ── ECOSYSTEM ─────────────────────────────────────────────────
+// ─── ECOSYSTEM ──────────────────────────────────────────
 function renderEcosystem() {
   renderRevStreams('ecoRevStreams');
-  var comps = [
+  const comps = [
     {n:'🏥 Greenville Flagship Clinic',d:'2,500 SF + 6 mobile PT vans',r:'$4.7–7.1M Y1',c:'var(--orange)'},
     {n:'🤖 Clinix AI SaaS',d:'$500–1,000/mo + 5% billing · 80–85% margin',r:'$11–17M/yr',c:'var(--cyan)'},
     {n:'💊 RealCost Plus Rx',d:'Pharmacy routing · Cost-plus generics',r:'$20M/yr at scale',c:'var(--purple)'},
     {n:'🏢 HCA Healthcare Partnership',d:'2,500+ outpatient facilities target',r:'$75–190M/yr potential',c:'var(--green)'},
   ];
-  document.getElementById('ecoComponents').innerHTML = comps.map(function(c){
-    return '<div style="padding:12px;background:var(--bg2);border-radius:10px;border-left:3px solid '+c.c+'">' +
-      '<div style="font-size:13px;font-weight:700">'+c.n+'</div>' +
-      '<div style="font-size:11px;color:var(--t3);margin-top:2px">'+c.d+'</div>' +
-      '<div style="font-size:12px;font-weight:700;color:var(--cyan);margin-top:5px">'+c.r+'</div>' +
-    '</div>';
-  }).join('');
+  document.getElementById('ecoComponents').innerHTML = comps.map(c =>
+    `<div class="eco-component" style="border-left-color:${c.c}">
+      <div style="font-size:13px;font-weight:700">${c.n}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:3px">${c.d}</div>
+      <div class="mono" style="font-size:12px;font-weight:700;color:${c.c};margin-top:6px">${c.r}</div>
+    </div>`).join('');
 }
 
-// ── CHARTS ────────────────────────────────────────────────────
-var chartsInited = false;
-function initCharts() {
-  if(chartsInited) return; chartsInited = true;
-  // Revenue
-  new Chart(document.getElementById('revenueChart'), {
-    type:'bar',
-    data:{labels:['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'],
-      datasets:[{label:'Revenue',data:[142,168,195,221,198,247,289,312,341,298,367,421].map(function(v){return v*1000;}),
-        backgroundColor:'rgba(240,112,32,0.65)',borderColor:'#F07020',borderWidth:1,borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return '$'+(c.raw/1000).toFixed(0)+'K';}}}},
-      scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'rgba(255,255,255,0.4)',font:{size:10}}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'rgba(255,255,255,0.4)',font:{size:10},callback:function(v){return '$'+(v/1000).toFixed(0)+'K';}}}}}
-  });
-  // Streams donut
-  new Chart(document.getElementById('streamsChart'), {
-    type:'doughnut',
-    data:{labels:['Take-Rate','Affiliate','BNPL','Prime Elite','B2B API'],
-      datasets:[{data:[67,14,8,7,4],backgroundColor:['#F07020','#8B5CF6','#00D4FF','#10B981','#EF4444'],borderWidth:0,hoverOffset:6}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
-      plugins:{legend:{position:'bottom',labels:{color:'rgba(255,255,255,0.55)',font:{size:10},padding:10,boxWidth:10}}}}
-  });
+// ─── LIVE ORDER FEED ────────────────────────────────────
+const LIVE_PRODUCTS = ['Nintendo Switch OLED','Theragun PRO','Sony WH-1000XM5','Yeezy Boost 350','Oura Ring Gen 4','AirPods Pro 2','Nike Dunk Low','PS5 Slim','Whey Protein 5lb','Apple Watch Ultra 2','Air Jordan 1','Exosome Therapy Kit'];
+const LIVE_STORES = ['Amazon','Walmart','Best Buy','Target','StockX','eBay','Costco'];
+let feedInterval = null;
+let orderCount = 1247;
+let feedSimActive = false;
+
+function startFeedSim() {
+  feedSimActive = true;
+  activeSections.feed = true;
+  setSimMode(true);
+  document.getElementById('feedEmpty').style.display = 'none';
+  document.getElementById('feedTableWrap').style.display = 'block';
+  document.getElementById('feedSimBtn').style.display = 'none';
+  document.getElementById('feedStopBtn').style.display = '';
+  document.getElementById('feedDot').style.background = 'var(--green)';
+  document.getElementById('feedStatus').textContent = 'SIMULATION RUNNING';
+  document.getElementById('feedStatus').style.color = '#FBBF24';
+  document.getElementById('badge-sim').style.display = 'inline-flex';
+
+  // Populate initial rows
+  for (let i = 0; i < 8; i++) addFeedRow(true);
+  feedInterval = setInterval(() => {
+    if (document.getElementById('tab-dashboard').classList.contains('active')) addFeedRow(false);
+  }, 5000);
 }
-function renderCatChart() {
-  var el = document.getElementById('catChart'); if(!el||el._inited) return; el._inited=true;
-  new Chart(el, {
-    type:'bar',
-    data:{labels:['Health Devices','Recovery','Footwear','Audio','Gaming','Supplements','Electronics'],
-      datasets:[{label:'Revenue',data:[428,312,289,198,187,142,98].map(function(v){return v*1000;}),
-        backgroundColor:['#F07020','#8B5CF6','#00D4FF','#10B981','#EF4444','#F07020','#8B5CF6'],borderRadius:4}]},
-    options:{responsive:true,indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'rgba(255,255,255,0.4)',font:{size:10},callback:function(v){return '$'+(v/1000).toFixed(0)+'K';}}},y:{grid:{display:false},ticks:{color:'rgba(255,255,255,0.55)',font:{size:11}}}}}
-  });
+function stopFeedSim() {
+  feedSimActive = false;
+  activeSections.feed = false;
+  setSimMode(false);
+  clearInterval(feedInterval);
+  feedInterval = null;
+  document.getElementById('feedEmpty').style.display = '';
+  document.getElementById('feedTableWrap').style.display = 'none';
+  document.getElementById('feedSimBtn').style.display = '';
+  document.getElementById('feedStopBtn').style.display = 'none';
+  document.getElementById('feedDot').style.background = 'var(--muted)';
+  document.getElementById('feedStatus').textContent = 'Not connected';
+  document.getElementById('feedStatus').style.color = '';
+  document.getElementById('liveFeed').innerHTML = '';
+  orderCount = 1247;
+}
+function addFeedRow(isInit) {
+  const feed = document.getElementById('liveFeed');
+  if (!feed) return;
+  const prod = LIVE_PRODUCTS[Math.floor(Math.random() * LIVE_PRODUCTS.length)];
+  const store = LIVE_STORES[Math.floor(Math.random() * LIVE_STORES.length)];
+  const bp = 50 + Math.floor(Math.random() * 650);
+  const mpct = 6 + Math.floor(Math.random() * 10);
+  const op = (bp * (1 + mpct/100)).toFixed(2);
+  const md = (bp * mpct/100).toFixed(2);
+  const time = isInit ? Math.floor(Math.random() * 59) + 'm ago' : 'just now';
+
+  const row = document.createElement('div');
+  row.className = 'feed-row';
+  row.innerHTML = `
+    <div class="feed-prod">${prod}</div>
+    <div class="feed-store">${store}</div>
+    <div class="feed-price">$${op}</div>
+    <div class="feed-margin">+$${md}</div>
+    <div class="feed-time">${time}</div>`;
+
+  if (isInit) {
+    feed.appendChild(row);
+  } else {
+    feed.insertBefore(row, feed.firstChild);
+    while (feed.children.length > 10) feed.removeChild(feed.lastChild);
+    orderCount++;
+  }
 }
 
-// ── LIVE ORDERS FEED ─────────────────────────────────────────
-var LIVE_P=['Nintendo Switch','Theragun PRO','Sony WH-1000XM5','Yeezy Boost','Oura Ring','AirPods Pro','Nike Dunk','PS5 Slim','Protein Powder','Apple Watch','Air Jordan 1','Exosome Kit'];
-var LIVE_S=['Amazon','Walmart','Best Buy','Target','StockX','eBay','Costco'];
-var orderCount=1247;
-function addLiveOrder(initial){
-  var feed=document.getElementById('liveFeed'); if(!feed) return;
-  var prod=LIVE_P[Math.floor(Math.random()*LIVE_P.length)];
-  var store=LIVE_S[Math.floor(Math.random()*LIVE_S.length)];
-  var bp=50+Math.floor(Math.random()*650), mpct=6+Math.floor(Math.random()*10);
-  var op=(bp*(1+mpct/100)).toFixed(2), md=(bp*mpct/100).toFixed(2);
-  var row=document.createElement('div'); row.className='feed-row';
-  row.innerHTML='<div class="feed-prod">'+prod+'</div><div class="feed-store">'+store+'</div><div class="feed-price">$'+op+'</div><div class="feed-margin">+$'+md+'</div><div class="feed-time">'+(initial?Math.floor(Math.random()*59)+'m ago':'just now')+'</div>';
-  if(initial){feed.appendChild(row);}else{feed.insertBefore(row,feed.firstChild);while(feed.children.length>10)feed.removeChild(feed.lastChild);orderCount++;var ke=document.getElementById('kpiOrders');if(ke)ke.textContent=orderCount.toLocaleString();}
-}
-function startFeed(){for(var i=0;i<8;i++)addLiveOrder(true);setInterval(function(){if(document.getElementById('tab-dashboard').classList.contains('active'))addLiveOrder(false);},5000);}
-
-// ── INIT ──────────────────────────────────────────────────────
+// ─── INIT ───────────────────────────────────────────────
 function initAll() {
   updateClock();
-  initCharts();
   renderMargin();
-  renderRevStreams('revStreams');
-  renderOrders();
-  renderAnalytics();
-  renderProducts();
-  renderCustomers();
+  renderRevStreams('revStreamsMargin');
   renderRTVList();
   renderEcosystem();
-  startFeed();
+  filterRTV('all', null);
+  // Load live API data
+  fetchDeals();
+  fetchSearch('electronics');
 }
 </script>
 </body>
