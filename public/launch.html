@@ -43,9 +43,92 @@ body {
 }
 
 /* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg1); }
-::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 3px; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#f07020,#ff8c42); border-radius: 3px; }
+
+/* ── CURSOR GLOW ── */
+#cursor-glow {
+  position: fixed;
+  width: 340px; height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(240,112,32,0.07) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: opacity 0.3s;
+  mix-blend-mode: screen;
+}
+
+/* ── LOADER ── */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #020409;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), visibility 0.7s;
+}
+#loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.loader-canvas-wrap {
+  position: relative;
+  width: 200px; height: 200px;
+  margin-bottom: 32px;
+}
+#loader-canvas {
+  width: 200px; height: 200px;
+}
+.loader-wordmark {
+  font-family: 'Playfair Display', serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 6px;
+  text-align: center;
+}
+.loader-wordmark span { color: var(--orange); }
+.loader-sub {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  text-align: center;
+  margin-bottom: 40px;
+}
+.loader-bar-wrap {
+  width: 240px;
+  height: 2px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.loader-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #f07020, #ff8c42, #00d4ff);
+  border-radius: 2px;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 12px rgba(240,112,32,0.6);
+}
+.loader-status {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.35);
+  height: 16px;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+}
 
 /* ── NAV ── */
 #nav {
@@ -114,54 +197,204 @@ body {
 
 /* ── ANIMATIONS ── */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(32px); }
+  from { opacity: 0; transform: translateY(40px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-
 @keyframes glow-pulse {
-  0%, 100% { opacity: 0.5; transform: scale(1); }
-  50%       { opacity: 0.8; transform: scale(1.05); }
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50%       { opacity: 0.85; transform: scale(1.08); }
 }
-
 @keyframes countUp {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
-@keyframes barFill {
-  from { width: 0; }
-}
-
+@keyframes barFill { from { width: 0; } }
 @keyframes scanline {
   0%   { transform: translateY(-100%); }
   100% { transform: translateY(100vh); }
 }
-
 @keyframes blink {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0; }
+  50%       { opacity: 0.1; }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes borderPulse {
+  0%, 100% { border-color: rgba(240,112,32,0.2); box-shadow: 0 0 0 0 rgba(240,112,32,0); }
+  50%       { border-color: rgba(240,112,32,0.5); box-shadow: 0 0 20px rgba(240,112,32,0.12); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes dash {
+  0%   { stroke-dashoffset: 502; }
+  100% { stroke-dashoffset: 0; }
+}
+@keyframes reticlePing {
+  0%   { opacity: 0.8; transform: scale(0.6); }
+  100% { opacity: 0; transform: scale(1.8); }
 }
 
 .fade-in-up {
   opacity: 0;
-  transform: translateY(32px);
+  transform: translateY(40px);
 }
-
 .fade-in-up.visible {
-  animation: fadeInUp 0.7s cubic-bezier(0.22,1,0.36,1) forwards;
+  animation: fadeInUp 0.75s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+.fade-in-up.delay-1 { animation-delay: 0.08s; }
+.fade-in-up.delay-2 { animation-delay: 0.18s; }
+.fade-in-up.delay-3 { animation-delay: 0.28s; }
+.fade-in-up.delay-4 { animation-delay: 0.40s; }
+.fade-in-up.delay-5 { animation-delay: 0.52s; }
+.fade-in-up.delay-6 { animation-delay: 0.64s; }
+
+/* ── ENHANCED CARDS ── */
+.calc-panel,
+.result-block,
+.result-big,
+.r78-panel,
+.persona-card,
+.revenue-card,
+.preflight-col {
+  transition: transform 0.3s cubic-bezier(0.22,1,0.36,1),
+              box-shadow 0.3s ease,
+              border-color 0.3s ease !important;
+}
+.calc-panel:hover,
+.result-block:hover,
+.r78-panel:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(240,112,32,0.15);
+  border-color: rgba(240,112,32,0.2) !important;
+}
+.persona-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(240,112,32,0.25);
+  border-color: rgba(240,112,32,0.3) !important;
+}
+.revenue-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 32px 64px rgba(0,0,0,0.6), 0 0 30px rgba(240,112,32,0.1);
+}
+.checklist-item:hover {
+  background: rgba(255,255,255,0.04) !important;
+  border-color: rgba(240,112,32,0.2) !important;
+  transform: translateX(4px);
+  transition: all 0.2s ease;
 }
 
-.fade-in-up.delay-1 { animation-delay: 0.1s; }
-.fade-in-up.delay-2 { animation-delay: 0.2s; }
-.fade-in-up.delay-3 { animation-delay: 0.3s; }
-.fade-in-up.delay-4 { animation-delay: 0.4s; }
-.fade-in-up.delay-5 { animation-delay: 0.5s; }
-.fade-in-up.delay-6 { animation-delay: 0.6s; }
+/* ── ENHANCED SLIDERS ── */
+.slider-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.08);
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s;
+  accent-color: var(--orange);
+}
+.slider-range:hover { background: rgba(255,255,255,0.13); }
+.slider-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f07020, #ff8c42);
+  box-shadow: 0 0 0 3px rgba(240,112,32,0.2), 0 0 12px rgba(240,112,32,0.4);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.slider-range::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+  box-shadow: 0 0 0 5px rgba(240,112,32,0.25), 0 0 20px rgba(240,112,32,0.6);
+}
+.slider-range:active::-webkit-slider-thumb {
+  transform: scale(1.35);
+}
+
+/* ── ENHANCED NAV ── */
+.nav-links a {
+  position: relative;
+  overflow: hidden;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%; right: 50%;
+  height: 2px;
+  background: var(--orange);
+  border-radius: 2px;
+  transition: left 0.2s, right 0.2s;
+}
+.nav-links a:hover::after,
+.nav-links a.active::after {
+  left: 8px; right: 8px;
+}
+
+/* ── STAT CARDS SHIMMER ── */
+.vision-stat {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.vision-stat::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.05) 50%, transparent 60%);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+.vision-stat:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(240,112,32,0.25);
+}
+
+/* ── FILTER BUTTONS ── */
+.filter-btn {
+  transition: all 0.2s cubic-bezier(0.22,1,0.36,1) !important;
+  position: relative;
+  overflow: hidden;
+}
+.filter-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(240,112,32,0.08);
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.filter-btn:hover::before { opacity: 1; }
+.filter-btn:active { transform: scale(0.96); }
+
+/* ── SECTION DIVIDERS ── */
+.section-divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(240,112,32,0.2), rgba(0,212,255,0.15), transparent);
+  margin: 0;
+}
+
+/* ── RESULT BIG NUM PULSE ── */
+.result-big-num.positive {
+  animation: none;
+  transition: color 0.4s ease, text-shadow 0.4s ease;
+}
+.result-big-num.positive:not([data-prev]) {
+  text-shadow: 0 0 30px rgba(16,185,129,0.4);
+}
 
 /* ── SECTIONS ── */
 section {
@@ -174,6 +407,12 @@ section {
   max-width: 100%;
   padding-left: 0;
   padding-right: 0;
+  position: relative;
+  overflow: hidden;
+}
+.vision-inner {
+  position: relative;
+  z-index: 2;
 }
 
 .section-label {
@@ -1717,6 +1956,22 @@ footer {
 </head>
 <body>
 
+<!-- ══ CURSOR GLOW ══ -->
+<div id="cursor-glow" aria-hidden="true"></div>
+
+<!-- ══ LOADER ══ -->
+<div id="loader" role="status" aria-label="Loading R.E.A.L. SmartScan">
+  <div class="loader-canvas-wrap">
+    <canvas id="loader-canvas" width="400" height="400"></canvas>
+  </div>
+  <div class="loader-wordmark">R.E.A.L. <span>SmartScan</span></div>
+  <div class="loader-sub">GA Launch Command Center</div>
+  <div class="loader-bar-wrap">
+    <div class="loader-bar" id="loader-bar"></div>
+  </div>
+  <div class="loader-status" id="loader-status">Initializing systems…</div>
+</div>
+
 <!-- ══ NAV ══ -->
 <nav id="nav">
   <a href="#vision" class="nav-logo" aria-label="R.E.A.L. SmartScan">
@@ -1746,10 +2001,11 @@ footer {
      SECTION 1 — VISION
 ══════════════════════════════════════════ -->
 <section id="vision" class="section-full">
+  <canvas id="particle-canvas" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
   <div class="vision-glow" aria-hidden="true"></div>
   <div class="vision-scanline" aria-hidden="true"></div>
   <div class="vision-inner">
-    <p class="vision-eyebrow fade-in-up">GA Launch Command Center · R.E.A.L. by ThingkTangk</p>
+    <p class="vision-eyebrow fade-in-up">GA Launch Command Center · R.E.A.L. SmartScan</p>
     <h1 class="vision-title fade-in-up delay-1">Retailers Had a Good Run.</h1>
     <p class="vision-brand fade-in-up delay-2">R.E.A.L. SmartScan</p>
 
@@ -2473,7 +2729,7 @@ footer {
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">R.E.A.L. <span>SmartScan</span></div>
-    <div class="footer-copy">GA Launch Command Center · Built by ThingkTangk · Confidential</div>
+    <div class="footer-copy">GA Launch Command Center · R.E.A.L. SmartScan · Confidential</div>
     <div class="footer-status">
       <div class="footer-status-dot"></div>
       <span>Command Center Online</span>
@@ -2486,6 +2742,224 @@ footer {
 ══════════════════════════════════════════ -->
 <script>
 'use strict';
+
+/* ══ LOADER ENGINE ══ */
+(function() {
+  const canvas  = document.getElementById('loader-canvas');
+  const ctx     = canvas.getContext('2d');
+  const bar     = document.getElementById('loader-bar');
+  const statusEl= document.getElementById('loader-status');
+  const loader  = document.getElementById('loader');
+  let progress  = 0;
+  let rafId;
+
+  const messages = [
+    'Initializing R.E.A.L. AI Engine…',
+    'Connecting to 847+ retailers…',
+    'Loading price intelligence…',
+    'Calibrating margin engine…',
+    'Building deal feed…',
+    'Systems online — entering command center…',
+  ];
+  let msgIdx = 0;
+  const msgInterval = setInterval(() => {
+    msgIdx = Math.min(msgIdx + 1, messages.length - 1);
+    statusEl.textContent = messages[msgIdx];
+  }, 420);
+
+  const W = 400, H = 400, CX = W/2, CY = H/2;
+  const rings = [
+    { r: 160, width: 1,   opacity: 0.12, speed: 0.003,  dash: [4,8] },
+    { r: 130, width: 1.5, opacity: 0.2,  speed: -0.005, dash: [12,6] },
+    { r: 100, width: 1,   opacity: 0.15, speed: 0.007,  dash: [3,10] },
+    { r: 70,  width: 2,   opacity: 0.35, speed: -0.009, dash: [8,4] },
+    { r: 40,  width: 1.5, opacity: 0.25, speed: 0.012,  dash: [] },
+  ];
+  let angles = rings.map(() => 0);
+  let pingAlpha = 0;
+  let startTime = null;
+  const DURATION = 2400;
+
+  function drawLoader(ts) {
+    if (!startTime) startTime = ts;
+    const elapsed = ts - startTime;
+    progress = Math.min(elapsed / DURATION, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.save();
+
+    // Background glow
+    const grd = ctx.createRadialGradient(CX, CY, 0, CX, CY, 180);
+    grd.addColorStop(0, `rgba(240,112,32,${0.06 * eased})`);
+    grd.addColorStop(1, 'transparent');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, W, H);
+
+    // Crosshair lines
+    ctx.strokeStyle = `rgba(240,112,32,${0.18 * eased})`;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([6,6]);
+    ctx.beginPath();
+    ctx.moveTo(CX, 10); ctx.lineTo(CX, CY - 45);
+    ctx.moveTo(CX, CY + 45); ctx.lineTo(CX, H - 10);
+    ctx.moveTo(10, CY); ctx.lineTo(CX - 45, CY);
+    ctx.moveTo(CX + 45, CY); ctx.lineTo(W - 10, CY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Corner brackets
+    const b = 20, bL = 24;
+    const corners = [[30,30],[W-30,30],[W-30,H-30],[30,H-30]];
+    const dirs = [[1,1],[-1,1],[-1,-1],[1,-1]];
+    ctx.strokeStyle = `rgba(240,112,32,${0.5 * eased})`;
+    ctx.lineWidth = 2;
+    corners.forEach(([x,y], i) => {
+      const [dx, dy] = dirs[i];
+      ctx.beginPath();
+      ctx.moveTo(x, y + dy*bL); ctx.lineTo(x, y); ctx.lineTo(x + dx*bL, y);
+      ctx.stroke();
+    });
+
+    // Spinning rings
+    rings.forEach(({ r, width, opacity, speed, dash }, i) => {
+      angles[i] += speed;
+      ctx.save();
+      ctx.translate(CX, CY);
+      ctx.rotate(angles[i]);
+      ctx.strokeStyle = `rgba(240,112,32,${opacity * Math.min(eased * 2, 1)})`;
+      ctx.lineWidth = width;
+      ctx.setLineDash(dash);
+
+      // Arc up to progress
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2 * eased);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+    });
+
+    // Center dot pulse
+    const pulse = 0.6 + 0.4 * Math.sin(ts * 0.006);
+    ctx.fillStyle = `rgba(240,112,32,${pulse * eased})`;
+    ctx.beginPath();
+    ctx.arc(CX, CY, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Ping ripple
+    if (eased > 0.6) {
+      const pingProgress = (eased - 0.6) / 0.4;
+      const pingR = 40 + pingProgress * 120;
+      ctx.strokeStyle = `rgba(240,112,32,${(1 - pingProgress) * 0.4})`;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(CX, CY, pingR, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // Progress arc (outermost)
+    ctx.strokeStyle = `rgba(0,212,255,${0.6 * eased})`;
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.arc(CX, CY, 175, -Math.PI/2, -Math.PI/2 + Math.PI*2*eased);
+    ctx.stroke();
+
+    ctx.restore();
+
+    // Update progress bar
+    bar.style.width = (eased * 100).toFixed(1) + '%';
+
+    if (progress < 1) {
+      rafId = requestAnimationFrame(drawLoader);
+    } else {
+      clearInterval(msgInterval);
+      statusEl.textContent = messages[messages.length - 1];
+      bar.style.width = '100%';
+      setTimeout(() => {
+        loader.classList.add('hidden');
+      }, 300);
+    }
+  }
+
+  requestAnimationFrame(drawLoader);
+})();
+
+/* ══ CURSOR GLOW ══ */
+(function() {
+  const glow = document.getElementById('cursor-glow');
+  if (!glow || window.matchMedia('(hover: none)').matches) return;
+  let tx = window.innerWidth/2, ty = window.innerHeight/2;
+  let cx = tx, cy = ty;
+  document.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; });
+  function tick() {
+    cx += (tx - cx) * 0.08;
+    cy += (ty - cy) * 0.08;
+    glow.style.left = cx + 'px';
+    glow.style.top  = cy + 'px';
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+/* ══ PARTICLE CANVAS ══ */
+(function() {
+  const canvas = document.getElementById('particle-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+  const N = 60;
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < N; i++) {
+    particles.push({
+      x: Math.random() * 1200,
+      y: Math.random() * 800,
+      r: Math.random() * 1.5 + 0.3,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      alpha: Math.random() * 0.4 + 0.05,
+      color: Math.random() > 0.7 ? '0,212,255' : '240,112,32',
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${p.color},${p.alpha})`;
+      ctx.fill();
+    });
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i+1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(240,112,32,${0.06 * (1 - dist/120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
 
 /* ── DATA ── */
 const CHECKLIST_DATA = [
@@ -2595,7 +3069,7 @@ const PREFLIGHT_DATA = [
       '5 hero product searches pre-loaded (with real data)',
       'SmartCast: io2-water submission live as featured broadcast',
       'FAQ page covering Prime Elite, returns, pricing',
-      'About page: ThingkTangk / REAL story',
+      'About page: R.E.A.L. SmartScan origin story',
       'Press kit downloadable (logo, screenshots, founder bio)',
     ]
   },
