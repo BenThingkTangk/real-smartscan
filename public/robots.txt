@@ -3,3 +3,6 @@ Allow: /
 Disallow: /api/
 Disallow: /admin.html
 Sitemap: https://real-smartscan.vercel.app/sitemap.xml
+
+# OG Image
+Allow: /og-image.png
