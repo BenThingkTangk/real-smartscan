@@ -35,14 +35,38 @@
       "src": "/api/smartcast",
       "dest": "/api/smartcast.js"
     },
-    { "src": "/api/saved-searches", "dest": "/api/saved-searches.js" },
-    { "src": "/api/alerts", "dest": "/api/alerts.js" },
-    { "src": "/api/record-price", "dest": "/api/record-price.js" },
-    { "src": "/api/analytics", "dest": "/api/analytics.js" },
-    { "src": "/api/push-subscribe", "dest": "/api/push-subscribe.js" },
-    { "src": "/sitemap.xml", "dest": "/public/sitemap.xml" },
-    { "src": "/robots.txt", "dest": "/public/robots.txt" },
-    { "src": "/manifest.json", "dest": "/public/manifest.json" },
+    {
+      "src": "/api/saved-searches",
+      "dest": "/api/saved-searches.js"
+    },
+    {
+      "src": "/api/alerts",
+      "dest": "/api/alerts.js"
+    },
+    {
+      "src": "/api/record-price",
+      "dest": "/api/record-price.js"
+    },
+    {
+      "src": "/api/analytics",
+      "dest": "/api/analytics.js"
+    },
+    {
+      "src": "/api/push-subscribe",
+      "dest": "/api/push-subscribe.js"
+    },
+    {
+      "src": "/sitemap.xml",
+      "dest": "/public/sitemap.xml"
+    },
+    {
+      "src": "/robots.txt",
+      "dest": "/public/robots.txt"
+    },
+    {
+      "src": "/manifest.json",
+      "dest": "/public/manifest.json"
+    },
     {
       "src": "/assets/(.*)",
       "dest": "/public/assets/$1"
@@ -58,6 +82,14 @@
     {
       "src": "/launch.html",
       "dest": "/public/launch.html"
+    },
+    {
+      "src": "/api/smartcast-upload",
+      "dest": "/api/smartcast-upload.js"
+    },
+    {
+      "src": "/api/smartcast-confirm",
+      "dest": "/api/smartcast-confirm.js"
     },
     {
       "src": "/((?!api/).*)",
