@@ -1709,6 +1709,112 @@ footer {
   .vision-title { font-size: 36px; }
 }
 
+/* ── METRIC TOOLTIPS ── */
+.metric-tip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--text3);
+  font-size: 9px;
+  font-weight: 700;
+  cursor: help;
+  margin-left: 5px;
+  vertical-align: middle;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s, border-color 0.2s;
+}
+.metric-tip:hover {
+  background: rgba(240,112,32,0.2);
+  border-color: rgba(240,112,32,0.5);
+  color: var(--orange);
+}
+.metric-tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0a0f20;
+  border: 1px solid rgba(240,112,32,0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text2);
+  line-height: 1.5;
+  width: 260px;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+  z-index: 500;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.metric-tip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ── METRIC CONTEXT ── */
+.metric-context {
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.5;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  font-style: italic;
+}
+
+/* ── COST CONTEXT BANNER ── */
+.cost-context-banner {
+  background: rgba(0,212,255,0.05);
+  border: 1px solid rgba(0,212,255,0.15);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+.cost-context-banner strong { color: var(--cyan); }
+
+/* ── COST LEGEND ── */
+.cost-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 10px 0 12px;
+  padding: 12px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.cost-legend-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.5;
+}
+.cost-legend-item strong { color: var(--text2); }
+.clb {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
 /* ── VISION CHAPTER HEADERS ── */
 .vision-chapter {
   font-family: 'Playfair Display', serif;
@@ -2236,43 +2342,81 @@ footer {
         </div>
 
         <div id="breakeven-block" class="result-block">
-          <div class="result-block-title">Break-Even Progress</div>
+          <div class="result-block-title">Break-Even Progress
+            <span class="metric-tip" data-tip="The point where total monthly revenue covers total monthly operating costs. 100% = we are profitable. Below 100% = still in the red for that month.">?</span>
+          </div>
           <div class="breakeven-bar-wrap">
             <div class="breakeven-bar-bg">
               <div class="breakeven-bar-fill" id="be-bar" style="width:0%"></div>
             </div>
             <p class="breakeven-bar-label" id="be-label">Calculating...</p>
           </div>
+          <p class="metric-context">Break-even is driven by ALL revenue vs. ALL costs. At default settings, GMV margin alone exceeds total monthly API costs within the first 100 active users placing orders.</p>
         </div>
 
         <div class="result-block">
-          <div class="result-block-title">Revenue Breakdown</div>
-          <div class="result-row gmv-row"><span class="result-key">⚡ GMV Margin Revenue</span><span class="result-val text-gold" id="r-gmv-rev">—</span></div>
-          <div class="result-row"><span class="result-key">Prime Elite Subscribers</span><span class="result-val" id="r-prime-subs">—</span></div>
-          <div class="result-row"><span class="result-key">Prime Revenue</span><span class="result-val" id="r-prime-rev">—</span></div>
-          <div class="result-row"><span class="result-key">SmartCast Revenue</span><span class="result-val" id="r-sc-rev">—</span></div>
-          <div class="result-row"><span class="result-key">Affiliate Revenue</span><span class="result-val" id="r-aff-rev">—</span></div>
+          <div class="result-block-title">Revenue Breakdown
+            <span class="metric-tip" data-tip="All numbers are per month totals, not per-user. Divide any line by MAU to get per-user revenue.">?</span>
+          </div>
+          <div class="result-row gmv-row">
+            <span class="result-key">⚡ GMV Margin Revenue
+              <span class="metric-tip" data-tip="The hidden take-rate on every 'Buy Here' order. User sees the best price. We keep our margin spread. Formula: Total Searches × Buy-Here Conv% × Avg Order Value × Take-Rate%. This is our biggest revenue lever.">?</span>
+            </span>
+            <span class="result-val text-gold" id="r-gmv-rev">—</span>
+          </div>
+          <div class="result-row">
+            <span class="result-key">Prime Elite Subscribers
+              <span class="metric-tip" data-tip="Number of free users who upgrade to Prime Elite at $9.99/mo. Driven by MAU × Prime Conversion Rate slider.">?</span>
+            </span>
+            <span class="result-val" id="r-prime-subs">—</span>
+          </div>
+          <div class="result-row"><span class="result-key">Prime Revenue <span class="metric-tip" data-tip="Prime Elite Subscribers × $9.99/mo. Pure SaaS recurring revenue. ~98% gross margin.">?</span></span><span class="result-val" id="r-prime-rev">—</span></div>
+          <div class="result-row"><span class="result-key">SmartCast Revenue <span class="metric-tip" data-tip="SmartCast Pro subscribers × $49/mo. Brands pay to broadcast verified product claims to our audience. B2B recurring.">?</span></span><span class="result-val" id="r-sc-rev">—</span></div>
+          <div class="result-row"><span class="result-key">Affiliate Revenue <span class="metric-tip" data-tip="When users click outbound links to external retailers instead of buying through us, we earn a commission. Formula: MAU × Affiliate CTR% × Avg Order Value × Commission%. Lower margin than GMV but zero cost.">?</span></span><span class="result-val" id="r-aff-rev">—</span></div>
           <div class="result-row" style="border-top: 1px solid var(--border); margin-top: 4px; padding-top: 8px;">
-            <span class="result-key" style="color: var(--text1); font-weight: 700;">Total Revenue</span>
+            <span class="result-key" style="color: var(--text1); font-weight: 700;">Total Revenue <span class="metric-tip" data-tip="GMV Margin + Prime Subs + SmartCast + Affiliate. All figures are monthly.">?</span></span>
             <span class="result-val text-green" id="r-total-rev">—</span>
           </div>
         </div>
 
         <div class="result-block">
-          <div class="result-block-title">GMV Detail</div>
-          <div class="result-row"><span class="result-key">Monthly Search Volume</span><span class="result-val" id="r-searches">—</span></div>
-          <div class="result-row"><span class="result-key">Buy Here Orders / Month</span><span class="result-val" id="r-orders">—</span></div>
-          <div class="result-row"><span class="result-key">Gross Merchandise Value</span><span class="result-val text-gold" id="r-gmv">—</span></div>
-          <div class="result-row"><span class="result-key">Our Take (hidden margin)</span><span class="result-val text-green" id="r-gmv-take">—</span></div>
-          <div class="result-row"><span class="result-key">Net Margin %</span><span class="result-val" id="r-margin">—</span></div>
+          <div class="result-block-title">GMV Engine Detail
+            <span class="metric-tip" data-tip="GMV = Gross Merchandise Value. The total dollar value of goods flowing through SmartScan's 'Buy Here' checkout. We keep a % of every transaction as hidden margin.">?</span>
+          </div>
+          <div class="result-row"><span class="result-key">Monthly Search Volume <span class="metric-tip" data-tip="MAU × Searches/User. Total queries processed. Each search triggers at least one AI price lookup.">?</span></span><span class="result-val" id="r-searches">—</span></div>
+          <div class="result-row"><span class="result-key">Buy Here Orders / Month <span class="metric-tip" data-tip="Total Searches × 'Buy Here' Conversion Rate. Users who skip the redirect and purchase directly through SmartScan's checkout.">?</span></span><span class="result-val" id="r-orders">—</span></div>
+          <div class="result-row"><span class="result-key">Gross Merchandise Value <span class="metric-tip" data-tip="Buy Here Orders × Avg Order Value. The total dollar volume transacted through us. This is what grows with every user.">?</span></span><span class="result-val text-gold" id="r-gmv">—</span></div>
+          <div class="result-row"><span class="result-key">Our Take (hidden margin) <span class="metric-tip" data-tip="GMV × Blended Take-Rate%. The dollar amount we pocket. User pays the same price they'd see on the retailer's site. We own the spread.">?</span></span><span class="result-val text-green" id="r-gmv-take">—</span></div>
+          <div class="result-row"><span class="result-key">Net Margin % <span class="metric-tip" data-tip="(Total Revenue − Total Costs) ÷ Total Revenue. At scale this approaches 90%+ because API costs grow slower than GMV revenue.">?</span></span><span class="result-val" id="r-margin">—</span></div>
         </div>
 
         <div class="result-block">
-          <div class="result-block-title">Cost Breakdown</div>
+          <div class="result-block-title">Cost Breakdown — Total Monthly Operating Costs
+            <span class="metric-tip" data-tip="ALL costs shown are monthly totals for the entire platform — NOT per user. These are shared infrastructure costs that grow slowly as users scale, while revenue grows much faster.">?</span>
+          </div>
+          <div class="cost-context-banner">
+            <strong>These are platform-wide monthly costs, not per-user.</strong> At 10K MAU doing 5 searches each = 50,000 searches/month. The AI cost per search (“R.E.A.L. AI Engine”) works out to roughly $0.003 per search after cache hits. Total cost divided by MAU = cost-per-user, shown below.
+          </div>
           <div class="cost-bar-section" id="cost-bars"></div>
-          <div class="result-row" style="border-top: 1px solid var(--border); margin-top: 4px; padding-top: 8px;">
-            <span class="result-key" style="color: var(--text1); font-weight: 700;">Total API Cost</span>
+          <div class="cost-legend">
+            <div class="cost-legend-item"><span class="clb" style="background:#f07020"></span><strong>R.E.A.L. AI Engine</strong> — Price data API. Called per search that misses cache. ~$0.00025/call.</div>
+            <div class="cost-legend-item"><span class="clb" style="background:#00d4ff"></span><strong>Prime Intelligence</strong> — AI layer for Prime Elite members only. Web sentiment, trend analysis. ~$0.005/Prime query.</div>
+            <div class="cost-legend-item"><span class="clb" style="background:#7c3aed"></span><strong>Deal Explainer AI</strong> — GPT-powered deal summaries shown on search results. 10% of all searches. ~$0.0003/call.</div>
+            <div class="cost-legend-item"><span class="clb" style="background:#10b981"></span><strong>Cache Layer</strong> — Redis caching flat fee. Reduces API calls by your set cache hit rate. Fixed $10/mo regardless of scale.</div>
+            <div class="cost-legend-item"><span class="clb" style="background:#f59e0b"></span><strong>Hosting</strong> — Vercel serverless. Fixed $20/mo covers millions of requests. Scales automatically.</div>
+            <div class="cost-legend-item"><span class="clb" style="background:#ef4444"></span><strong>Transactional Email</strong> — Resend for receipts, Prime onboarding, alerts. Fixed $20/mo up to 50K emails.</div>
+          </div>
+          <div class="result-row" style="border-top: 1px solid var(--border); margin-top: 8px; padding-top: 8px;">
+            <span class="result-key" style="color: var(--text1); font-weight: 700;">Total Monthly Cost <span class="metric-tip" data-tip="Sum of all 6 cost lines above. This is what we spend per month to run the entire platform. Divide by MAU for cost-per-user.">?</span></span>
             <span class="result-val text-red" id="r-total-cost">—</span>
+          </div>
+          <div class="result-row" style="margin-top:4px;">
+            <span class="result-key" style="color:var(--text3);font-size:11px;">Cost per Active User</span>
+            <span class="result-val" style="color:var(--text3);font-size:11px;" id="r-cost-per-user">—</span>
+          </div>
+          <div class="result-row">
+            <span class="result-key" style="color:var(--text3);font-size:11px;">Revenue per Active User</span>
+            <span class="result-val" style="color:var(--green);font-size:11px;" id="r-rev-per-user">—</span>
           </div>
         </div>
 
@@ -2280,10 +2424,13 @@ footer {
 
         <!-- 12-month projection -->
         <div class="result-block" style="margin-top: 16px;">
-          <div class="result-block-title">12-Month Revenue Projection (20%/mo growth)</div>
+          <div class="result-block-title">12-Month Revenue Projection
+            <span class="metric-tip" data-tip="Assumes 20% month-over-month revenue growth (aggressive but realistic for a viral consumer product) and 5% monthly cost growth. Starting point is your current slider configuration.">?</span>
+          </div>
+          <p style="font-size:11px;color:var(--text3);margin-bottom:8px;">Starting from current inputs. Revenue grows 20%/mo — costs grow only 5%/mo. The gap between them is your expanding profit margin.</p>
           <div style="overflow-x:auto">
             <table class="projection-table" id="proj-table">
-              <thead><tr><th>Month</th><th>Revenue</th><th>GMV</th><th>Costs</th><th>Profit</th></tr></thead>
+              <thead><tr><th>Month</th><th>Revenue</th><th>GMV Flowing</th><th>Op. Costs</th><th>Net Profit</th></tr></thead>
               <tbody id="proj-tbody"></tbody>
             </table>
           </div>
@@ -3350,6 +3497,15 @@ function updateCalc() {
     </div>
   `).join('');
   document.getElementById('r-total-cost').textContent = fmt(r.totalCost, 2);
+
+  // Per-user economics
+  const { mau } = state.calcValues;
+  const costPerUser = mau > 0 ? (r.totalCost / mau) : 0;
+  const revPerUser  = mau > 0 ? (r.totalRev  / mau) : 0;
+  const cpuEl = document.getElementById('r-cost-per-user');
+  const rpuEl = document.getElementById('r-rev-per-user');
+  if (cpuEl) cpuEl.textContent = '$' + costPerUser.toFixed(3) + '/user';
+  if (rpuEl) rpuEl.textContent = '$' + revPerUser.toFixed(2) + '/user';
 
   // Break-even bar
   document.getElementById('be-bar').style.width = r.bePct.toFixed(1) + '%';
