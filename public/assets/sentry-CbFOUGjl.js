@@ -1,0 +1,1 @@
+import{_ as n}from"./index-IhPyDeKw.js";import"./react-Scv302NR.js";import"./framer-BvCoJvVI.js";import"./charts-CQJ3T28V.js";import"./supabase-C6kEiIz1.js";function p(){}function d(t,r){try{console.error("[SmartScan Error]",t,r)}catch{}}export{p as initSentry,d as reportError};
