@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>R.E.A.L. Admin Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg0:#060a14;--bg1:#0b1020;--bg2:#101828;--bg3:#151e30;--bgc:#0d1525;
+  --b0:rgba(255,255,255,0.05);--b1:rgba(255,255,255,0.09);--b2:rgba(255,255,255,0.16);
+  --orange:#F07020;--og:linear-gradient(135deg,#F07020,#FF8C42);--odim:rgba(240,112,32,0.1);--oglow:rgba(240,112,32,0.3);
+  --cyan:#00D4FF;--cdim:rgba(0,212,255,0.08);
+  --green:#10B981;--gdim:rgba(16,185,129,0.1);--green2:#34D399;
+  --red:#EF4444;--rdim:rgba(239,68,68,0.1);
+  --purple:#8B5CF6;--pdim:rgba(139,92,246,0.1);
+  --t1:#F8FAFC;--t2:rgba(248,250,252,0.70);--t3:rgba(248,250,252,0.42);--t4:rgba(248,250,252,0.22);
+  --font:'Inter',system-ui,sans-serif;
+  --r4:4px;--r8:8px;--r12:12px;--r16:16px;--r24:24px;--rfull:9999px;
+  --ease:cubic-bezier(0.16,1,0.3,1);
+}
+html,body{height:100%;font-family:var(--font);background:var(--bg0);color:var(--t1);overflow:hidden}
+
+/* ── GATE ── */
+#gate{position:fixed;inset:0;background:var(--bg0);z-index:9999;display:flex;align-items:center;justify-content:center}
+.gate-box{background:var(--bg1);border:1px solid var(--b2);border-radius:var(--r24);padding:48px 40px;width:100%;max-width:400px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,0.7)}
+.gate-logo{width:56px;height:56px;background:var(--og);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:#fff;margin:0 auto 20px}
+.gate-title{font-size:26px;font-weight:800;margin-bottom:6px}
+.gate-sub{font-size:14px;color:var(--t3);margin-bottom:32px}
+.gate-input{width:100%;background:var(--bg3);border:1.5px solid var(--b1);border-radius:var(--r12);color:var(--t1);font-size:18px;font-family:var(--font);padding:14px 18px;text-align:center;letter-spacing:4px;outline:none;transition:border-color .2s,box-shadow .2s;margin-bottom:12px}
+.gate-input:focus{border-color:var(--orange);box-shadow:0 0 0 4px var(--odim)}
+.gate-input.shake{animation:shake .4s var(--ease)}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.gate-btn{width:100%;background:var(--og);border:none;color:#fff;font-size:15px;font-weight:800;font-family:var(--font);padding:15px;border-radius:var(--r12);cursor:pointer;transition:opacity .15s,box-shadow .15s}
+.gate-btn:hover{opacity:.9;box-shadow:0 4px 24px var(--oglow)}
+.gate-error{font-size:13px;color:var(--red);margin-top:12px;min-height:20px}
+
+/* ── LAYOUT ── */
+#app{display:none;height:100vh;overflow:hidden}
+#app.visible{display:flex}
+
+/* Sidebar */
+.sidebar{width:220px;flex-shrink:0;background:var(--bg1);border-right:1px solid var(--b0);display:flex;flex-direction:column;height:100vh;overflow-y:auto}
+.sb-logo{padding:20px 20px 16px;border-bottom:1px solid var(--b0);margin-bottom:8px}
+.sb-logo-mark{font-size:13px;font-weight:800;color:var(--t1)}.sb-logo-mark span{color:var(--orange)}
+.sb-logo-sub{font-size:10px;color:var(--t3);margin-top:2px;letter-spacing:.04em}
+.sb-nav{flex:1;padding:4px 8px;display:flex;flex-direction:column;gap:2px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r8);cursor:pointer;font-size:13px;font-weight:500;color:var(--t3);transition:all .15s;border:none;background:transparent;width:100%;text-align:left}
+.sb-item:hover{background:var(--bg2);color:var(--t1)}
+.sb-item.active{background:var(--odim);color:var(--orange);border:1px solid var(--oglow);font-weight:700}
+.sb-icon{font-size:15px;flex-shrink:0}
+.sb-footer{padding:12px 8px;border-top:1px solid var(--b0)}
+.sb-back{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:var(--r8);cursor:pointer;font-size:13px;color:var(--t3);transition:all .15s;border:none;background:transparent;width:100%}
+.sb-back:hover{background:var(--bg2);color:var(--t1)}
+
+/* Main area */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;height:100vh;overflow:hidden}
+.topbar{height:56px;background:var(--bg1);border-bottom:1px solid var(--b0);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0}
+.topbar-title{font-size:15px;font-weight:700;flex:1}
+.topbar-clock{font-size:12px;color:var(--t3)}
+.topbar-logout{background:transparent;border:1px solid var(--b1);color:var(--t3);font-size:12px;font-weight:600;font-family:var(--font);padding:6px 12px;border-radius:var(--rfull);cursor:pointer;transition:all .15s}
+.topbar-logout:hover{border-color:var(--red);color:var(--red)}
+
+/* Content */
+.content{flex:1;overflow-y:auto;padding:24px}
+
+/* Tabs */
+.tab{display:none}.tab.active{display:block}
+
+/* KPI Grid */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.kpi{background:var(--bgc);border:1px solid var(--b0);border-radius:var(--r16);padding:20px}
+.kpi-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:8px}
+.kpi-val{font-size:28px;font-weight:900;line-height:1}
+.kpi-change{font-size:12px;font-weight:600;margin-top:6px}
+.up{color:var(--green)}.down{color:var(--red)}
+
+/* Charts */
+.chart-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px}
+.card{background:var(--bgc);border:1px solid var(--b0);border-radius:var(--r16);padding:20px}
+.card h3{font-size:13px;font-weight:700;color:var(--t2);margin-bottom:16px}
+.chart-wrap{position:relative;height:180px}
+
+/* Live feed */
+.live-feed{background:var(--bgc);border:1px solid var(--b0);border-radius:var(--r16);padding:20px;margin-bottom:24px}
+.live-feed-header{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.live-dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:lp 1.4s ease infinite;flex-shrink:0}
+@keyframes lp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.feed-row{display:grid;grid-template-columns:1fr 100px 80px 64px 52px;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--b0);font-size:12px;animation:slideIn .35s var(--ease)}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.feed-row:last-child{border-bottom:none}
+.feed-prod{font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feed-store{color:var(--t3)}
+.feed-price{font-weight:700;text-align:right}
+.feed-margin{font-weight:800;color:var(--green);text-align:right}
+.feed-time{color:var(--t4);text-align:right}
+
+/* Section title */
+.sec-title{font-size:15px;font-weight:700;color:var(--t1);margin-bottom:16px;display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--b0)}
+
+/* Margin table */
+.mtable{width:100%;border-collapse:collapse}
+.mthead th{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);padding:8px 14px;border-bottom:1px solid var(--b0);text-align:left}
+.mtr td{padding:11px 14px;border-bottom:1px solid var(--b0);font-size:13px;vertical-align:middle}
+.mtr:last-child td{border-bottom:none}
+.mtr:hover{background:var(--bg2)}
+.mtr-cat{font-weight:700}
+.mtr-rate{font-weight:800;color:var(--cyan);min-width:44px}
+.mrate-slider{-webkit-appearance:none;width:120px;height:4px;border-radius:99px;background:var(--bg3);outline:none;cursor:pointer;vertical-align:middle}
+.mrate-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--orange);cursor:pointer;border:2px solid #fff}
+.mtr-preview{font-size:11px;color:var(--t3);font-style:italic}
+
+/* Revenue bars */
+.rev-streams{display:flex;flex-direction:column;gap:14px;margin-top:4px}
+.rev-stream .rs-header{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+.rev-stream .rs-name{color:var(--t2)}
+.rev-stream .rs-val{font-weight:800}
+.rs-bar{height:7px;background:var(--bg3);border-radius:99px;overflow:hidden}
+.rs-fill{height:100%;border-radius:99px}
+
+/* Orders table */
+.otable{width:100%;border-collapse:collapse;font-size:12px}
+.othead th{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);padding:8px 10px;border-bottom:1px solid var(--b0);text-align:left;white-space:nowrap}
+.otr td{padding:9px 10px;border-bottom:1px solid var(--b0)}
+.otr:hover{background:var(--bg2)}
+.status-badge{display:inline-flex;padding:2px 8px;border-radius:var(--rfull);font-size:10px;font-weight:700}
+.status-complete{background:var(--gdim);color:var(--green)}
+.status-pending{background:var(--odim);color:var(--orange)}
+.status-processing{background:var(--pdim);color:var(--purple)}
+.export-btn{background:var(--bg2);border:1px solid var(--b1);color:var(--t2);font-size:12px;font-weight:700;font-family:var(--font);padding:7px 14px;border-radius:var(--r8);cursor:pointer;transition:all .15s}
+.export-btn:hover{border-color:var(--green);color:var(--green)}
+
+/* Analytics */
+.funnel-step{margin-bottom:12px}
+.funnel-header{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;color:var(--t2)}
+.funnel-bar{height:7px;background:var(--bg3);border-radius:99px}
+.funnel-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--purple),var(--cyan))}
+.atab{width:100%;border-collapse:collapse}
+.athead th{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);padding:8px 12px;border-bottom:1px solid var(--b0);text-align:left}
+.atr td{padding:9px 12px;border-bottom:1px solid var(--b0);font-size:13px}
+.atr:hover{background:var(--bg2)}
+
+/* Real TV */
+.rtv-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-label{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t3)}
+.form-input{background:var(--bg3);border:1px solid var(--b1);border-radius:var(--r8);color:var(--t1);font-size:14px;font-family:var(--font);padding:10px 12px;outline:none;transition:border-color .15s}
+.form-input:focus{border-color:var(--orange)}
+.form-select{background:var(--bg3);border:1px solid var(--b1);border-radius:var(--r8);color:var(--t1);font-size:14px;font-family:var(--font);padding:10px 12px;outline:none;cursor:pointer}
+.btn-primary{background:var(--og);border:none;color:#fff;font-size:13px;font-weight:700;font-family:var(--font);padding:10px 20px;border-radius:var(--r8);cursor:pointer;transition:opacity .15s}
+.btn-primary:hover{opacity:.9}
+.btn-secondary{background:var(--bg3);border:1px solid var(--b1);color:var(--t2);font-size:12px;font-weight:600;font-family:var(--font);padding:8px 14px;border-radius:var(--r8);cursor:pointer;transition:all .15s}
+.btn-secondary:hover{border-color:var(--b2);color:var(--t1)}
+.btn-danger{background:var(--rdim);border:1px solid rgba(239,68,68,0.25);color:var(--red);font-size:11px;font-weight:700;font-family:var(--font);padding:6px 10px;border-radius:var(--r8);cursor:pointer}
+
+/* RTV item */
+.rtv-item{display:flex;align-items:center;gap:14px;padding:14px;background:var(--bg2);border:1px solid var(--b0);border-radius:var(--r12);margin-bottom:8px}
+.rtv-thumb{font-size:30px;flex-shrink:0;width:48px;text-align:center}
+.rtv-info{flex:1;min-width:0}
+.rtv-badges{display:flex;gap:6px;margin-bottom:4px}
+.badge-live{background:rgba(239,68,68,0.15);color:var(--red);font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;border:1px solid rgba(239,68,68,0.3)}
+.badge-rec{background:var(--bg3);color:var(--t3);font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;border:1px solid var(--b0)}
+.badge-cat{color:var(--orange);font-size:11px;font-weight:600}
+.rtv-title{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rtv-url{font-size:11px;color:var(--cyan);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rtv-actions{display:flex;gap:6px;flex-shrink:0}
+
+/* Ecosystem */
+.eco-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.eco-kpi{background:var(--bgc);border:1px solid var(--b0);border-radius:var(--r16);padding:18px;text-align:center}
+.eco-kpi-val{font-size:22px;font-weight:900;margin-bottom:4px}
+.eco-kpi-lbl{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.07em}
+
+/* Settings */
+.api-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg2);border:1px solid var(--b0);border-radius:var(--r8);margin-bottom:8px}
+.api-name{flex:1;font-size:13px;font-weight:600}
+.api-val{font-family:monospace;font-size:12px;color:var(--t3)}
+.embed-code{background:var(--bg0);border:1px solid var(--b1);border-radius:var(--r8);padding:14px;font-family:monospace;font-size:12px;color:var(--cyan);line-height:1.7;white-space:pre;overflow-x:auto;margin:8px 0}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--b0)}
+.toggle-label{font-size:13px;color:var(--t2)}
+.toggle{width:40px;height:22px;background:var(--orange);border-radius:99px;position:relative;cursor:pointer;flex-shrink:0}
+.toggle-off{background:var(--bg3)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .2s}
+.toggle:not(.toggle-off)::after{transform:translateX(18px)}
+
+/* Customers */
+.cust-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg1)}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:99px}
+
+/* Responsive */
+@media(max-width:900px){.sidebar{display:none}.kpi-grid{grid-template-columns:1fr 1fr}.chart-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-logo">R</div>
+    <div class="gate-title">Admin Portal</div>
+    <div class="gate-sub">R.E.A.L. SmartScan · Business Intelligence</div>
+    <input type="password" class="gate-input" id="gateInput" placeholder="••••••••"
+      onkeydown="if(event.key==='Enter')tryLogin()" autocomplete="current-password">
+    <div class="gate-error" id="gateError"></div>
+    <button class="gate-btn" onclick="tryLogin()">Access Portal →</button>
+    <div style="margin-top:20px">
+      <a href="/" style="font-size:12px;color:var(--t4);text-decoration:none" 
+        onmouseover="this.style.color='var(--t2)'" onmouseout="this.style.color='var(--t4)'">← Back to store</a>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-mark"><span>R.E.A.L.</span> Admin</div>
+      <div class="sb-logo-sub">Business Intelligence Portal</div>
+    </div>
+    <nav class="sb-nav">
+      <button class="sb-item active" onclick="showTab('dashboard',this)"><span class="sb-icon">📊</span>Dashboard</button>
+      <button class="sb-item" onclick="showTab('orders',this)"><span class="sb-icon">📦</span>Orders</button>
+      <button class="sb-item" onclick="showTab('margin',this)"><span class="sb-icon">💰</span>Margin Engine</button>
+      <button class="sb-item" onclick="showTab('analytics',this)"><span class="sb-icon">📈</span>Analytics</button>
+      <button class="sb-item" onclick="showTab('products',this)"><span class="sb-icon">🏷️</span>Products</button>
+      <button class="sb-item" onclick="showTab('customers',this)"><span class="sb-icon">👥</span>Customers</button>
+      <button class="sb-item" onclick="showTab('realtv',this)"><span class="sb-icon">📺</span>Real TV</button>
+      <button class="sb-item" onclick="showTab('ecosystem',this)"><span class="sb-icon">🌐</span>Ecosystem / IR</button>
+      <button class="sb-item" onclick="showTab('settings',this)"><span class="sb-icon">⚙️</span>Settings</button>
+    </nav>
+    <div class="sb-footer">
+      <button class="sb-back" onclick="window.location.href='/'">🏠 Back to Store</button>
+      <button class="sb-back" onclick="logout()" style="color:var(--red)">🚪 Logout</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="tabTitle">Dashboard</div>
+      <div class="topbar-clock" id="clock"></div>
+      <button class="topbar-logout" onclick="logout()">Logout</button>
+    </div>
+    <div class="content" id="content">
+
+      <!-- DASHBOARD -->
+      <div class="tab active" id="tab-dashboard">
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi-label">Total Revenue</div><div class="kpi-val" style="color:var(--orange)">$2,847,392</div><div class="kpi-change up">↑ 18.3% vs last month</div></div>
+          <div class="kpi"><div class="kpi-label">Orders Today</div><div class="kpi-val" style="color:var(--cyan)" id="kpiOrders">1,247</div><div class="kpi-change up" id="kpiOrdersSub">+24 this hour</div></div>
+          <div class="kpi"><div class="kpi-label">Avg Order Value</div><div class="kpi-val">$127.40</div><div class="kpi-change up">↑ $8.20 vs last month</div></div>
+          <div class="kpi"><div class="kpi-label">Margin Today</div><div class="kpi-val" style="color:var(--green)" id="kpiMargin">$34,821</div><div class="kpi-change up">9.2% avg take-rate</div></div>
+        </div>
+        <div class="chart-grid">
+          <div class="card"><div class="card h3">Monthly Revenue (12 months)</div><div class="chart-wrap"><canvas id="revenueChart"></canvas></div></div>
+          <div class="card"><div class="card h3">Revenue Streams</div><div class="chart-wrap"><canvas id="streamsChart"></canvas></div></div>
+        </div>
+        <div class="live-feed">
+          <div class="live-feed-header">
+            <div class="live-dot"></div>
+            <span style="font-size:14px;font-weight:700">Live Orders</span>
+            <span style="font-size:12px;color:var(--t3);margin-left:8px">Updates every 5s</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 100px 80px 64px 52px;gap:8px;padding:6px 0;border-bottom:1px solid var(--b0);margin-bottom:4px">
+            <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t4)">Product</div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t4)">Store</div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t4);text-align:right">Price</div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t4);text-align:right">Margin</div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t4);text-align:right">Time</div>
+          </div>
+          <div id="liveFeed"></div>
+        </div>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="tab" id="tab-orders">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div class="sec-title" style="border:none;margin:0;padding:0">Order History</div>
+          <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+        </div>
+        <div class="card" style="overflow-x:auto">
+          <table class="otable"><thead><tr class="othead">
+            <th>Order ID</th><th>Customer</th><th>Product</th><th>Mkt Price</th><th>Our Price</th><th>Margin $</th><th>Margin %</th><th>Status</th><th>Date</th>
+          </tr></thead><tbody id="ordersBody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- MARGIN ENGINE -->
+      <div class="tab" id="tab-margin">
+        <div class="sec-title">💰 Take-Rate Controls</div>
+        <p style="font-size:13px;color:var(--t3);margin-bottom:16px">Adjust per-category margin rates. The customer only sees the final SmartScan price — margin is completely invisible.</p>
+        <div class="card" style="margin-bottom:20px;overflow-x:auto">
+          <table class="mtable"><thead><tr class="mthead"><th>Category</th><th>Rate</th><th>Adjust</th><th>Live Preview</th></tr></thead>
+          <tbody id="marginBody"></tbody></table>
+        </div>
+        <div class="sec-title" style="margin-top:8px">Revenue Stream Breakdown</div>
+        <div class="card">
+          <div class="rev-streams" id="revStreams"></div>
+        </div>
+        <div class="card" style="margin-top:16px;padding:16px 20px">
+          <div style="font-size:12px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">How Hidden Margin Works</div>
+          <div style="font-size:13px;color:var(--t2);line-height:1.75">
+            When a customer searches for <strong style="color:var(--cyan)">Sony WH-1000XM5</strong>, we find the market best at <strong>$248</strong>.<br>
+            We apply a <strong style="color:var(--orange)">9% take-rate</strong> → SmartScan Price shown to user: <strong style="color:var(--orange)">$270.32</strong><br>
+            The customer sees <em>"All-in price · Free shipping · No redirect"</em> — zero mention of margin.<br>
+            We earn <strong style="color:var(--green)">$22.32</strong> per transaction. At 1,247 orders/day = <strong style="color:var(--green)">$27,849/day gross margin</strong>.
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div class="tab" id="tab-analytics">
+        <div class="sec-title">🔥 Top Searched Products</div>
+        <div class="card" style="margin-bottom:20px;overflow-x:auto">
+          <table class="atab"><thead><tr class="athead"><th>Product</th><th>Searches</th><th>Conversions</th><th>Conv. Rate</th><th>Revenue</th></tr></thead>
+          <tbody id="analyticsBody"></tbody></table>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="card">
+            <h3>Conversion Funnel</h3>
+            <div id="funnelSection" style="margin-top:8px"></div>
+          </div>
+          <div class="card">
+            <h3>Category Performance</h3>
+            <div class="chart-wrap"><canvas id="catChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRODUCTS -->
+      <div class="tab" id="tab-products">
+        <div class="sec-title">🏷️ Product Catalog</div>
+        <div id="productGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px"></div>
+      </div>
+
+      <!-- CUSTOMERS -->
+      <div class="tab" id="tab-customers">
+        <div class="kpi-grid cust-kpis">
+          <div class="kpi"><div class="kpi-label">Total Customers</div><div class="kpi-val" style="color:var(--cyan)">84,291</div><div class="kpi-change up">↑ 2,847 this month</div></div>
+          <div class="kpi"><div class="kpi-label">Prime Elite Members</div><div class="kpi-val" style="color:var(--orange)">50,847</div><div class="kpi-change up">60.3% conversion</div></div>
+          <div class="kpi"><div class="kpi-label">Avg LTV</div><div class="kpi-val">$847</div><div class="kpi-change up">↑ $124 YoY</div></div>
+          <div class="kpi"><div class="kpi-label">Repeat Rate</div><div class="kpi-val" style="color:var(--green)">68%</div><div class="kpi-change up">Industry avg: 32%</div></div>
+        </div>
+        <div class="card" style="overflow-x:auto">
+          <table class="atab"><thead><tr class="athead"><th>Customer</th><th>Email</th><th>Orders</th><th>Total Spend</th><th>Plan</th><th>Joined</th></tr></thead>
+          <tbody id="custBody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- REAL TV -->
+      <div class="tab" id="tab-realtv">
+        <div class="sec-title">📺 Real TV — Content Manager</div>
+        <div class="card" style="margin-bottom:16px">
+          <h3>Add New Content</h3>
+          <div class="rtv-form-grid" style="margin-top:14px">
+            <div>
+              <div class="form-group" style="margin-bottom:12px">
+                <label class="form-label">Type</label>
+                <select class="form-select" id="rtvType"><option value="live">🔴 Live Stream</option><option value="recorded">📹 Recorded</option></select>
+              </div>
+              <div class="form-group" style="margin-bottom:12px">
+                <label class="form-label">Title</label>
+                <input class="form-input" id="rtvTitle" placeholder="e.g. Nike Flash Sale — Live Deals">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Category</label>
+                <input class="form-input" id="rtvCat" placeholder="e.g. Sneakers, Gaming, Health...">
+              </div>
+            </div>
+            <div>
+              <div class="form-group" style="margin-bottom:12px">
+                <label class="form-label">Video / Stream URL</label>
+                <input class="form-input" id="rtvUrl" type="url" placeholder="https://youtube.com/...">
+              </div>
+              <div class="form-group" style="margin-bottom:12px">
+                <label class="form-label">Thumbnail (emoji)</label>
+                <input class="form-input" id="rtvEmoji" placeholder="🎮 👟 📱" maxlength="4" style="font-size:22px">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Description</label>
+                <input class="form-input" id="rtvDesc" placeholder="Brief description...">
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:4px">
+            <button class="btn-primary" onclick="addRTV()">+ Add to Real TV</button>
+            <div id="rtvMsg" style="font-size:13px;display:none"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <h3>Content Library (<span id="rtvCount">4</span>)</h3>
+            <div style="display:flex;gap:6px">
+              <button class="btn-primary" id="rtvAll" onclick="filterRTV('all',this)" style="font-size:11px;padding:6px 10px">All</button>
+              <button class="btn-secondary" id="rtvLive" onclick="filterRTV('live',this)" style="font-size:11px;padding:6px 10px">Live</button>
+              <button class="btn-secondary" id="rtvRec" onclick="filterRTV('recorded',this)" style="font-size:11px;padding:6px 10px">Recorded</button>
+            </div>
+          </div>
+          <div id="rtvList"></div>
+        </div>
+      </div>
+
+      <!-- ECOSYSTEM / IR -->
+      <div class="tab" id="tab-ecosystem">
+        <div class="eco-kpis">
+          <div class="eco-kpi"><div class="eco-kpi-val" style="color:var(--cyan)">$2–5M</div><div class="eco-kpi-lbl">Series Seed Target</div></div>
+          <div class="eco-kpi"><div class="eco-kpi-val" style="color:var(--cyan)">$20–30M</div><div class="eco-kpi-lbl">Pre-Money Val.</div></div>
+          <div class="eco-kpi"><div class="eco-kpi-val" style="color:var(--orange)">$74–213M</div><div class="eco-kpi-lbl">Year 3 Revenue</div></div>
+          <div class="eco-kpi"><div class="eco-kpi-val" style="color:var(--orange)">$1.2–2.5B</div><div class="eco-kpi-lbl">10-Year Exit</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div class="card">
+            <h3>Revenue Stream Breakdown</h3>
+            <div class="rev-streams" style="margin-top:8px" id="ecoRevStreams"></div>
+          </div>
+          <div class="card">
+            <h3>Ecosystem Components</h3>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px" id="ecoComponents"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:16px">
+          <h3>Financial Projections</h3>
+          <div style="overflow-x:auto;margin-top:12px">
+            <table class="otable"><thead><tr class="othead"><th>Year</th><th>Revenue</th><th>Details</th><th>Milestone</th></tr></thead>
+            <tbody>
+              <tr class="otr"><td style="font-weight:700">Year 1</td><td style="font-weight:800;color:var(--cyan)">$2–5M</td><td style="color:var(--t3)">1,000 deals/month @ 30% margin</td><td>Greenville + SmartScan launch</td></tr>
+              <tr class="otr"><td style="font-weight:700">Year 2</td><td style="font-weight:800;color:var(--cyan)">$15–30M</td><td style="color:var(--t3)">5,000 deals/month + SaaS</td><td>Clinix AI + HCA pilot</td></tr>
+              <tr class="otr"><td style="font-weight:700">Year 3</td><td style="font-weight:800;color:var(--orange)">$50–100M</td><td style="color:var(--t3)">Wholesale + marketplace</td><td>Series B + national expansion</td></tr>
+              <tr class="otr"><td style="font-weight:700">Exit</td><td style="font-weight:800;color:var(--orange)">$200–500M</td><td style="color:var(--t3)">Amazon / Walmart / CVS acquisition</td><td>10-year: $1.2–2.5B</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Investor Contact</h3>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0 16px">
+            <div style="text-align:center;padding:14px;background:var(--bg2);border-radius:10px"><div style="font-size:20px;font-weight:900;color:var(--cyan)">$1–3M</div><div style="font-size:11px;color:var(--t3);margin-top:3px">Seed Round</div></div>
+            <div style="text-align:center;padding:14px;background:var(--bg2);border-radius:10px"><div style="font-size:20px;font-weight:900;color:var(--orange)">4–6×</div><div style="font-size:11px;color:var(--t3);margin-top:3px">Target ROIC Y2</div></div>
+            <div style="text-align:center;padding:14px;background:var(--bg2);border-radius:10px"><div style="font-size:20px;font-weight:900;color:var(--green)">$8–12M</div><div style="font-size:11px;color:var(--t3);margin-top:3px">Pre-Money Val.</div></div>
+          </div>
+          <div style="font-size:13px;color:var(--t2)">
+            <a href="mailto:invest@realecosystem.com" style="color:var(--orange)">invest@realecosystem.com</a>&nbsp; · &nbsp;
+            <a href="https://real-smart-retail-concept.vercel.app" target="_blank" style="color:var(--cyan)">View Investor Deck →</a>&nbsp; · &nbsp;
+            <a href="https://real-pt.com" target="_blank" style="color:var(--t3)">real-pt.com</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="tab" id="tab-settings">
+        <div class="sec-title">🔑 API Configuration</div>
+        <div class="card" style="margin-bottom:20px">
+          <div class="api-row"><span class="api-name">Gemini AI Engine (Search Grounding)</span><span class="api-val">AIzaSy••••••••••••OqpY</span></div>
+          <div class="api-row"><span class="api-name">Barcode Lookup API</span><span class="api-val">bk_••••••••9c11</span></div>
+          <div class="api-row"><span class="api-name">Real-Time Product Search (RapidAPI)</span><span class="api-val">rt_••••••••F3a2</span></div>
+        </div>
+        <div class="sec-title">🌐 Website Embed</div>
+        <div class="card" style="margin-bottom:20px">
+          <p style="font-size:13px;color:var(--t3);margin-bottom:10px">Embed SmartScan price intelligence on any website:</p>
+          <div class="embed-code">&lt;script src="https://smartscan.real-pt.com/embed.js"
+  data-key="YOUR_API_KEY"
+  data-theme="dark"
+  data-position="bottom-right"&gt;&lt;/script&gt;</div>
+        </div>
+        <div class="sec-title">🔔 Notifications</div>
+        <div class="card">
+          <div class="toggle-row"><span class="toggle-label">Email alerts for margin rate changes</span><div class="toggle" onclick="this.classList.toggle('toggle-off')"></div></div>
+          <div class="toggle-row"><span class="toggle-label">Daily revenue summary email</span><div class="toggle" onclick="this.classList.toggle('toggle-off')"></div></div>
+          <div class="toggle-row" style="border:none"><span class="toggle-label">Slack integration for new orders</span><div class="toggle toggle-off" onclick="this.classList.toggle('toggle-off')"></div></div>
+          <button class="btn-primary" style="margin-top:16px">Save Settings</button>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+const PASS = 'REAL2026';
+
+// ── AUTH ──────────────────────────────────────────────────────
+function tryLogin() {
+  var v = document.getElementById('gateInput').value.trim();
+  var err = document.getElementById('gateError');
+  if (v === PASS) {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    initAll();
+  } else {
+    err.textContent = 'Incorrect password. Try again.';
+    var inp = document.getElementById('gateInput');
+    inp.value = '';
+    inp.className = 'gate-input shake';
+    setTimeout(function(){ inp.className = 'gate-input'; inp.focus(); }, 450);
+  }
+}
+function logout() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('gate').style.display = 'flex';
+  document.getElementById('gateInput').value = '';
+  document.getElementById('gateError').textContent = '';
+}
+document.getElementById('gateInput').focus();
+
+// ── TABS ──────────────────────────────────────────────────────
+var titles = { dashboard:'Dashboard', orders:'Orders', margin:'Margin Engine', analytics:'Analytics', products:'Products', customers:'Customers', realtv:'Real TV', ecosystem:'Ecosystem & IR', settings:'Settings' };
+function showTab(name, el) {
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.sb-item').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('tab-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  document.getElementById('tabTitle').textContent = titles[name] || name;
+  if (name === 'realtv') renderRTVList();
+  if (name === 'analytics') renderCatChart();
+}
+
+// ── CLOCK ─────────────────────────────────────────────────────
+function updateClock() {
+  document.getElementById('clock').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+}
+setInterval(updateClock, 1000);
+
+// ── MARGIN RATES ─────────────────────────────────────────────
+var marginRates = {
+  'Recovery Hardware': 10, 'Biologics & Exosomes': 15, 'Supplements': 15,
+  'Health Devices': 9, 'Apparel': 7, 'Footwear': 8, 'Gaming': 6,
+  'Smartphones': 5, 'Audio': 8, 'Electronics': 7, 'Home': 9, 'General': 9
+};
+var exPrices = {
+  'Recovery Hardware':499,'Biologics & Exosomes':149,'Supplements':42,
+  'Health Devices':279,'Apparel':29,'Footwear':89,'Gaming':279,
+  'Smartphones':849,'Audio':248,'Electronics':899,'Home':499,'General':99
+};
+function renderMargin() {
+  var cats = Object.keys(marginRates);
+  document.getElementById('marginBody').innerHTML = cats.map(function(cat) {
+    var rate = marginRates[cat], ex = exPrices[cat]||99;
+    var our = (ex*(1+rate/100)).toFixed(2), earn = (ex*rate/100).toFixed(2);
+    var key = cat.replace(/[^a-z]/gi,'_');
+    return '<tr class="mtr"><td class="mtr-cat">' + cat + '</td>' +
+      '<td class="mtr-rate" id="r_'+key+'">' + rate + '%</td>' +
+      '<td><input type="range" class="mrate-slider" min="5" max="25" value="'+rate+'" oninput="updateRate(\''+cat+'\',this.value)"></td>' +
+      '<td class="mtr-preview" id="p_'+key+'">$'+ex+' best → SmartScan $'+our+' (+$'+earn+')</td>' +
+    '</tr>';
+  }).join('');
+}
+function updateRate(cat, val) {
+  marginRates[cat] = parseInt(val);
+  var key = cat.replace(/[^a-z]/gi,'_');
+  var ex = exPrices[cat]||99, rate = parseInt(val);
+  var our = (ex*(1+rate/100)).toFixed(2), earn = (ex*rate/100).toFixed(2);
+  var re = document.getElementById('r_'+key), pe = document.getElementById('p_'+key);
+  if (re) re.textContent = val + '%';
+  if (pe) pe.textContent = '$'+ex+' best → SmartScan $'+our+' (+$'+earn+')';
+}
+function renderRevStreams(containerId) {
+  var streams = [
+    {n:'Transaction Take-Rate',v:'$12.4M',pct:67,c:'#F07020'},
+    {n:'Affiliate Revenue',v:'$8.7M',pct:47,c:'#00D4FF'},
+    {n:'Prime Elite Subs',v:'$6.2M',pct:34,c:'#8B5CF6'},
+    {n:'Data Insights',v:'$4.1M',pct:22,c:'#10B981'},
+    {n:'R.E.A.L. TV Ads',v:'$2.8M',pct:15,c:'rgba(255,255,255,0.3)'},
+    {n:'Featured Listings',v:'$1.9M',pct:10,c:'rgba(255,255,255,0.2)'},
+  ];
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = streams.map(function(s){
+    return '<div class="rev-stream">' +
+      '<div class="rs-header"><span class="rs-name">'+s.n+'</span><span class="rs-val" style="color:'+s.c+'">'+s.v+'</span></div>' +
+      '<div class="rs-bar"><div class="rs-fill" style="width:'+s.pct+'%;background:'+s.c+'"></div></div>' +
+    '</div>';
+  }).join('');
+}
+
+// ── ORDERS ────────────────────────────────────────────────────
+var ORDERS = [
+  {p:'Nintendo Switch OLED',s:'Walmart',mp:249,op:263.94,st:'complete'},
+  {p:'Theragun PRO Plus',s:'Amazon',mp:329,op:361.90,st:'complete'},
+  {p:'Sony WH-1000XM5',s:'Amazon',mp:248,op:269.84,st:'processing'},
+  {p:'Yeezy Boost 350 V2',s:'StockX',mp:185,op:199.80,st:'complete'},
+  {p:'Oura Ring Gen 4',s:'Amazon',mp:279,op:304.11,st:'complete'},
+  {p:'Apple Watch Ultra 2',s:'Amazon',mp:699,op:762.21,st:'pending'},
+  {p:'Air Jordan 1 Retro',s:'GOAT',mp:165,op:178.20,st:'complete'},
+  {p:'Whey Protein 5lb',s:'Amazon',mp:42,op:48.30,st:'complete'},
+  {p:'PS5 Slim',s:'Walmart',mp:399,op:423.06,st:'complete'},
+  {p:'Dyson V15',s:'Best Buy',mp:499,op:544.09,st:'processing'},
+  {p:'Nike Dunk Low',s:'StockX',mp:110,op:118.80,st:'complete'},
+  {p:'Garmin Fenix 8',s:'Amazon',mp:849,op:925.41,st:'pending'},
+  {p:'AirPods Pro 2',s:'Amazon',mp:189,op:204.12,st:'complete'},
+  {p:'Exosome Kit',s:'RealPT.com',mp:99,op:113.85,st:'complete'},
+  {p:'Red Light Panel',s:'Amazon',mp:249,op:271.41,st:'complete'},
+  {p:'Samsung Galaxy S25',s:'Best Buy',mp:699,op:734.07,st:'processing'},
+  {p:'Creatine 500g',s:'Amazon',mp:18,op:20.70,st:'complete'},
+  {p:'Normatec 3',s:'Amazon',mp:449,op:493.90,st:'complete'},
+  {p:'MacBook Air M3',s:'Amazon',mp:899,op:971.22,st:'pending'},
+  {p:'WHOOP 4.0',s:'Official',mp:149,op:162.41,st:'complete'},
+];
+function renderOrders() {
+  document.getElementById('ordersBody').innerHTML = ORDERS.map(function(o,i){
+    var m = ((o.op-o.mp)/o.op*100).toFixed(1), md = (o.op-o.mp).toFixed(2);
+    var date = new Date(Date.now() - i*3600000*(0.5+Math.random()*2)).toLocaleDateString();
+    return '<tr class="otr">' +
+      '<td style="color:var(--t3)">#RS'+(100000+i)+'</td>' +
+      '<td>Customer '+(1000+i)+'</td>' +
+      '<td style="font-weight:600">'+o.p+'</td>' +
+      '<td>$'+o.mp.toFixed(2)+'</td>' +
+      '<td style="color:var(--orange);font-weight:700">$'+o.op.toFixed(2)+'</td>' +
+      '<td style="color:var(--green);font-weight:700">$'+md+'</td>' +
+      '<td style="color:var(--green)">'+m+'%</td>' +
+      '<td><span class="status-badge status-'+o.st+'">'+o.st+'</span></td>' +
+      '<td style="color:var(--t3)">'+date+'</td></tr>';
+  }).join('');
+}
+function exportCSV() {
+  var rows = ['Order ID,Customer,Product,Market Price,Our Price,Margin $,Margin %,Status'];
+  ORDERS.forEach(function(o,i){ rows.push('#RS'+(100000+i)+',Customer '+(1000+i)+',"'+o.p+'",$'+o.mp.toFixed(2)+',$'+o.op.toFixed(2)+',$'+(o.op-o.mp).toFixed(2)+','+((o.op-o.mp)/o.op*100).toFixed(1)+'%,'+o.st); });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'})); a.download = 'orders.csv'; a.click();
+}
+
+// ── ANALYTICS ─────────────────────────────────────────────────
+var SEARCHES = [
+  {p:'Nintendo Switch OLED',s:4821,c:892,r:235456},
+  {p:'Yeezy Boost 350',s:3944,c:614,r:115440},
+  {p:'iPhone 16 Pro',s:3201,c:421,r:356202},
+  {p:'Theragun PRO',s:2847,c:733,r:265021},
+  {p:'Sony WH-1000XM5',s:2614,c:681,r:183820},
+  {p:'Air Jordan 1',s:2291,c:402,r:72358},
+  {p:'PS5 Slim',s:2104,c:311,r:131683},
+  {p:'Apple Watch Ultra',s:1987,c:284,r:216204},
+  {p:'AirPods Pro',s:1744,c:564,r:115104},
+  {p:'Oura Ring Gen 4',s:1521,c:392,r:119240},
+];
+var FUNNEL = [
+  {l:'Product Searches',v:15847,pct:100},
+  {l:'Results Viewed',v:12677,pct:80},
+  {l:'Deal Clicked',v:8217,pct:52},
+  {l:'Checkout Opened',v:3802,pct:24},
+  {l:'Purchase Complete',v:2164,pct:14},
+];
+function renderAnalytics() {
+  document.getElementById('analyticsBody').innerHTML = SEARCHES.map(function(a){
+    var cr = (a.c/a.s*100).toFixed(1);
+    return '<tr class="atr"><td style="font-weight:600">'+a.p+'</td><td>'+a.s.toLocaleString()+'</td><td>'+a.c.toLocaleString()+'</td><td style="color:var(--green)">'+cr+'%</td><td style="color:var(--orange);font-weight:700">$'+a.r.toLocaleString()+'</td></tr>';
+  }).join('');
+  document.getElementById('funnelSection').innerHTML = FUNNEL.map(function(f){
+    return '<div class="funnel-step"><div class="funnel-header"><span>'+f.l+'</span><span>'+f.v.toLocaleString()+' ('+f.pct+'%)</span></div><div class="funnel-bar"><div class="funnel-fill" style="width:'+f.pct+'%"></div></div></div>';
+  }).join('');
+}
+
+// ── PRODUCTS ──────────────────────────────────────────────────
+var PRODUCTS = [
+  {n:'Carbon Fiber Recovery Backpack',c:'Recovery Hardware',e:'🎒',msrp:299,best:299,m:10},
+  {n:'Exosome Therapy Starter Kit',c:'Biologics & Exosomes',e:'🧬',msrp:149,best:149,m:15},
+  {n:'Joovv Solo Red Light Panel',c:'Health Devices',e:'💡',msrp:695,best:399,m:9},
+  {n:'Oura Ring Gen 4',c:'Health Devices',e:'💍',msrp:349,best:279,m:9},
+  {n:'Theragun PRO Plus',c:'Recovery Hardware',e:'💪',msrp:599,best:329,m:10},
+  {n:'Apple Watch Ultra 2',c:'Health Devices',e:'⌚',msrp:799,best:699,m:9},
+  {n:'Nike Air Force 1 Low',c:'Footwear',e:'👟',msrp:110,best:89,m:8},
+  {n:'Sony WH-1000XM5',c:'Audio',e:'🎧',msrp:399,best:248,m:8},
+];
+function renderProducts() {
+  document.getElementById('productGrid').innerHTML = PRODUCTS.map(function(p){
+    var op = (p.best*(1+p.m/100)).toFixed(2), earn = (p.best*p.m/100).toFixed(2);
+    return '<div style="background:var(--bgc);border:1px solid var(--b0);border-radius:var(--r16);overflow:hidden">' +
+      '<div style="aspect-ratio:1;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:52px;border-bottom:1px solid var(--b0);position:relative">' +
+        p.e + '<span style="position:absolute;top:8px;left:8px;background:var(--orange);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:99px">'+p.m+'% margin</span>' +
+      '</div>' +
+      '<div style="padding:14px">' +
+        '<div style="font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">'+p.c+'</div>' +
+        '<div style="font-size:13px;font-weight:700;margin-bottom:6px;line-height:1.3">'+p.n+'</div>' +
+        '<div style="display:flex;align-items:baseline;gap:6px;margin-bottom:4px"><span style="font-size:17px;font-weight:800">$'+op+'</span><span style="font-size:12px;color:var(--t3);text-decoration:line-through">$'+p.msrp+'</span></div>' +
+        '<div style="font-size:11px;color:var(--green)">+$'+earn+' margin per sale</div>' +
+      '</div></div>';
+  }).join('');
+}
+
+// ── CUSTOMERS ─────────────────────────────────────────────────
+var CUSTS = [
+  {n:'Marcus T.',e:'marcus.t@email.com',o:24,s:'$3,847',pl:'Prime Elite',j:'Jan 2025'},
+  {n:'Dr. Sarah K.',e:'drsarahk@med.com',o:31,s:'$7,214',pl:'Prime Elite',j:'Dec 2024'},
+  {n:'Jordan M.',e:'jordan.m@bio.com',o:18,s:'$2,641',pl:'Prime Elite',j:'Mar 2025'},
+  {n:'Alex R.',e:'alex.r@health.co',o:12,s:'$1,892',pl:'Free',j:'Apr 2025'},
+  {n:'Casey L.',e:'caseyl@fit.io',o:9,s:'$1,247',pl:'Prime Elite',j:'Feb 2025'},
+];
+function renderCustomers() {
+  document.getElementById('custBody').innerHTML = CUSTS.map(function(c){
+    return '<tr class="atr"><td style="font-weight:600">'+c.n+'</td><td style="color:var(--t3)">'+c.e+'</td><td>'+c.o+'</td><td style="color:var(--green);font-weight:700">'+c.s+'</td>' +
+      '<td><span class="status-badge '+(c.pl==='Prime Elite'?'status-complete':'status-processing')+'">'+c.pl+'</span></td>' +
+      '<td style="color:var(--t3)">'+c.j+'</td></tr>';
+  }).join('');
+}
+
+// ── REAL TV ───────────────────────────────────────────────────
+var rtvContent = [
+  {id:'r1',type:'live',title:'PS5 Slim vs Xbox Series X — Best Deal Right Now?',cat:'Gaming Deals',emoji:'🎮',viewers:'1,204',url:'',addedAt:Date.now()-3600000},
+  {id:'r2',type:'live',title:'Sneaker Prices DROPPING: Yeezy & Nike Air Max Flash Sale',cat:'Sneakers',emoji:'👟',viewers:'892',url:'',addedAt:Date.now()-7200000},
+  {id:'r3',type:'recorded',title:'iPhone 16 Pro vs Samsung S25 Ultra — Full Price Breakdown',cat:'Electronics',emoji:'📱',viewers:null,url:'',addedAt:Date.now()-86400000},
+  {id:'r4',type:'recorded',title:'Theragun vs Hyperice: Which Recovery Device is Worth It?',cat:'Health',emoji:'💪',viewers:null,url:'',addedAt:Date.now()-172800000},
+];
+var rtvFilter='all';
+function timeAgo(ts){var d=Date.now()-ts,m=Math.floor(d/60000),h=Math.floor(d/3600000),dy=Math.floor(d/86400000);return dy>0?dy+'d ago':h>0?h+'h ago':m+'m ago';}
+function renderRTVList(){
+  var list=document.getElementById('rtvList'),cnt=document.getElementById('rtvCount');
+  if(!list)return;
+  var filtered=rtvFilter==='all'?rtvContent:rtvContent.filter(function(i){return i.type===rtvFilter;});
+  if(cnt)cnt.textContent=rtvContent.length;
+  if(!filtered.length){list.innerHTML='<div style="text-align:center;padding:32px;color:var(--t3);font-size:13px">No content yet. Add your first video or stream above.</div>';return;}
+  list.innerHTML=filtered.map(function(item){
+    var isLive=item.type==='live';
+    return '<div class="rtv-item">' +
+      '<div class="rtv-thumb">'+item.emoji+'</div>' +
+      '<div class="rtv-info">' +
+        '<div class="rtv-badges"><span class="'+(isLive?'badge-live':'badge-rec')+'">'+(isLive?'🔴 LIVE':'📹 REC')+'</span><span class="badge-cat">'+item.cat+'</span></div>' +
+        '<div class="rtv-title">'+item.title+'</div>' +
+        (item.url?'<div class="rtv-url">'+item.url+'</div>':'<div style="font-size:11px;color:var(--t4);margin-top:2px">No URL — add link to connect stream</div>') +
+      '</div>' +
+      '<div class="rtv-actions">' +
+        '<button onclick="toggleLive(\''+item.id+'\')" class="btn-secondary" style="font-size:11px;padding:5px 9px;color:'+(isLive?'var(--red)':'var(--t3)')+'">'+(isLive?'⏹ Stop':'🔴 Go Live')+'</button>' +
+        '<button onclick="delRTV(\''+item.id+'\')" class="btn-danger">✕</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+function filterRTV(f,btn){
+  rtvFilter=f;
+  ['rtvAll','rtvLive','rtvRec'].forEach(function(id){var el=document.getElementById(id);if(el){el.className=id==='rtv'+f.charAt(0).toUpperCase()+f.slice(1)||f==='all'&&id==='rtvAll'?'btn-primary':'btn-secondary';el.style.cssText='font-size:11px;padding:6px 10px'}});
+  renderRTVList();
+}
+function addRTV(){
+  var title=document.getElementById('rtvTitle').value.trim();
+  if(!title){alert('Please enter a title.');return;}
+  rtvContent.unshift({id:'r'+Date.now(),type:document.getElementById('rtvType').value,title:title,cat:document.getElementById('rtvCat').value||'General',emoji:document.getElementById('rtvEmoji').value||'📺',viewers:null,url:document.getElementById('rtvUrl').value,addedAt:Date.now()});
+  ['rtvTitle','rtvCat','rtvUrl','rtvEmoji','rtvDesc'].forEach(function(id){document.getElementById(id).value='';});
+  var msg=document.getElementById('rtvMsg');
+  msg.style.display='block';msg.style.color='var(--green)';msg.textContent='✓ Added to Real TV!';
+  setTimeout(function(){msg.style.display='none';},2500);
+  renderRTVList();
+}
+function toggleLive(id){var item=rtvContent.find(function(i){return i.id===id;});if(item){item.type=item.type==='live'?'recorded':'live';renderRTVList();}}
+function delRTV(id){if(!confirm('Remove this content?'))return;rtvContent=rtvContent.filter(function(i){return i.id!==id;});renderRTVList();}
+
+// ── ECOSYSTEM ─────────────────────────────────────────────────
+function renderEcosystem() {
+  renderRevStreams('ecoRevStreams');
+  var comps = [
+    {n:'🏥 Greenville Flagship Clinic',d:'2,500 SF + 6 mobile PT vans',r:'$4.7–7.1M Y1',c:'var(--orange)'},
+    {n:'🤖 Clinix AI SaaS',d:'$500–1,000/mo + 5% billing · 80–85% margin',r:'$11–17M/yr',c:'var(--cyan)'},
+    {n:'💊 RealCost Plus Rx',d:'Pharmacy routing · Cost-plus generics',r:'$20M/yr at scale',c:'var(--purple)'},
+    {n:'🏢 HCA Healthcare Partnership',d:'2,500+ outpatient facilities target',r:'$75–190M/yr potential',c:'var(--green)'},
+  ];
+  document.getElementById('ecoComponents').innerHTML = comps.map(function(c){
+    return '<div style="padding:12px;background:var(--bg2);border-radius:10px;border-left:3px solid '+c.c+'">' +
+      '<div style="font-size:13px;font-weight:700">'+c.n+'</div>' +
+      '<div style="font-size:11px;color:var(--t3);margin-top:2px">'+c.d+'</div>' +
+      '<div style="font-size:12px;font-weight:700;color:var(--cyan);margin-top:5px">'+c.r+'</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ── CHARTS ────────────────────────────────────────────────────
+var chartsInited = false;
+function initCharts() {
+  if(chartsInited) return; chartsInited = true;
+  // Revenue
+  new Chart(document.getElementById('revenueChart'), {
+    type:'bar',
+    data:{labels:['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'],
+      datasets:[{label:'Revenue',data:[142,168,195,221,198,247,289,312,341,298,367,421].map(function(v){return v*1000;}),
+        backgroundColor:'rgba(240,112,32,0.65)',borderColor:'#F07020',borderWidth:1,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return '$'+(c.raw/1000).toFixed(0)+'K';}}}},
+      scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'rgba(255,255,255,0.4)',font:{size:10}}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'rgba(255,255,255,0.4)',font:{size:10},callback:function(v){return '$'+(v/1000).toFixed(0)+'K';}}}}}
+  });
+  // Streams donut
+  new Chart(document.getElementById('streamsChart'), {
+    type:'doughnut',
+    data:{labels:['Take-Rate','Affiliate','BNPL','Prime Elite','B2B API'],
+      datasets:[{data:[67,14,8,7,4],backgroundColor:['#F07020','#8B5CF6','#00D4FF','#10B981','#EF4444'],borderWidth:0,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
+      plugins:{legend:{position:'bottom',labels:{color:'rgba(255,255,255,0.55)',font:{size:10},padding:10,boxWidth:10}}}}
+  });
+}
+function renderCatChart() {
+  var el = document.getElementById('catChart'); if(!el||el._inited) return; el._inited=true;
+  new Chart(el, {
+    type:'bar',
+    data:{labels:['Health Devices','Recovery','Footwear','Audio','Gaming','Supplements','Electronics'],
+      datasets:[{label:'Revenue',data:[428,312,289,198,187,142,98].map(function(v){return v*1000;}),
+        backgroundColor:['#F07020','#8B5CF6','#00D4FF','#10B981','#EF4444','#F07020','#8B5CF6'],borderRadius:4}]},
+    options:{responsive:true,indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'rgba(255,255,255,0.4)',font:{size:10},callback:function(v){return '$'+(v/1000).toFixed(0)+'K';}}},y:{grid:{display:false},ticks:{color:'rgba(255,255,255,0.55)',font:{size:11}}}}}
+  });
+}
+
+// ── LIVE ORDERS FEED ─────────────────────────────────────────
+var LIVE_P=['Nintendo Switch','Theragun PRO','Sony WH-1000XM5','Yeezy Boost','Oura Ring','AirPods Pro','Nike Dunk','PS5 Slim','Protein Powder','Apple Watch','Air Jordan 1','Exosome Kit'];
+var LIVE_S=['Amazon','Walmart','Best Buy','Target','StockX','eBay','Costco'];
+var orderCount=1247;
+function addLiveOrder(initial){
+  var feed=document.getElementById('liveFeed'); if(!feed) return;
+  var prod=LIVE_P[Math.floor(Math.random()*LIVE_P.length)];
+  var store=LIVE_S[Math.floor(Math.random()*LIVE_S.length)];
+  var bp=50+Math.floor(Math.random()*650), mpct=6+Math.floor(Math.random()*10);
+  var op=(bp*(1+mpct/100)).toFixed(2), md=(bp*mpct/100).toFixed(2);
+  var row=document.createElement('div'); row.className='feed-row';
+  row.innerHTML='<div class="feed-prod">'+prod+'</div><div class="feed-store">'+store+'</div><div class="feed-price">$'+op+'</div><div class="feed-margin">+$'+md+'</div><div class="feed-time">'+(initial?Math.floor(Math.random()*59)+'m ago':'just now')+'</div>';
+  if(initial){feed.appendChild(row);}else{feed.insertBefore(row,feed.firstChild);while(feed.children.length>10)feed.removeChild(feed.lastChild);orderCount++;var ke=document.getElementById('kpiOrders');if(ke)ke.textContent=orderCount.toLocaleString();}
+}
+function startFeed(){for(var i=0;i<8;i++)addLiveOrder(true);setInterval(function(){if(document.getElementById('tab-dashboard').classList.contains('active'))addLiveOrder(false);},5000);}
+
+// ── INIT ──────────────────────────────────────────────────────
+function initAll() {
+  updateClock();
+  initCharts();
+  renderMargin();
+  renderRevStreams('revStreams');
+  renderOrders();
+  renderAnalytics();
+  renderProducts();
+  renderCustomers();
+  renderRTVList();
+  renderEcosystem();
+  startFeed();
+}
+</script>
+</body>
+</html>
