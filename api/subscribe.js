@@ -75,3 +75,4 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 };
+// ENV: STRIPE_SECRET_KEY, STRIPE_PRIME_PRICE_ID, STRIPE_SMARTCAST_PRICE_ID set 2026-05-22
