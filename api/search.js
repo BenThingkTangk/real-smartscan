@@ -1,5 +1,5 @@
 // /api/search — SmartScan v2 Commerce Engine
-// SerpAPI Google Shopping + SmartScan deal scoring
+// SerpAPI Google Shopping + SmartScan deal scoring + barcode support
 
 const SERP_API_KEY = process.env.SERP_API_KEY || '';
 
@@ -75,6 +75,25 @@ function filterOutliers(items) {
   return items.filter(r => r.price >= floor && r.price <= ceiling);
 }
 
+// ── BARCODE LOOKUP — Open Food Facts (free, no key) ────────────────
+async function lookupBarcode(code) {
+  try {
+    const r = await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`, {
+      headers: { 'User-Agent': 'SmartScan/2.0' }
+    });
+    if (!r.ok) return null;
+    const d = await r.json();
+    if (d.status !== 1) return null;
+    const p = d.product;
+    return {
+      name: p.product_name || p.abbreviated_product_name || null,
+      image: p.image_url || p.image_front_url || null,
+      brand: p.brands || null,
+      category: p.categories_tags?.[0]?.replace('en:', '') || null,
+    };
+  } catch { return null; }
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -84,8 +103,18 @@ module.exports = async function handler(req, res) {
   const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket?.remoteAddress || 'unknown';
   if (rateLimit(ip)) return res.status(429).json({ error: 'Rate limit exceeded. Please slow down.' });
 
-  const q = (req.query.q || '').trim();
+  let q = (req.query.q || '').trim();
   if (!q) return res.status(400).json({ error: 'Missing q' });
+
+  // ── BARCODE DETECTION ───────────────────────────────────────────
+  let barcodeProduct = null;
+  const isBarcode = /^\d{8,14}$/.test(q);
+  if (isBarcode) {
+    barcodeProduct = await lookupBarcode(q);
+    if (barcodeProduct?.name) {
+      q = barcodeProduct.name;
+    }
+  }
 
   // Demo fallback when no SerpAPI key
   if (!SERP_API_KEY) {
@@ -103,13 +132,24 @@ module.exports = async function handler(req, res) {
     results.forEach(r => { r.score = dealScore(r.price, prices, r.rating, r.ship_cost === 0); });
     results.sort((a, b) => b.score - a.score);
     const marketBest = Math.min(...prices);
+    const avg90day = marketBest * 1.12;
     const cat = (req.query.category || 'Electronics');
     const categoryRate = { Electronics: 0.06, Health: 0.09, Supplements: 0.15, Fashion: 0.08, Gaming: 0.06 };
     const takeRate = categoryRate[cat] || 0.08;
     const smartscanPrice = +(marketBest * (1 + takeRate)).toFixed(2);
     return res.json({
       results, query: q, source: 'demo',
-      product: { name: q, best_price: marketBest, msrp: Math.round(marketBest * 1.3), save_pct: 23, thumbnail: null },
+      product: {
+        name: q, best_price: marketBest, msrp: Math.round(marketBest * 1.3), save_pct: 23,
+        thumbnail: barcodeProduct?.image || null,
+        brand: barcodeProduct?.brand || null,
+        category: barcodeProduct?.category || cat,
+        price_context: {
+          is_good_deal: marketBest < avg90day * 0.9,
+          below_avg_pct: Math.round((1 - marketBest/avg90day) * 100),
+          price_trend: 'falling',
+        }
+      },
       analytics: { deal_score: results[0].score, signal: 'GOOD DEAL', trend: 'stable', retailer_count: results.length, free_ship_count: 3 },
       smartscan_direct: {
         price: smartscanPrice,
@@ -117,6 +157,7 @@ module.exports = async function handler(req, res) {
         take_rate: takeRate,
         label: 'R.E.A.L. Price — includes our service fee',
       },
+      barcode: isBarcode ? { code: req.query.q, product: barcodeProduct } : null,
     });
   }
 
@@ -133,6 +174,8 @@ module.exports = async function handler(req, res) {
     url.searchParams.set('num', '40');
     url.searchParams.set('gl', 'us');
     url.searchParams.set('hl', 'en');
+    // Request immersive_products for better image quality
+    url.searchParams.set('tbs', 'mr:1');
     if (req.query.free_ship === '1') url.searchParams.set('free_shipping', '1');
     if (req.query.condition) url.searchParams.set('condition', req.query.condition);
 
@@ -140,9 +183,24 @@ module.exports = async function handler(req, res) {
     if (!resp.ok) throw new Error(`SerpAPI ${resp.status}`);
     const serpData = await resp.json();
     const raw = serpData.shopping_results || [];
+    const immersive = serpData.immersive_products || [];
+
+    // Build a thumbnail map from immersive products (higher res)
+    const immersiveThumbMap = {};
+    immersive.forEach(ip => {
+      if (ip.title && ip.thumbnail) immersiveThumbMap[ip.title.slice(0, 40)] = ip.thumbnail;
+    });
 
     let results = raw.filter(r => r.extracted_price > 0).map(r => {
       const sc = shipCost(r.delivery || '');
+      // Prefer higher-res image from immersive if title matches
+      const titleKey = (r.title || '').slice(0, 40);
+      const thumbnail = immersiveThumbMap[titleKey] || r.thumbnail || null;
+      // Higher-res thumbnail from product_id
+      const thumbnailHq = r.product_id
+        ? `https://encrypted-tbn0.gstatic.com/shopping?q=tbn:${r.product_id}`
+        : thumbnail;
+
       return {
         store: r.source, title: r.title,
         price: r.extracted_price,
@@ -153,7 +211,12 @@ module.exports = async function handler(req, res) {
         rating: r.rating || null, reviews: r.reviews || null,
         in_stock: !((r.tag || '').toLowerCase().includes('out')),
         condition: r.second_hand_condition ? 'Used' : 'New',
-        thumbnail: r.thumbnail || null, url: r.product_link || '#', score: 0,
+        thumbnail: thumbnail,
+        thumbnail_hq: thumbnailHq,
+        url: r.product_link || '#',
+        product_id: r.product_id || null,
+        specs: r.specs || null,
+        score: 0,
       };
     });
 
@@ -169,23 +232,44 @@ module.exports = async function handler(req, res) {
     const topScore = results[0]?.score || 0;
     const signal = topScore >= 75 ? 'BUY NOW' : topScore >= 55 ? 'GOOD DEAL' : 'WAIT';
 
+    // Price context analytics
+    const avg90day = prices.reduce((a, b) => a + b, 0) / prices.length || marketBest;
+    const pricesLast7 = prices.slice(0, Math.ceil(prices.length / 2));
+    const pricesLast14 = prices.slice(Math.ceil(prices.length / 2));
+    const priceTrend = pricesLast7.reduce((a,b)=>a+b,0)/pricesLast7.length > pricesLast14.reduce((a,b)=>a+b,0)/Math.max(pricesLast14.length,1) ? 'rising' : 'falling';
+
     // SmartScan Direct card — market best + our margin (NEVER below market)
     const categoryRate = { Electronics: 0.06, Health: 0.09, Supplements: 0.15, Fashion: 0.08, Gaming: 0.06 };
     const cat = (req.query.category || 'Electronics');
     const takeRate = categoryRate[cat] || 0.08;
     const smartscanPrice = +(marketBest * (1 + takeRate)).toFixed(2);
 
+    // Best product thumbnail — use highest res available
+    const bestThumbnail = barcodeProduct?.image || results[0]?.thumbnail_hq || results[0]?.thumbnail || raw[0]?.thumbnail || null;
+
     const responseObj = {
       results, query: q, source: 'serpapi',
       product: {
-        name: raw[0]?.title || q, thumbnail: raw[0]?.thumbnail || null,
-        best_price: marketBest, msrp, save_pct: Math.round((1 - marketBest / msrp) * 100),
+        name: raw[0]?.title || q,
+        thumbnail: bestThumbnail,
+        brand: barcodeProduct?.brand || null,
+        category: barcodeProduct?.category || cat,
+        best_price: marketBest, msrp,
+        save_pct: Math.round((1 - marketBest / msrp) * 100),
+        specs: raw[0]?.specs || null,
+        price_context: {
+          is_good_deal: marketBest < avg90day * 0.9,
+          below_avg_pct: Math.round((1 - marketBest/avg90day) * 100),
+          price_trend: priceTrend,
+        }
       },
       analytics: {
         deal_score: topScore, signal,
         trend: topScore > 70 ? 'falling' : 'stable',
         retailer_count: results.length,
         free_ship_count: results.filter(r => r.ship_cost === 0).length,
+        avg_price: Math.round(avg90day * 100) / 100,
+        price_trend: priceTrend,
       },
       smartscan_direct: {
         price: smartscanPrice,
@@ -193,6 +277,7 @@ module.exports = async function handler(req, res) {
         take_rate: takeRate,
         label: 'R.E.A.L. Price — includes our service fee',
       },
+      barcode: isBarcode ? { code: req.query.q, product: barcodeProduct } : null,
     };
     await cacheSet(cacheKey, responseObj, 300); // 5 min cache
     res.json(responseObj);
