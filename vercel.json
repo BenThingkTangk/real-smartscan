@@ -119,6 +119,30 @@
       "dest": "/public/vibranium.html"
     },
     {
+      "src": "/tos.html",
+      "dest": "/public/tos.html"
+    },
+    {
+      "src": "/privacy.html",
+      "dest": "/public/privacy.html"
+    },
+    {
+      "src": "/refund.html",
+      "dest": "/public/refund.html"
+    },
+    {
+      "src": "/about.html",
+      "dest": "/public/about.html"
+    },
+    {
+      "src": "/faq.html",
+      "dest": "/public/faq.html"
+    },
+    {
+      "src": "/api/health",
+      "dest": "/api/health.js"
+    },
+    {
       "src": "/((?!api/).*)",
       "dest": "/public/index.html"
     }
