@@ -143,6 +143,10 @@
       "dest": "/api/health.js"
     },
     {
+      "src": "/api/version",
+      "dest": "/api/version.js"
+    },
+    {
       "src": "/((?!api/).*)",
       "dest": "/public/index.html"
     }
