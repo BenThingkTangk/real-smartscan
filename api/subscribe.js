@@ -37,16 +37,15 @@ module.exports = async (req, res) => {
 
   const STRIPE_KEY = process.env.STRIPE_SECRET_KEY;
   
-  // If no Stripe key yet — return a clear message with setup instructions
   if (!STRIPE_KEY) {
     return res.status(503).json({
       error: 'Payment processing not yet configured',
-      message: 'Stripe integration coming soon. Contact support@atomsalesdominator.com to be notified.',
-      plan: plan.name,
-      price: `$${(plan.amount / 100).toFixed(2)}/month`,
+      message: 'Set STRIPE_SECRET_KEY in Vercel environment variables.',
       setup_required: ['STRIPE_SECRET_KEY', 'STRIPE_PRIME_PRICE_ID', 'STRIPE_SMARTCAST_PRICE_ID', 'STRIPE_WEBHOOK_SECRET'],
     });
   }
+  
+  if (plan) plan.price_id = process.env[`STRIPE_${tier.toUpperCase().replace('_','')}_PRICE_ID`] || plan.price_id;
 
   try {
     // Dynamic Stripe integration via fetch (no npm install needed)
