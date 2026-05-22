@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
               method: 'POST',
               headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                from: 'alerts@real-smartscan.com',
+                from: 'alerts@atomsalesdominator.com',
                 to: alert.email,
                 subject: `Price Alert: ${alert.query} is now $${currentBest}`,
                 html: `

@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
   if (!STRIPE_KEY) {
     return res.status(503).json({
       error: 'Payment processing not yet configured',
-      message: 'Stripe integration coming soon. Contact support@real-smartscan.com to be notified.',
+      message: 'Stripe integration coming soon. Contact support@atomsalesdominator.com to be notified.',
       plan: plan.name,
       price: `$${(plan.amount / 100).toFixed(2)}/month`,
       setup_required: ['STRIPE_SECRET_KEY', 'STRIPE_PRIME_PRICE_ID', 'STRIPE_SMARTCAST_PRICE_ID', 'STRIPE_WEBHOOK_SECRET'],

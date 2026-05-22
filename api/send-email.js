@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: 'R.E.A.L. SmartScan <no-reply@real-smartscan.com>', to, subject, html }),
+    body: JSON.stringify({ from: 'R.E.A.L. SmartScan <alerts@atomsalesdominator.com>', to, subject, html }),
   });
   const d = await r.json();
   if (!r.ok) return res.status(500).json({ error: d.message });
