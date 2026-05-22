@@ -115,6 +115,10 @@
       "dest": "/api/send-email.js"
     },
     {
+      "src": "/vibranium.html",
+      "dest": "/public/vibranium.html"
+    },
+    {
       "src": "/((?!api/).*)",
       "dest": "/public/index.html"
     }

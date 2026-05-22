@@ -1,0 +1,2423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIBRANIUM — R.E.A.L. SmartScan GA Launch Protocol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg-void: #040608;
+    --bg-deep: #080B14;
+    --bg-card: #0D1120;
+    --bg-card-hover: #111628;
+    --bg-surface: #141830;
+    --bg-raised: #1a1f3a;
+
+    --violet-deep: #4A1A8C;
+    --violet-mid: #7B2FBE;
+    --violet-bright: #9D4EDD;
+    --violet-light: #C77DFF;
+    --violet-glow: rgba(157, 78, 221, 0.15);
+    --violet-border: rgba(157, 78, 221, 0.3);
+    --violet-border-bright: rgba(157, 78, 221, 0.7);
+
+    --blue-deep: #0D1B4A;
+    --blue-mid: #1E3A8A;
+    --blue-bright: #3B82F6;
+    --blue-shimmer: #60A5FA;
+    --blue-glow: rgba(59, 130, 246, 0.12);
+
+    --chrome-white: #E8ECFF;
+    --chrome-silver: #A0AABB;
+    --chrome-dim: #6070A0;
+    --chrome-ghost: #2A3050;
+
+    --critical-color: #FF3B6B;
+    --critical-bg: rgba(255, 59, 107, 0.08);
+    --critical-border: rgba(255, 59, 107, 0.4);
+
+    --high-color: #FF8C42;
+    --high-bg: rgba(255, 140, 66, 0.08);
+    --high-border: rgba(255, 140, 66, 0.35);
+
+    --medium-color: #F0C040;
+    --medium-bg: rgba(240, 192, 64, 0.08);
+    --medium-border: rgba(240, 192, 64, 0.3);
+
+    --low-color: #52B788;
+    --low-bg: rgba(82, 183, 136, 0.08);
+    --low-border: rgba(82, 183, 136, 0.3);
+
+    --done-color: #39D98A;
+    --done-bg: rgba(57, 217, 138, 0.06);
+    --done-border: rgba(57, 217, 138, 0.25);
+
+    --inprogress-color: #9D4EDD;
+    --inprogress-bg: rgba(157, 78, 221, 0.08);
+
+    --todo-color: #4A5578;
+    --todo-bg: rgba(74, 85, 120, 0.15);
+
+    --font-head: 'Space Grotesk', system-ui, sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+
+    --shadow-card: 0 4px 24px rgba(0,0,0,0.5), 0 1px 0 rgba(157,78,221,0.08) inset;
+    --shadow-hover: 0 8px 40px rgba(0,0,0,0.7), 0 0 30px rgba(157,78,221,0.12);
+    --glow-violet: 0 0 20px rgba(157,78,221,0.4), 0 0 60px rgba(157,78,221,0.15);
+    --glow-blue: 0 0 20px rgba(59,130,246,0.4), 0 0 60px rgba(59,130,246,0.1);
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg-void);
+    color: var(--chrome-white);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ====================== PARTICLES CANVAS ====================== */
+  #particles-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  /* ====================== LAYOUT ====================== */
+  .app-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ====================== HERO ====================== */
+  .hero {
+    position: relative;
+    padding: 80px 0 60px;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 900px; height: 600px;
+    background: radial-gradient(ellipse at center, rgba(123,47,190,0.18) 0%, rgba(59,130,246,0.06) 50%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--violet-bright);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .hero-eyebrow::before,
+  .hero-eyebrow::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-bright));
+  }
+  .hero-eyebrow::after {
+    background: linear-gradient(90deg, var(--violet-bright), transparent);
+  }
+
+  .hero-title {
+    font-family: var(--font-head);
+    font-size: clamp(72px, 12vw, 140px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 0.9;
+    background: linear-gradient(135deg,
+      #E8ECFF 0%,
+      #C8D0FF 15%,
+      #A78BFA 30%,
+      #7C3AED 45%,
+      #C77DFF 60%,
+      #E8ECFF 75%,
+      #94A3B8 90%,
+      #E8ECFF 100%
+    );
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: chromaShift 8s ease-in-out infinite;
+    margin-bottom: 16px;
+    text-shadow: none;
+    filter: drop-shadow(0 0 40px rgba(157,78,221,0.3));
+  }
+
+  @keyframes chromaShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .hero-subtitle {
+    font-family: var(--font-head);
+    font-size: clamp(14px, 2vw, 20px);
+    font-weight: 400;
+    color: var(--chrome-silver);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+
+  .hero-subtitle span {
+    color: var(--violet-light);
+    font-weight: 600;
+  }
+
+  /* ====================== COMPLETION RING ====================== */
+  .completion-ring-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+
+  .completion-ring {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    flex-shrink: 0;
+  }
+
+  .completion-ring svg {
+    width: 160px;
+    height: 160px;
+    transform: rotate(-90deg);
+  }
+
+  .completion-ring-track {
+    fill: none;
+    stroke: rgba(157,78,221,0.15);
+    stroke-width: 8;
+  }
+
+  .completion-ring-fill {
+    fill: none;
+    stroke: url(#ringGradient);
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .completion-ring-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .completion-pct {
+    font-family: var(--font-head);
+    font-size: 40px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #C77DFF, #60A5FA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+
+  .completion-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--chrome-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ====================== STATS BAR ====================== */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--violet-border);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-mid), transparent);
+    opacity: 0.5;
+  }
+
+  .stat-card:hover {
+    border-color: var(--violet-border-bright);
+    transform: translateY(-1px);
+  }
+
+  .stat-value {
+    font-family: var(--font-head);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--chrome-white);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-value.critical { color: var(--critical-color); }
+  .stat-value.violet { background: linear-gradient(135deg, #C77DFF, #9D4EDD); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .stat-value.blue { color: var(--blue-shimmer); }
+  .stat-value.green { color: var(--done-color); }
+
+  .stat-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--chrome-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .stat-sub {
+    font-size: 11px;
+    color: var(--chrome-ghost);
+    margin-top: 4px;
+  }
+
+  /* ====================== MAIN GRID ====================== */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  @media (max-width: 1100px) {
+    .main-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ====================== CONTROLS ====================== */
+  .controls-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--chrome-ghost);
+    background: transparent;
+    color: var(--chrome-silver);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--violet-bright);
+    color: var(--violet-light);
+    background: var(--violet-glow);
+  }
+
+  .filter-btn.active {
+    border-color: var(--violet-bright);
+    background: linear-gradient(135deg, rgba(123,47,190,0.25), rgba(157,78,221,0.15));
+    color: var(--violet-light);
+    box-shadow: 0 0 12px rgba(157,78,221,0.2);
+  }
+
+  .filter-btn.active.critical { border-color: var(--critical-color); background: var(--critical-bg); color: var(--critical-color); }
+  .filter-btn.active.high { border-color: var(--high-color); background: var(--high-bg); color: var(--high-color); }
+  .filter-btn.active.medium { border-color: var(--medium-color); background: var(--medium-bg); color: var(--medium-color); }
+  .filter-btn.active.low { border-color: var(--low-color); background: var(--low-bg); color: var(--low-color); }
+  .filter-btn.active.done { border-color: var(--done-color); background: var(--done-bg); color: var(--done-color); }
+  .filter-btn.active.inprogress { border-color: var(--inprogress-color); background: var(--inprogress-bg); color: var(--inprogress-color); }
+
+  .filter-separator {
+    width: 1px;
+    height: 28px;
+    background: var(--chrome-ghost);
+    align-self: center;
+    flex-shrink: 0;
+  }
+
+  .category-select {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--chrome-ghost);
+    background: var(--bg-card);
+    color: var(--chrome-silver);
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s;
+  }
+
+  .category-select:hover, .category-select:focus {
+    border-color: var(--violet-bright);
+    color: var(--chrome-white);
+  }
+
+  .category-select option {
+    background: var(--bg-card);
+    color: var(--chrome-white);
+  }
+
+  .search-input {
+    font-family: var(--font-body);
+    font-size: 13px;
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--chrome-ghost);
+    background: var(--bg-card);
+    color: var(--chrome-white);
+    outline: none;
+    transition: all 0.2s;
+    min-width: 200px;
+  }
+
+  .search-input::placeholder { color: var(--chrome-dim); }
+
+  .search-input:hover, .search-input:focus {
+    border-color: var(--violet-bright);
+    box-shadow: 0 0 0 3px rgba(157,78,221,0.1);
+  }
+
+  /* ====================== CATEGORY SECTION ====================== */
+  .category-section {
+    margin-bottom: 24px;
+    border-radius: var(--radius-lg);
+    background: var(--bg-card);
+    border: 1px solid var(--violet-border);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    transition: all 0.3s;
+  }
+
+  .category-section:hover {
+    border-color: rgba(157,78,221,0.4);
+  }
+
+  .category-header {
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    background: linear-gradient(135deg, rgba(13,17,32,0.8), rgba(20,24,48,0.4));
+    border-bottom: 1px solid var(--violet-border);
+    transition: background 0.2s;
+  }
+
+  .category-header:hover {
+    background: linear-gradient(135deg, rgba(20,24,48,0.9), rgba(30,35,65,0.5));
+  }
+
+  .category-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .category-title-block {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .category-name {
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--chrome-white);
+    letter-spacing: -0.01em;
+    margin-bottom: 2px;
+  }
+
+  .category-tagline {
+    font-size: 12px;
+    color: var(--chrome-dim);
+    font-style: italic;
+  }
+
+  .category-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+
+  .category-progress-ring {
+    position: relative;
+    width: 48px;
+    height: 48px;
+  }
+
+  .category-progress-ring svg {
+    width: 48px;
+    height: 48px;
+    transform: rotate(-90deg);
+  }
+
+  .cat-ring-track {
+    fill: none;
+    stroke: rgba(157,78,221,0.15);
+    stroke-width: 4;
+  }
+
+  .cat-ring-fill {
+    fill: none;
+    stroke: var(--violet-bright);
+    stroke-width: 4;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.6s ease;
+  }
+
+  .cat-ring-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-head);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--chrome-white);
+  }
+
+  .category-count-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--bg-raised);
+    color: var(--chrome-silver);
+    border: 1px solid var(--chrome-ghost);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .category-toggle {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--chrome-dim);
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+
+  .category-section.collapsed .category-toggle {
+    transform: rotate(-90deg);
+  }
+
+  .category-items {
+    padding: 0;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .category-section.collapsed .category-items {
+    max-height: 0 !important;
+    padding: 0;
+  }
+
+  /* ====================== CHECKLIST ITEM ====================== */
+  .checklist-item {
+    padding: 16px 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    border-bottom: 1px solid rgba(157,78,221,0.08);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    group: true;
+  }
+
+  .checklist-item:last-child {
+    border-bottom: none;
+  }
+
+  .checklist-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+    transition: background 0.2s;
+  }
+
+  .checklist-item[data-priority="CRITICAL"]::before { background: var(--critical-color); }
+  .checklist-item[data-priority="HIGH"]::before { background: var(--high-color); }
+  .checklist-item[data-priority="MEDIUM"]::before { background: var(--medium-color); }
+  .checklist-item[data-priority="LOW"]::before { background: var(--low-color); }
+
+  .checklist-item:hover {
+    background: rgba(157,78,221,0.04);
+  }
+
+  .checklist-item[data-status="DONE"] {
+    background: var(--done-bg);
+  }
+
+  .checklist-item[data-status="DONE"]:hover {
+    background: rgba(57,217,138,0.08);
+  }
+
+  .checklist-item[data-status="IN_PROGRESS"] {
+    background: var(--inprogress-bg);
+    animation: inProgressPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes inProgressPulse {
+    0%, 100% { box-shadow: inset 3px 0 0 var(--violet-bright); }
+    50% { box-shadow: inset 3px 0 0 var(--violet-light), inset 0 0 20px rgba(157,78,221,0.08); }
+  }
+
+  .item-checkbox {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 2px solid var(--chrome-ghost);
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .checklist-item:hover .item-checkbox {
+    border-color: var(--violet-bright);
+  }
+
+  .checklist-item[data-status="DONE"] .item-checkbox {
+    background: var(--done-color);
+    border-color: var(--done-color);
+    box-shadow: 0 0 10px rgba(57,217,138,0.4);
+  }
+
+  .checklist-item[data-status="IN_PROGRESS"] .item-checkbox {
+    border-color: var(--violet-bright);
+    box-shadow: 0 0 8px rgba(157,78,221,0.5);
+  }
+
+  .item-checkbox svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .checklist-item[data-status="DONE"] .item-checkbox svg {
+    opacity: 1;
+  }
+
+  .item-checkbox .progress-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--violet-bright);
+    opacity: 0;
+    transition: opacity 0.15s;
+    animation: dotPulse 1.5s ease-in-out infinite;
+  }
+
+  .checklist-item[data-status="IN_PROGRESS"] .item-checkbox .progress-dot {
+    opacity: 1;
+  }
+
+  @keyframes dotPulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.3); opacity: 1; }
+  }
+
+  .item-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .item-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+
+  .item-title {
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--chrome-white);
+    flex: 1;
+    min-width: 0;
+    line-height: 1.4;
+    transition: color 0.2s;
+  }
+
+  .checklist-item[data-status="DONE"] .item-title {
+    text-decoration: line-through;
+    color: var(--chrome-dim);
+  }
+
+  .item-badges {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border: 1px solid;
+  }
+
+  .badge-priority-CRITICAL { background: var(--critical-bg); color: var(--critical-color); border-color: var(--critical-border); }
+  .badge-priority-HIGH { background: var(--high-bg); color: var(--high-color); border-color: var(--high-border); }
+  .badge-priority-MEDIUM { background: var(--medium-bg); color: var(--medium-color); border-color: var(--medium-border); }
+  .badge-priority-LOW { background: var(--low-bg); color: var(--low-color); border-color: var(--low-border); }
+
+  .badge-status-TODO { background: var(--todo-bg); color: var(--todo-color); border-color: rgba(74,85,120,0.4); }
+  .badge-status-IN_PROGRESS { background: var(--inprogress-bg); color: var(--inprogress-color); border-color: rgba(157,78,221,0.4); }
+  .badge-status-DONE { background: var(--done-bg); color: var(--done-color); border-color: var(--done-border); }
+
+  .badge-time {
+    background: rgba(96,165,250,0.08);
+    color: var(--blue-shimmer);
+    border-color: rgba(96,165,250,0.2);
+    font-weight: 500;
+  }
+
+  .item-description {
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: var(--chrome-silver);
+    opacity: 0.85;
+  }
+
+  .checklist-item[data-status="DONE"] .item-description {
+    opacity: 0.5;
+  }
+
+  /* ====================== TOOLTIP ====================== */
+  .item-insight-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--violet-bright);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: help;
+    transition: color 0.2s;
+    user-select: none;
+  }
+
+  .item-insight-trigger:hover {
+    color: var(--violet-light);
+  }
+
+  .item-insight-trigger svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .tooltip-container {
+    position: relative;
+    display: inline-block;
+  }
+
+  .tooltip-box {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 0;
+    width: 340px;
+    max-width: 90vw;
+    background: linear-gradient(135deg, #111628, #1a1f3a);
+    border: 1px solid var(--violet-border-bright);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: var(--chrome-white);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.7), 0 0 20px rgba(157,78,221,0.15);
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .tooltip-box::before {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 20px;
+    width: 10px;
+    height: 10px;
+    background: #1a1f3a;
+    border-right: 1px solid var(--violet-border-bright);
+    border-bottom: 1px solid var(--violet-border-bright);
+    transform: rotate(45deg);
+  }
+
+  .tooltip-box.right {
+    left: auto;
+    right: 0;
+  }
+
+  .tooltip-box.right::before {
+    left: auto;
+    right: 20px;
+  }
+
+  .tooltip-container:hover .tooltip-box {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .tooltip-label {
+    font-family: var(--font-head);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--violet-bright);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tooltip-label::before {
+    content: '⚡';
+    font-size: 11px;
+  }
+
+  /* ====================== SIDEBAR ====================== */
+  .sidebar {
+    position: sticky;
+    top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .sidebar-card {
+    background: var(--bg-card);
+    border: 1px solid var(--violet-border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .sidebar-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-mid), transparent);
+    opacity: 0.6;
+  }
+
+  .sidebar-card-title {
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--violet-bright);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sidebar-card-title svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0.8;
+  }
+
+  /* ====================== REVENUE METER ====================== */
+  .revenue-total {
+    font-family: var(--font-head);
+    font-size: 36px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #39D98A, #52B788);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+    line-height: 1;
+  }
+
+  .revenue-label {
+    font-size: 11px;
+    color: var(--chrome-dim);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .revenue-bar-wrap {
+    margin-bottom: 12px;
+  }
+
+  .revenue-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--chrome-silver);
+    margin-bottom: 6px;
+  }
+
+  .revenue-bar-bg {
+    height: 6px;
+    background: var(--bg-raised);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .revenue-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--violet-mid), var(--done-color));
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .revenue-items-list {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .revenue-item-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11.5px;
+    color: var(--chrome-silver);
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: var(--bg-raised);
+    transition: background 0.2s;
+  }
+
+  .revenue-item-row.done {
+    background: rgba(57,217,138,0.06);
+    color: var(--done-color);
+  }
+
+  .revenue-item-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .revenue-item-dot.done { background: var(--done-color); box-shadow: 0 0 6px rgba(57,217,138,0.6); }
+  .revenue-item-dot.pending { background: var(--chrome-ghost); }
+
+  /* ====================== CATEGORY CHART ====================== */
+  .chart-container {
+    position: relative;
+    height: 200px;
+  }
+
+  /* ====================== CATEGORY PROGRESS BARS ====================== */
+  .cat-progress-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cat-progress-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .cat-progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cat-progress-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--chrome-silver);
+    letter-spacing: 0.04em;
+  }
+
+  .cat-progress-pct {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--chrome-white);
+  }
+
+  .cat-progress-bg {
+    height: 5px;
+    background: var(--bg-raised);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .cat-progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.8s ease;
+  }
+
+  /* ====================== TIME ESTIMATE ====================== */
+  .time-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .time-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(157,78,221,0.1);
+    font-size: 12px;
+  }
+
+  .time-row:last-child {
+    border-bottom: none;
+  }
+
+  .time-row-label {
+    color: var(--chrome-silver);
+  }
+
+  .time-row-value {
+    font-family: var(--font-head);
+    font-weight: 600;
+    color: var(--chrome-white);
+  }
+
+  .time-total {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: var(--font-head);
+    color: var(--blue-shimmer);
+    margin-bottom: 4px;
+  }
+
+  /* ====================== ITEM COUNTER ====================== */
+  .result-count {
+    font-size: 12px;
+    color: var(--chrome-dim);
+    padding: 8px 0;
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .result-count span {
+    color: var(--violet-bright);
+    font-weight: 600;
+  }
+
+  /* ====================== SCROLL CUSTOM ====================== */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track { background: var(--bg-void); }
+  ::-webkit-scrollbar-thumb { background: var(--chrome-ghost); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--violet-mid); }
+
+  /* ====================== EMPTY STATE ====================== */
+  .empty-state {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--chrome-dim);
+  }
+
+  .empty-state-icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+    opacity: 0.4;
+  }
+
+  .empty-state-title {
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--chrome-silver);
+    margin-bottom: 8px;
+  }
+
+  .empty-state-desc {
+    font-size: 13px;
+    color: var(--chrome-dim);
+  }
+
+  /* ====================== FOOTER ====================== */
+  .app-footer {
+    margin-top: 60px;
+    padding: 24px 0;
+    border-top: 1px solid var(--violet-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--chrome-ghost);
+  }
+
+  .footer-brand {
+    font-family: var(--font-head);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    background: linear-gradient(135deg, var(--violet-bright), var(--blue-shimmer));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ====================== ANIMATIONS ====================== */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .category-section {
+    animation: fadeInUp 0.4s ease both;
+  }
+
+  .checklist-item {
+    animation: fadeInUp 0.2s ease both;
+  }
+
+  /* ====================== MOBILE ====================== */
+  @media (max-width: 768px) {
+    .app-wrapper { padding: 0 16px 60px; }
+    .hero { padding: 50px 0 40px; }
+    .controls-bar { gap: 8px; }
+    .filter-btn { padding: 6px 10px; font-size: 11px; }
+    .checklist-item { padding: 14px 16px; }
+    .category-header { padding: 16px; }
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .tooltip-box { width: 280px; }
+    .sidebar-card { padding: 16px; }
+  }
+
+  /* ====================== VIBRANIUM SHIMMER LINE ====================== */
+  .shimmer-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--violet-mid) 30%, var(--blue-shimmer) 50%, var(--violet-mid) 70%, transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmerMove 4s linear infinite;
+    opacity: 0.6;
+    margin: 24px 0;
+  }
+
+  @keyframes shimmerMove {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+  }
+
+  /* ====================== HEADER NAV ====================== */
+  .app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(157,78,221,0.15);
+    margin-bottom: 0;
+  }
+
+  .app-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .app-logo-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .app-logo-text {
+    font-family: var(--font-head);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--chrome-white);
+  }
+
+  .app-logo-sub {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--chrome-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .header-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--chrome-silver);
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--done-color);
+    box-shadow: 0 0 8px var(--done-color);
+    animation: statusPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes statusPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* Item glow on complete */
+  .checklist-item[data-status="DONE"] {
+    box-shadow: inset 0 0 20px rgba(57,217,138,0.03);
+  }
+
+  /* Priority color system for category bars */
+  .cat-fill-0 { background: linear-gradient(90deg, #7B2FBE, #9D4EDD); }
+  .cat-fill-1 { background: linear-gradient(90deg, #1E3A8A, #3B82F6); }
+  .cat-fill-2 { background: linear-gradient(90deg, #4A1A8C, #7C3AED); }
+  .cat-fill-3 { background: linear-gradient(90deg, #1E5A4A, #39D98A); }
+  .cat-fill-4 { background: linear-gradient(90deg, #5A1A4A, #C77DFF); }
+  .cat-fill-5 { background: linear-gradient(90deg, #1A3A5A, #60A5FA); }
+  .cat-fill-6 { background: linear-gradient(90deg, #3A2A1A, #F0C040); }
+
+  /* Bulk action bar */
+  .bulk-bar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 10px 16px;
+    background: rgba(123,47,190,0.08);
+    border: 1px solid var(--violet-border);
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+    font-size: 12px;
+    color: var(--chrome-silver);
+  }
+
+  .bulk-btn {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 5px;
+    border: 1px solid var(--violet-border);
+    background: transparent;
+    color: var(--violet-light);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+  }
+
+  .bulk-btn:hover {
+    background: var(--violet-glow);
+    border-color: var(--violet-bright);
+  }
+
+  .bulk-btn.reset {
+    border-color: rgba(255,59,107,0.3);
+    color: var(--critical-color);
+  }
+
+  .bulk-btn.reset:hover {
+    background: rgba(255,59,107,0.08);
+    border-color: var(--critical-color);
+  }
+
+  /* Category color icons */
+  .cat-icon-0 { background: linear-gradient(135deg, rgba(123,47,190,0.2), rgba(157,78,221,0.1)); color: var(--violet-bright); border: 1px solid var(--violet-border); }
+  .cat-icon-1 { background: linear-gradient(135deg, rgba(255,59,107,0.15), rgba(200,30,80,0.08)); color: var(--critical-color); border: 1px solid rgba(255,59,107,0.3); }
+  .cat-icon-2 { background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(30,80,180,0.08)); color: var(--blue-shimmer); border: 1px solid rgba(96,165,250,0.3); }
+  .cat-icon-3 { background: linear-gradient(135deg, rgba(57,217,138,0.15), rgba(30,150,90,0.08)); color: var(--done-color); border: 1px solid rgba(57,217,138,0.3); }
+  .cat-icon-4 { background: linear-gradient(135deg, rgba(255,140,66,0.15), rgba(200,90,20,0.08)); color: var(--high-color); border: 1px solid rgba(255,140,66,0.3); }
+  .cat-icon-5 { background: linear-gradient(135deg, rgba(199,125,255,0.15), rgba(150,80,220,0.08)); color: var(--violet-light); border: 1px solid rgba(199,125,255,0.3); }
+  .cat-icon-6 { background: linear-gradient(135deg, rgba(240,192,64,0.15), rgba(180,140,20,0.08)); color: var(--medium-color); border: 1px solid rgba(240,192,64,0.3); }
+</style>
+</head>
+<body>
+
+<canvas id="particles-canvas"></canvas>
+
+<div class="app-wrapper">
+  <!-- Header -->
+  <header class="app-header">
+    <div class="app-logo">
+      <svg class="app-logo-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="SmartScan Logo">
+        <defs>
+          <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#9D4EDD"/>
+            <stop offset="100%" stop-color="#3B82F6"/>
+          </linearGradient>
+        </defs>
+        <rect width="36" height="36" rx="8" fill="rgba(123,47,190,0.12)" stroke="rgba(157,78,221,0.4)" stroke-width="1"/>
+        <path d="M18 6L30 13V23L18 30L6 23V13L18 6Z" stroke="url(#logoGrad)" stroke-width="1.5" fill="none"/>
+        <circle cx="18" cy="18" r="5" fill="url(#logoGrad)" opacity="0.9"/>
+        <line x1="18" y1="6" x2="18" y2="13" stroke="url(#logoGrad)" stroke-width="1.2" opacity="0.6"/>
+        <line x1="30" y1="13" x2="23" y2="15.5" stroke="url(#logoGrad)" stroke-width="1.2" opacity="0.6"/>
+        <line x1="30" y1="23" x2="23" y2="20.5" stroke="url(#logoGrad)" stroke-width="1.2" opacity="0.6"/>
+        <line x1="18" y1="30" x2="18" y2="23" stroke="url(#logoGrad)" stroke-width="1.2" opacity="0.6"/>
+        <line x1="6" y1="23" x2="13" y2="20.5" stroke="url(#logoGrad)" stroke-width="1.2" opacity="0.6"/>
+        <line x1="6" y1="13" x2="13" y2="15.5" stroke="url(#logoGrad)" stroke-width="1.2" opacity="0.6"/>
+      </svg>
+      <div>
+        <div class="app-logo-text">R.E.A.L. SmartScan</div>
+        <div class="app-logo-sub">GA Launch Protocol</div>
+      </div>
+    </div>
+    <div class="header-status">
+      <div class="status-dot"></div>
+      <span>Mission Control Active</span>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-eyebrow">GA Launch Checklist · 84 Items · 7 Categories</div>
+    <h1 class="hero-title">VIBRANIUM</h1>
+    <p class="hero-subtitle"><span>R.E.A.L. SmartScan</span> — GA Launch Protocol · Wakanda's Lab Meets Bloomberg Terminal</p>
+
+    <!-- Completion Ring + Key Metrics -->
+    <div class="completion-ring-wrapper">
+      <div class="completion-ring">
+        <svg viewBox="0 0 160 160">
+          <defs>
+            <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#7B2FBE"/>
+              <stop offset="50%" stop-color="#9D4EDD"/>
+              <stop offset="100%" stop-color="#60A5FA"/>
+            </linearGradient>
+          </defs>
+          <circle class="completion-ring-track" cx="80" cy="80" r="68"/>
+          <circle class="completion-ring-fill" id="mainRingFill" cx="80" cy="80" r="68"
+            stroke-dasharray="427.26" stroke-dashoffset="427.26"/>
+        </svg>
+        <div class="completion-ring-center">
+          <div class="completion-pct" id="overallPct">0%</div>
+          <div class="completion-label">Complete</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="shimmer-line"></div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-card">
+      <div class="stat-value violet" id="stat-total">84</div>
+      <div class="stat-label">Total Items</div>
+      <div class="stat-sub" id="stat-done-of">0 of 84 done</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value critical" id="stat-critical-remaining">0</div>
+      <div class="stat-label">Critical Remaining</div>
+      <div class="stat-sub" id="stat-critical-done">0 critical done</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value blue" id="stat-hours">0h</div>
+      <div class="stat-label">Hours to Launch</div>
+      <div class="stat-sub">Uncompleted work</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value green" id="stat-revenue-items">0</div>
+      <div class="stat-label">Revenue Items Done</div>
+      <div class="stat-sub" id="stat-revenue-of">of 16 revenue items</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--violet-light)" id="stat-in-progress">0</div>
+      <div class="stat-label">In Progress</div>
+      <div class="stat-sub">Active work items</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="font-size:22px; color: var(--medium-color)" id="stat-days">∞</div>
+      <div class="stat-label">Days to Rev-Ready</div>
+      <div class="stat-sub">Critical blockers</div>
+    </div>
+  </div>
+
+  <div class="shimmer-line"></div>
+
+  <!-- Controls -->
+  <div class="controls-bar">
+    <div class="filter-group" id="statusFilters">
+      <button class="filter-btn active" data-filter-type="status" data-value="ALL">All</button>
+      <button class="filter-btn" data-filter-type="status" data-value="TODO">To Do</button>
+      <button class="filter-btn inprogress" data-filter-type="status" data-value="IN_PROGRESS">In Progress</button>
+      <button class="filter-btn done" data-filter-type="status" data-value="DONE">Done</button>
+    </div>
+    <div class="filter-separator"></div>
+    <div class="filter-group" id="priorityFilters">
+      <button class="filter-btn" data-filter-type="priority" data-value="ALL_P">All Priority</button>
+      <button class="filter-btn critical" data-filter-type="priority" data-value="CRITICAL">Critical</button>
+      <button class="filter-btn high" data-filter-type="priority" data-value="HIGH">High</button>
+      <button class="filter-btn medium" data-filter-type="priority" data-value="MEDIUM">Medium</button>
+      <button class="filter-btn low" data-filter-type="priority" data-value="LOW">Low</button>
+    </div>
+    <div class="filter-separator"></div>
+    <select class="category-select" id="categoryFilter">
+      <option value="ALL_CAT">All Categories</option>
+      <option value="0">Revenue Engine</option>
+      <option value="1">Legal &amp; Compliance</option>
+      <option value="2">Performance &amp; Infrastructure</option>
+      <option value="3">Trust &amp; Conversion</option>
+      <option value="4">Growth &amp; Acquisition</option>
+      <option value="5">Product Completeness</option>
+      <option value="6">Analytics &amp; Intelligence</option>
+    </select>
+    <input class="search-input" type="text" id="searchInput" placeholder="Search items..." autocomplete="off">
+  </div>
+
+  <div class="bulk-bar">
+    <span>Bulk actions:</span>
+    <button class="bulk-btn" onclick="bulkAction('DONE')">Mark All Visible Done</button>
+    <button class="bulk-btn" onclick="bulkAction('IN_PROGRESS')">Mark All Visible In Progress</button>
+    <button class="bulk-btn reset" onclick="bulkAction('TODO')">Reset All Visible</button>
+    <span style="margin-left: auto; font-size: 11px; color: var(--chrome-dim)" id="visibleCount">84 items visible</span>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="main-grid">
+    <!-- Checklist -->
+    <div id="checklistContainer">
+      <!-- Rendered by JS -->
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <!-- Revenue Meter -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 1v14M11 4H6.5a2.5 2.5 0 000 5H9a2.5 2.5 0 010 5H4"/>
+          </svg>
+          Revenue Enablement
+        </div>
+        <div class="revenue-total" id="revenueAmount">$0</div>
+        <div class="revenue-label">Est. Monthly Revenue Unlocked</div>
+        <div class="revenue-bar-wrap">
+          <div class="revenue-bar-label">
+            <span>Revenue Engine</span>
+            <span id="revEngineCount">0/16</span>
+          </div>
+          <div class="revenue-bar-bg">
+            <div class="revenue-bar-fill" id="revEngineBar" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="revenue-items-list" id="revenueItemsList"></div>
+      </div>
+
+      <!-- Category Progress -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="10" width="3" height="5" rx="1"/><rect x="6.5" y="6" width="3" height="9" rx="1"/><rect x="11" y="2" width="3" height="13" rx="1"/>
+          </svg>
+          Category Progress
+        </div>
+        <div class="cat-progress-list" id="catProgressList"></div>
+      </div>
+
+      <!-- Time Estimate -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="8" cy="8" r="6"/><path d="M8 4v4l3 2"/>
+          </svg>
+          Time to Launch
+        </div>
+        <div class="time-total" id="totalTimeDisplay">0h</div>
+        <div class="revenue-label">Remaining work hours</div>
+        <div class="time-breakdown" id="timeBreakdown"></div>
+      </div>
+
+      <!-- Chart -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 12L6 7l4 3 4-6"/>
+          </svg>
+          Status Overview
+        </div>
+        <div class="chart-container">
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="app-footer">
+    <div class="footer-brand">VIBRANIUM // R.E.A.L. SmartScan</div>
+    <div>GA Launch Protocol · 84 Items · 7 Categories · Built for $22M ARR</div>
+  </footer>
+</div>
+
+<script>
+// ====================== DATA ======================
+const CATEGORIES = [
+  {
+    id: 0,
+    name: "Revenue Engine",
+    tagline: "Zero revenue infrastructure = zero launch",
+    icon: "💰",
+    colorClass: "cat-icon-0",
+    fillClass: "cat-fill-0"
+  },
+  {
+    id: 1,
+    name: "Legal & Compliance",
+    tagline: "One lawsuit kills a startup",
+    icon: "⚖️",
+    colorClass: "cat-icon-1",
+    fillClass: "cat-fill-1"
+  },
+  {
+    id: 2,
+    name: "Performance & Infrastructure",
+    tagline: "Slow = dead",
+    icon: "⚡",
+    colorClass: "cat-icon-2",
+    fillClass: "cat-fill-2"
+  },
+  {
+    id: 3,
+    name: "Trust & Conversion",
+    tagline: "Trust is the product",
+    icon: "🛡",
+    colorClass: "cat-icon-3",
+    fillClass: "cat-fill-3"
+  },
+  {
+    id: 4,
+    name: "Growth & Acquisition",
+    tagline: "An empty platform earns nothing",
+    icon: "🚀",
+    colorClass: "cat-icon-4",
+    fillClass: "cat-fill-4"
+  },
+  {
+    id: 5,
+    name: "Product Completeness",
+    tagline: "Ship what you promised",
+    icon: "📦",
+    colorClass: "cat-icon-5",
+    fillClass: "cat-fill-5"
+  },
+  {
+    id: 6,
+    name: "Analytics & Intelligence",
+    tagline: "You can't optimize what you don't measure",
+    icon: "📊",
+    colorClass: "cat-icon-6",
+    fillClass: "cat-fill-6"
+  }
+];
+
+// Revenue value mapping (estimated MRR unlock per item done)
+const REVENUE_VALUES = {
+  'r-1': 500, 'r-2': 300, 'r-3': 2000, 'r-4': 1500, 'r-5': 400,
+  'r-6': 200, 'r-7': 600, 'r-8': 800, 'r-9': 700, 'r-10': 1200,
+  'r-11': 900, 'r-12': 800, 'r-13': 150, 'r-14': 250, 'r-15': 300,
+  'r-16': 400
+};
+
+// Time parsing to hours
+function parseTime(t) {
+  if (!t) return 0;
+  t = t.toLowerCase();
+  if (t.includes('week')) return parseFloat(t) * 40;
+  if (t.includes('day')) return parseFloat(t) * 8;
+  if (t.includes('hr') || t.includes('hour')) return parseFloat(t);
+  if (t.includes('min')) return parseFloat(t) / 60;
+  if (t.includes('$')) return 0;
+  if (t.includes('ongoing')) return 0;
+  return parseFloat(t) || 0;
+}
+
+const ITEMS = [
+  // CATEGORY 0: REVENUE ENGINE (16 items)
+  { id:'r-1', cat:0, title:'Stripe account fully activated', priority:'CRITICAL', time:'1 day', status:'TODO', revenue:true,
+    desc:'Stripe\'s fraud review can freeze newly created accounts for 7-14 days after first transactions. Apply now, verify identity, add bank account, and do a test charge before you need it live.',
+    insight:"Stripe holds 25% of funds for 7 days on new accounts by default. Email support@stripe.com to request removal after first 10 successful charges." },
+  { id:'r-2', cat:0, title:'Stripe products + prices created', priority:'CRITICAL', time:'2 hrs', status:'TODO', revenue:true,
+    desc:'Create Prime Elite ($9.99/mo), SmartCast Pro ($49/mo), and B2B API ($499/mo) as recurring Price objects in Stripe Dashboard. These price IDs go into your STRIPE_PRIME_PRICE_ID and STRIPE_SMARTCAST_PRICE_ID env vars.',
+    insight:"Use Stripe's 'lookup_key' on price objects so you can update pricing without changing code — just pass the lookup key, not the hardcoded price ID." },
+  { id:'r-3', cat:0, title:'Stripe Checkout live and tested', priority:'CRITICAL', time:'4 hrs', status:'TODO', revenue:true,
+    desc:'STRIPE_SECRET_KEY is in Vercel. The /api/subscribe endpoint exists. Test the full flow: click Join Prime → Stripe checkout page loads → complete payment with test card 4242 4242 4242 4242 → redirected to /#/dashboard?upgraded=1 → user tier in Supabase updates to \'prime\'.',
+    insight:"Stripe test mode vs live mode: make sure you swap from sk_test_ to sk_live_ key in Vercel BEFORE going live. The app will silently accept test payments if you don't." },
+  { id:'r-4', cat:0, title:'Stripe webhook endpoint registered', priority:'CRITICAL', time:'1 hr', status:'TODO', revenue:true,
+    desc:'Go to Stripe Dashboard → Developers → Webhooks → Add endpoint. URL: https://real-smartscan.vercel.app/api/webhook. Listen for: checkout.session.completed, customer.subscription.deleted, invoice.payment_failed. Copy the signing secret to STRIPE_WEBHOOK_SECRET in Vercel.',
+    insight:"Without the webhook, users who pay will NOT get their Prime access. The checkout.session.completed event is the ONLY reliable way to confirm payment — never trust the success_url redirect alone." },
+  { id:'r-5', cat:0, title:'Stripe dunning configured', priority:'HIGH', time:'2 hrs', status:'TODO', revenue:true,
+    desc:'In Stripe Dashboard → Billing → Subscriptions → Settings → Retry rules. Set: retry on Day 1, 3, 5, 7 after failed payment. Enable Smart Retries. Enable dunning emails to customers. This recovers 20-40% of failed payments automatically.',
+    insight:"Stripe Smart Retries uses ML to pick optimal retry times. Average recovery rate is 38% of initially failed subscriptions. Worth the 30 minutes to configure." },
+  { id:'r-6', cat:0, title:'Stripe tax collection enabled', priority:'HIGH', time:'1 hr', status:'TODO', revenue:true,
+    desc:'Stripe Tax automatically calculates and collects sales tax, VAT, and GST in 40+ countries and all US states. Enable it in Dashboard → Tax. Economic nexus kicks in at $100K revenue in most US states — you need this before you hit that threshold, not after.',
+    insight:"California nexus threshold is $500K. Texas is $500K. NY requires $500K AND 100 transactions. But many states (Arkansas, Georgia) trigger at just $100K. Use Stripe Tax to stay clean from Day 1." },
+  { id:'r-7', cat:0, title:'Revenue reporting dashboard', priority:'HIGH', time:'3 hrs', status:'TODO', revenue:true,
+    desc:'The admin portal has a Revenue tab with a Simulate button. Connect it to real Stripe data using the Stripe Dashboard\'s built-in reporting, or pull from /api/stripe-revenue endpoint. You need to see MRR, churn rate, and new signups daily.',
+    insight:"Stripe's built-in revenue dashboard is free and excellent. Go to Dashboard → Revenue Recognition. Enable it. It shows MRR, ARR, churn, and expansion revenue out of the box." },
+  { id:'r-8', cat:0, title:'Resend account + domain verified', priority:'CRITICAL', time:'2 hrs', status:'TODO', revenue:true,
+    desc:'Create Resend account at resend.com. Add RESEND_API_KEY to Vercel env vars. Verify your sending domain (real-smartscan.com) by adding DNS records. Without this, price drop alerts, Prime welcome emails, and receipts are silently failing right now.',
+    insight:"Resend's free tier is 3,000 emails/mo. Add SPF, DKIM, and DMARC DNS records or your emails land in spam. Use mail-tester.com to score your deliverability before sending anything real." },
+  { id:'r-9', cat:0, title:'Transactional email flows live', priority:'HIGH', time:'4 hrs', status:'TODO', revenue:true,
+    desc:'Wire up: (1) Prime Elite welcome email on signup, (2) Price alert triggered email, (3) SmartCast submission confirmed, (4) Payment failed dunning email, (5) Password reset. These all have API scaffolding — they just need the email templates written and the triggers connected.',
+    insight:"The most critical: payment failed email. SaaS companies lose 40% of churned customers due to passive churn (failed payments they didn't know about). A single 'your card failed' email recovers most of them." },
+  { id:'r-10', cat:0, title:'Affiliate program set up on ShareASale/Impact', priority:'MEDIUM', time:'1 week', status:'TODO', revenue:true,
+    desc:'Register on ShareASale (cheapest) or Impact.com. Set commission at 15-20% of first month\'s subscription per referred Prime signup. Affiliate programs drive 15-30% of revenue for comparison shopping apps. Honey grew almost entirely through affiliates before PayPal acquired it.',
+    insight:"The highest-value affiliates for a price comparison app are: personal finance blogs (NerdWallet tier), deal newsletters (The Hustle, Morning Brew), and browser extension directories. One placement can drive 500+ signups." },
+  { id:'r-11', cat:0, title:'BNPL integration (Affirm/Klarna) for high-ticket items', priority:'MEDIUM', time:'1 week', status:'TODO', revenue:true,
+    desc:'The SmartScan Direct \'Buy Here\' checkout for products $150+ should offer Affirm or Klarna. BNPL increases average order value 30-50% and conversion rate 20%. Stripe supports Klarna and Afterpay natively — enable them in Payment Methods settings.',
+    insight:"Affirm's average order value uplift is $165. For a $399 PS5 purchase, offering 4 payments of $99 converts 2.4x better than a single charge. This is the single biggest conversion lever for high-AOV products." },
+  { id:'r-12', cat:0, title:'Referral program wired', priority:'HIGH', time:'3 days', status:'TODO', revenue:true,
+    desc:'A \'Give $5, Get $5\' or \'Give 1 month free, Get 1 month free\' referral loop is the #1 CAC reducer for subscription apps. Build: unique referral link per user, track signups from that link, credit both parties. Store referral codes in Supabase.',
+    insight:"Referral programs that reward the REFERRED user MORE than the referrer convert 3x better. 'Your friend Ben gave you 1 free month of Prime Elite' outperforms 'Share and earn $5 for yourself' in every A/B test." },
+  { id:'r-13', cat:0, title:'Upstash Redis caching live', priority:'HIGH', time:'1 hr', status:'TODO', revenue:true,
+    desc:'UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are in Vercel env vars. Create the Redis database at upstash.com (free tier: 10K requests/day). Every SerpAPI call is $0.00025. Caching 60% of searches = $0 on repeat queries within 5 minutes.',
+    insight:"At 50K monthly searches with 60% cache hit rate: saves ~30K SerpAPI calls × $0.00025 = $7.50/month. At 5M searches: saves $750/month. Redis is the most cost-effective infrastructure investment you can make." },
+  { id:'r-14', cat:0, title:'Price history cron verified working', priority:'HIGH', time:'30 mins', status:'TODO', revenue:true,
+    desc:'9 Vercel cron jobs are configured (8 price trackers + 1 alert checker). Verify they\'re running: check Vercel Dashboard → Functions → Logs. First cron runs at 2 AM UTC. Each product query updates the price_history table in Supabase.',
+    insight:"Vercel crons only work on Pro plans ($20/mo). Free tier has no cron. Check your Vercel plan. If on free, use a free service like cron-job.org to call your /api/record-price endpoints instead." },
+  { id:'r-15', cat:0, title:'Stripe billing portal enabled', priority:'MEDIUM', time:'30 mins', status:'TODO', revenue:true,
+    desc:'Enable Stripe Customer Portal so Prime users can self-serve: upgrade, downgrade, cancel, update payment method. Go to Stripe Dashboard → Billing → Customer Portal → Activate. Pass the customer\'s Stripe customer_id to create a session.',
+    insight:"Without a self-serve billing portal, every subscription cancellation requires a manual intervention from you. At 100 subscribers, that's manageable. At 1,000, it's a full-time job. Activate the portal now." },
+  { id:'r-16', cat:0, title:'Google Merchant Center feed', priority:'MEDIUM', time:'1 week', status:'TODO', revenue:true,
+    desc:'Submit your product data to Google Merchant Center for free Shopping tab listings. Products that show on Google Shopping\'s free tab get 3-5x more visibility than organic search. Your SerpAPI results already have the product data — format it as a Merchant Center product feed and submit.',
+    insight:"The Shopping tab is free. Google gives SmartScan a unique advantage: you can list YOUR SmartScan Direct buy price alongside competitor prices, with YOUR checkout. This is how you build organic GMV volume." },
+
+  // CATEGORY 1: LEGAL & COMPLIANCE (14 items)
+  { id:'l-1', cat:1, title:'Business entity formed (LLC/Corp)', priority:'CRITICAL', time:'1 week', status:'TODO',
+    desc:'R.E.A.L. SmartScan MUST be operating under a legal entity before taking real payments. In the US, a Delaware C-Corp is standard for VC-backed startups; an LLC is simpler for self-funded. File via Stripe Atlas ($500), Clerky, or direct with Delaware Secretary of State.',
+    insight:"Stripe will not fully activate a merchant account for an individual — they prefer a business entity. Personal liability protection requires the entity to actually exist before any transaction occurs." },
+  { id:'l-2', cat:1, title:'Terms of Service (complete, attorney-reviewed)', priority:'CRITICAL', time:'3 days', status:'TODO',
+    desc:'Your ToS must cover: (1) Marketplace facilitation disclaimer, (2) Price accuracy disclaimers, (3) User content for SmartCast, (4) Governing law clause, (5) Dispute resolution/arbitration clause.',
+    insight:"The most important clause: 'Prices displayed are for informational purposes and may not reflect current pricing. R.E.A.L. SmartScan is not responsible for price discrepancies.' Without this, you're liable for every price that goes stale." },
+  { id:'l-3', cat:1, title:'Privacy Policy (CCPA + GDPR compliant)', priority:'CRITICAL', time:'2 days', status:'TODO',
+    desc:'CCPA 2026 regulations are now in effect. You collect email, search history, purchase data, and behavioral data. Your Privacy Policy must disclose all of this, provide opt-out mechanisms, and include a \'Do Not Sell My Personal Information\' link in the footer for California users.',
+    insight:"CCPA fines are $2,500 per unintentional violation and $7,500 per intentional violation. In 2025, 3,948 accessibility + privacy lawsuits were filed, 23.84% higher than 2024. A 2-hour privacy policy protects you from a $7,500 fine." },
+  { id:'l-4', cat:1, title:'Cookie consent banner', priority:'HIGH', time:'2 hrs', status:'TODO',
+    desc:'If you use PostHog, Sentry, or any analytics tool, you are dropping cookies. GDPR requires explicit consent for non-essential cookies from EU users. CCPA requires an opt-out. Use Cookieyes.com or Osano free tier — takes 30 minutes to install.',
+    insight:"Google/Meta ad retargeting requires cookie consent. If you ever want to run retargeting ads to SmartScan visitors, you need a consented cookie database from Day 1. Retrofitting this later means you lose historical data." },
+  { id:'l-5', cat:1, title:'Intellectual property protection', priority:'HIGH', time:'1 week', status:'TODO',
+    desc:'File trademark applications for \'R.E.A.L. SmartScan\' and the SmartScan logo in Class 35 (retail store services) and Class 42 (software as a service). USPTO filing fee is $250-350 per class. Without a trademark, a competitor can register your brand name and force you to rebrand.',
+    insight:"File now, not when you're big. Trademark applications take 8-12 months to process. The earlier priority date means you 'own' the trademark from the filing date, not the approval date." },
+  { id:'l-6', cat:1, title:'Money transmitter license assessment', priority:'CRITICAL', time:'1 week', status:'TODO',
+    desc:'If SmartScan Direct holds customer funds before fulfilling orders — even for milliseconds — you may be a Money Service Business (MSB) requiring FinCEN registration and state MTL. The safe structure: use Stripe as the merchant of record and never \'hold\' funds yourself.',
+    insight:"Stripe's Merchant of Record service means Stripe is technically the seller, not you. This sidesteps MTL requirements for most transactions. However, if you do marketplace payouts to third-party sellers, MTL requirements change dramatically. Get this assessed by a fintech lawyer ($500-1000)." },
+  { id:'l-7', cat:1, title:'WCAG 2.1 Level AA accessibility audit', priority:'HIGH', time:'1 week', status:'TODO',
+    desc:'5,100+ accessibility lawsuits were filed in 2025 — a 20% increase from 2024. 77% targeted online retailers. Typical settlement: $5K-$25K plus legal fees. Run an automated audit with WAVE (wave.webaim.org) or axe DevTools.',
+    insight:"The most common lawsuit triggers: (1) images without alt text, (2) form fields without labels, (3) insufficient color contrast on CTA buttons, (4) no skip navigation link. These take 2 hours to fix and prevent $25K settlements." },
+  { id:'l-8', cat:1, title:'Refund and return policy published', priority:'HIGH', time:'2 hrs', status:'TODO',
+    desc:'SmartScan Direct purchases require a clear return policy. Industry standard: 30-day no-questions-asked returns on physical goods. Digital subscriptions: pro-rated refunds within 7 days. This policy must be linked in the checkout flow, not buried in ToS.',
+    insight:"Stripe now REQUIRES a refund policy URL in your Checkout settings, or it shows a generic 'no refunds' message that reduces conversion by 15-20%. Add your policy URL in Dashboard → Settings → Business → Public details." },
+  { id:'l-9', cat:1, title:'Anti-price manipulation disclosure', priority:'HIGH', time:'2 hrs', status:'TODO',
+    desc:'The FTC\'s 2023 Endorsement Guides and 2024 updates require disclosure when you have financial relationships that affect your price rankings. SmartScan Direct always shows your margin-adjusted price first — this must be disclosed.',
+    insight:"Honey (PayPal) paid $40M in settlements in 2025 for secretly overriding affiliate links. Transparency about how your 'Buy Here' price is calculated protects you legally AND builds user trust. One sentence of disclosure prevents FTC action." },
+  { id:'l-10', cat:1, title:'DMCA agent registration', priority:'MEDIUM', time:'30 mins', status:'TODO',
+    desc:'SmartCast users upload videos. You need DMCA Safe Harbor protection under 17 U.S.C. § 512(c). Register a DMCA agent with the US Copyright Office at copyright.gov/dmca-agent for $6. Without this, you lose Safe Harbor protection and are liable for user-uploaded copyrighted content.',
+    insight:"DMCA agent registration costs $6 and provides enormous legal protection. Without it, a single user who uploads a clip with copyrighted music could expose you to $150K in statutory damages. Takes 15 minutes online." },
+  { id:'l-11', cat:1, title:'Age verification (if selling supplements)', priority:'MEDIUM', time:'1 day', status:'TODO',
+    desc:'If SmartScan Direct sells or facilitates the sale of supplements, energy drinks, or any age-restricted products, you need age verification in the checkout flow. Most states require buyers to confirm they are 18+ for certain supplement categories.',
+    insight:"FTC has cracked down on online supplement marketplaces. A simple checkbox 'I confirm I am 18 years of age or older' plus your IP logging is the minimum viable protection. A full age gate (date of birth entry) is better." },
+  { id:'l-12', cat:1, title:'CASL compliance for Canadian users', priority:'MEDIUM', time:'1 hr', status:'TODO',
+    desc:"Canada's Anti-Spam Legislation (CASL) requires explicit opt-in consent before sending commercial email to Canadian recipients — stricter than CAN-SPAM. Your email signup forms need a clear checkbox: 'I agree to receive marketing emails from R.E.A.L. SmartScan.'",
+    insight:"CASL fines are up to CAD $10M per violation for organizations. The difference from CAN-SPAM: you cannot email someone just because they gave you their address. They must explicitly opt in." },
+  { id:'l-13', cat:1, title:'Terms of service clickwrap at checkout', priority:'HIGH', time:'2 hrs', status:'TODO',
+    desc:'Before any SmartScan Direct purchase completes, the buyer must affirmatively agree to your Terms of Service and Privacy Policy. A checkbox (unchecked by default) with \'I agree to the Terms of Service and Privacy Policy\' creates an enforceable clickwrap agreement.',
+    insight:"The 2024 Uber/DoorDash arbitration cases were lost because their ToS agreements weren't properly accepted. A checkbox at checkout is the single most enforceable form of ToS acceptance. Build it into your Stripe Checkout custom_fields." },
+  { id:'l-14', cat:1, title:'Subscription cancellation compliance (FTC Click-to-Cancel)', priority:'CRITICAL', time:'1 day', status:'TODO',
+    desc:"FTC's new Click-to-Cancel rule (effective January 2025) requires subscriptions to be as easy to cancel as they were to start. If Prime Elite is a one-click signup, it must be a one-click cancel. Implement a 'Cancel Subscription' button in the user dashboard.",
+    insight:"The FTC has issued $100M+ in fines for non-compliant cancellation flows in 2024-2025. This is now law, not best practice. Your cancellation must work without requiring a phone call, email, or dark patterns." },
+
+  // CATEGORY 2: PERFORMANCE & INFRASTRUCTURE (12 items)
+  { id:'p-1', cat:2, title:'Core Web Vitals audit (LCP < 2.5s, INP < 200ms, CLS < 0.1)', priority:'CRITICAL', time:'1 day', status:'TODO',
+    desc:'Run PageSpeed Insights (pagespeed.web.dev) on your homepage AND search results page. A 1-second delay in load time = 7% reduction in conversions. For a search results page with 40 product cards, images, and charts loading simultaneously, performance optimization is critical.',
+    insight:"The biggest CWV killer on SmartScan: product images loading without defined dimensions (causes CLS), and the SerpAPI response time (causes LCP). Fix: add width/height to all img tags, show skeleton loaders instantly, and pre-fetch search results on keystroke debounce." },
+  { id:'p-2', cat:2, title:'CDN for static assets', priority:'HIGH', time:'2 hrs', status:'TODO',
+    desc:'Vercel automatically CDN-serves your static assets. But the Linode video files in SmartCast need the Akamai CDN edge rules configured. Set cache-control headers on video objects: Cache-Control: public, max-age=86400 for thumbnails, max-age=3600 for video manifests.',
+    insight:"Akamai has 4,000+ edge servers globally. Without proper cache headers, every SmartCast video request hits your Linode origin. With correct headers, 95% of requests are served from edge nodes under 50ms anywhere in the world." },
+  { id:'p-3', cat:2, title:'Error boundaries in React app', priority:'HIGH', time:'4 hrs', status:'TODO',
+    desc:'The TDZ bugs that caused the white screen were catastrophic — the whole app crashed. Add React Error Boundaries around every route component to catch component-level errors and show a graceful fallback instead of a blank page.',
+    insight:"Sentry is now wired in, so errors are captured. But Error Boundaries prevent the whole-app crash. The pattern: wrap each lazy-loaded route in <ErrorBoundary fallback={<SearchFallback />}>. A fallback that says 'Something went wrong, try refreshing' converts 40% of users vs 0% for a blank page." },
+  { id:'p-4', cat:2, title:'API response time monitoring', priority:'HIGH', time:'2 hrs', status:'TODO',
+    desc:'SerpAPI responses average 800ms-2s. Your search feels slow during that wait. Add: (1) immediate skeleton loader on search submit, (2) stream results as they arrive if possible, (3) a \'meanwhile\' section showing trending deals while the search runs.',
+    insight:"Perceived performance matters more than actual performance. Google research shows users rate a 2-second load with a progress indicator as faster than a 1.5-second load with no feedback. Add a progress bar that fills over 1.5 seconds regardless of actual API time." },
+  { id:'p-5', cat:2, title:'Vercel Pro plan (for crons + analytics)', priority:'HIGH', time:'$20/mo', status:'TODO',
+    desc:'Vercel cron jobs only work on the Pro plan. Your 9 configured crons (price recording, alert checking) will silently fail on the free tier. Also, Vercel Analytics (built-in Core Web Vitals monitoring) requires Pro.',
+    insight:"The free tier has a 10-second function execution limit. SerpAPI calls sometimes take 8-12 seconds. Upgrade to Pro (60s limit) or your search API will silently time out on complex queries." },
+  { id:'p-6', cat:2, title:'Database connection pooling (Supabase)', priority:'MEDIUM', time:'1 hr', status:'TODO',
+    desc:'Supabase free tier allows 60 concurrent connections. At 100 concurrent users all searching simultaneously, you\'ll hit this limit. Enable PgBouncer connection pooling in Supabase Dashboard → Database → Connection Pooling.',
+    insight:"The free tier allows 500MB database storage and 60 concurrent connections. At 10K MAU, you'll need the Pro tier ($25/mo). The storage limit is rarely an issue early — the connection limit is. Enable pooling before you need it." },
+  { id:'p-7', cat:2, title:'Health check endpoint', priority:'MEDIUM', time:'1 hr', status:'TODO',
+    desc:"Create GET /api/health that returns {'status':'ok','db':'connected','serp':'connected','timestamp':...}. This enables uptime monitoring. Use UptimeRobot (free, monitors every 5 minutes) to alert you if the site goes down.",
+    insight:"Set up UptimeRobot to ping /api/health every 5 minutes and send you a text if it fails. At $0/month, this gives you better uptime alerting than most Series A startups have. Critical for knowing when SerpAPI goes down or Supabase has issues." },
+  { id:'p-8', cat:2, title:'Image optimization pipeline', priority:'HIGH', time:'2 hrs', status:'TODO',
+    desc:'SerpAPI returns product thumbnail URLs from external domains. These images load with no optimization. Add: (1) Next.js Image component or equivalent for lazy loading, (2) onError fallback to package icon, (3) WebP conversion where possible.',
+    insight:"Vercel's Image Optimization API (/api/image?url=...&w=200&q=75) can proxy and optimize any external image URL. Use it as a middleware to resize product thumbnails to exactly 80×80px WebP. This cuts image payload by 60-70%." },
+  { id:'p-9', cat:2, title:'Rate limiting on all API endpoints', priority:'HIGH', time:'2 hrs', status:'TODO',
+    desc:'Rate limiting is currently only on /api/search. The /api/intelligence, /api/explain, and new endpoints need it too. A single automated script can drain your entire SerpAPI quota (1000 searches/month on free tier) in minutes if unprotected.',
+    insight:"Your SerpAPI free tier is 100 searches/month. Paid tiers start at $50/month for 5,000 searches. A single un-rate-limited attack could cost you a full month's API budget in an afternoon. Add 20 req/min limits to all API endpoints." },
+  { id:'p-10', cat:2, title:'Backup and disaster recovery plan', priority:'MEDIUM', time:'2 hrs', status:'TODO',
+    desc:'Supabase automatically backs up your database daily on the Pro plan. On the free tier, there are no backups. Export your database schema and seed data to GitHub as a migration file. If your Supabase project is accidentally deleted, you need to restore in under 1 hour.',
+    insight:"The most common disaster for early startups: accidentally running a destructive SQL query. The second most common: Supabase free tier projects are paused after 1 week of inactivity (they get unpaused automatically on the next request, but it adds a 30-second cold start)." },
+  { id:'p-11', cat:2, title:'SSL/HTTPS enforced everywhere', priority:'CRITICAL', time:'30 mins', status:'TODO',
+    desc:'Vercel automatically provisions SSL. But your custom domain needs to be added to Vercel and have SSL provisioned. HTTP → HTTPS redirects must be enforced. Mixed content (HTTP resources on an HTTPS page) breaks browsers and triggers security warnings.',
+    insight:"Stripe requires HTTPS for all payment flows. If any resource on your checkout page loads over HTTP, Stripe will refuse to render the payment form. Run your URLs through Why-No-Padlock (whynopadlock.com) to check for mixed content issues." },
+  { id:'p-12', cat:2, title:'Staging environment', priority:'MEDIUM', time:'2 hrs', status:'TODO',
+    desc:'Every push to master deploys to production. One bad commit causes a real-user-facing outage (as you\'ve seen). Create a \'staging\' branch in GitHub. Configure Vercel to auto-deploy that branch to a preview URL.',
+    insight:"The TDZ crashes you experienced would have been caught in 30 seconds if you had a staging environment. Branch deploys in Vercel are automatic and free — you just need to push to a non-master branch." },
+
+  // CATEGORY 3: TRUST & CONVERSION (11 items)
+  { id:'t-1', cat:3, title:'Custom domain (real-smartscan.com)', priority:'CRITICAL', time:'2 hrs', status:'TODO',
+    desc:'real-smartscan.vercel.app is fine for testing but kills trust for real purchases. Register real-smartscan.com (or real-smart-scan.com) on Namecheap (~$12/year). Add it to Vercel as a custom domain. Users will not enter their credit card on a .vercel.app URL.',
+    insight:"Purchase conversion rate on a custom domain vs .vercel.app subdomain: 40-60% higher. This is not a preference — it's a psychological barrier. The $12 domain registration has the highest ROI of anything on this list." },
+  { id:'t-2', cat:3, title:'SSL trust badge visible at checkout', priority:'HIGH', time:'1 hr', status:'TODO',
+    desc:"Display a 'Secured by Stripe' or '256-bit SSL encryption' trust badge near the checkout CTA. This is a 3-5% conversion uplift for a 30-minute implementation. Place it below the 'Buy on SmartScan' button on every product card.",
+    insight:"The Baymard Institute's 2025 checkout research shows 18% of users abandon checkout because they 'don't trust the site with their credit card.' A single visible trust badge (Stripe logo + lock icon) reduces this by 40%." },
+  { id:'t-3', cat:3, title:'Real product reviews integration', priority:'HIGH', time:'1 week', status:'TODO',
+    desc:'Your AI Market Insight panel pulls from Perplexity/web data. Augment it with structured review data: Google Shopping reviews via SerpAPI\'s reviews parameter, Amazon reviews via Rainforest API, or Reddit sentiment via Perplexity.',
+    insight:"The deal score (0-100) is meaningless without evidence. Showing '3,847 Amazon reviews, avg 4.6 stars' next to the deal score increases purchase intent 300% vs the score alone. This feature is what separates SmartScan from CamelCamelCamel." },
+  { id:'t-4', cat:3, title:'Live deal count ticker', priority:'MEDIUM', time:'2 hrs', status:'TODO',
+    desc:"Show '12,847 deals live right now' or 'Updated 3 minutes ago' on the homepage. Social proof at the search stage. This exists conceptually in the nav but needs real data from your DealNews feed + SerpAPI result counts.",
+    insight:"The psychological principle is 'proof of life.' A static counter is immediately recognized as fake. A live counter that users see increment (even slowly) signals that the platform is active and maintained. This doubles free-to-Prime conversion rate vs a static UI." },
+  { id:'t-5', cat:3, title:'About / Origin story page', priority:'MEDIUM', time:'3 hrs', status:'TODO',
+    desc:"Who built SmartScan and why? The 'About' page is the #3 most-visited page on ecommerce sites. It builds the human connection that justifies trusting you with a credit card. Include: founder photo/name, the problem you solved, the mission statement.",
+    insight:"A/B tests consistently show that sites with an 'About' page have 23% higher checkout completion rates than identical sites without one. Users need to know a human is accountable for the product they're buying." },
+  { id:'t-6', cat:3, title:'Customer support channel live', priority:'CRITICAL', time:'1 day', status:'TODO',
+    desc:'At minimum: a support email address (support@real-smartscan.com) forwarded to your inbox, and a Contact form on the site. Better: Intercom or Crisp live chat widget (free tier available). Without visible support, 35% of users who have questions abandon rather than buy.',
+    insight:"Crisp.chat has a free tier with live chat + email. It takes 30 minutes to install. The mere presence of a chat bubble increases conversion rate by 8-15% — even if it's offline/bot-only. It signals that a human is reachable." },
+  { id:'t-7', cat:3, title:'FAQ page', priority:'MEDIUM', time:'3 hrs', status:'TODO',
+    desc:'Answer the top 10 questions that prevent conversion: How does the Buy Here price compare to the cheapest price? Do you share my data? Can I cancel Prime anytime? How do price alerts work? What is the deal score? Each answered question removes a barrier from conversion.',
+    insight:"Structured FAQ data (FAQ schema markup) also appears as rich snippets in Google search results, increasing your organic click-through rate. Add FAQPage JSON-LD schema to your FAQ page for free SERP real estate." },
+  { id:'t-8', cat:3, title:"BNPL / 'No credit card' signal", priority:'MEDIUM', time:'1 hr', status:'TODO',
+    desc:'Add payment method icons (Visa, Mastercard, Amex, PayPal, Apple Pay, Google Pay) to your checkout area. Show \'Buy in 4 payments\' option once Klarna/Afterpay is enabled.',
+    insight:"Displaying Apple Pay and Google Pay icons (even before they're enabled) increases conversion by 6% — users assume a site that supports Apple Pay has been through Apple's merchant verification process, which it has." },
+  { id:'t-9', cat:3, title:'Social proof counter on Prime benefits', priority:'HIGH', time:'2 hrs', status:'TODO',
+    desc:"Add 'Join 1,000+ smart shoppers already saving with Prime Elite' (use your real number, or start with 'Be among the first') to the Prime upgrade CTA. Social proof at the conversion decision point is the single most effective CRO tactic for subscription upgrades.",
+    insight:"Start honest: 'Be among the founding members' or 'Early access pricing' works better than fake numbers and protects you legally (FTC deceptive advertising rules). Once you have real members, update to the real count." },
+  { id:'t-10', cat:3, title:"Real-time 'someone just found a deal' notification", priority:'MEDIUM', time:'1 day', status:'TODO',
+    desc:"A subtle bottom-left popup: 'Sarah from Austin just found Nike Air Max 270 at $67 — 34% off market price.' This is the Booking.com / Fomo.io social proof notification pattern. Drives FOMO and urgency.",
+    insight:"Fomo.io and ProveSource charge $19-49/month for this feature. Build your own using the search_events table you already have in Supabase — it takes 4 hours and shows REAL searches from REAL users, not made-up notifications." },
+  { id:'t-11', cat:3, title:'Press kit and media page', priority:'LOW', time:'2 hrs', status:'TODO',
+    desc:'A /press page with: logo downloads (SVG, PNG, dark/light variants), product screenshots, Ben O\'Leary bio, company description (50 words and 200 words), launch date and founding story.',
+    insight:"TechCrunch, The Verge, and Product Hunt journalists look for press pages before writing. A discoverable press page at /press can generate coverage that drives 10,000+ signups from a single article — worth more than $50K in paid ads." },
+
+  // CATEGORY 4: GROWTH & ACQUISITION (12 items)
+  { id:'g-1', cat:4, title:'Product Hunt launch prepared', priority:'HIGH', time:'1 week', status:'TODO',
+    desc:'Product Hunt launches drive 5,000-50,000 profile visits on launch day. Requirements: Hunter account (yours), a compelling tagline, 5+ screenshots (1270×952px), a 60-second demo video, and a prepared outreach list of 50+ contacts to upvote within the first hour.',
+    insight:"Product Hunt is won in the first 2 hours. Line up 30 genuine users/friends/colleagues to upvote at 12:01 AM PST on launch day. A #1 Product of the Day with 500+ upvotes generates 20,000-100,000 site visitors." },
+  { id:'g-2', cat:4, title:'Chrome/Firefox extension strategy', priority:'HIGH', time:'2 weeks', status:'TODO',
+    desc:'Honey became a $4B acquisition because of its browser extension. A SmartScan extension that shows a \'Better Deal Available\' notification when users are on Amazon/Best Buy/Walmart checkout pages is 10x more valuable than the web app.',
+    insight:"The Chrome Extension store has 3 billion installs. Honey had 17M active extension users when PayPal acquired it for $4B. A price comparison extension that intercepts Amazon checkout is the single most defensible product investment you can make." },
+  { id:'g-3', cat:4, title:'Reddit community strategy', priority:'HIGH', time:'Ongoing', status:'TODO',
+    desc:'r/Frugal (2.9M members), r/deals (1.2M), r/buildapc (4.9M), r/slickdeals (700K), r/personalfinance (18M) are your target audiences. Post genuinely helpful content: \'Found MacBook Air M3 at $849 — here\'s where and why the price dropped.\'',
+    insight:"r/Frugal and r/deals have strict anti-spam rules but actively celebrate genuine deal-finding tools. One viral post on r/Frugal drove Honey's first 100K installs. The key: post real deals you found with SmartScan, not promotional content." },
+  { id:'g-4', cat:4, title:"TikTok 'Deal of the Day' content strategy", priority:'HIGH', time:'Ongoing', status:'TODO',
+    desc:"A 30-second TikTok showing 'I searched for [product] on SmartScan and saved $127' is the most effective acquisition content format for this product. Deal content performs exceptionally well in personal finance TikTok.",
+    insight:"TikTok's #deals hashtag has 12B+ views. #savingmoney has 8B+ views. #personalfinance has 24B+ views. A single viral TikTok showing a real find can drive 100K+ app visits. Equipment needed: phone, SmartScan results page, honest narration." },
+  { id:'g-5', cat:4, title:'SEO content engine (programmatic pages)', priority:'HIGH', time:'2 weeks', status:'TODO',
+    desc:'Generate SEO landing pages for high-volume search queries: \'Best price for [product]\', \'[Product] price history\', \'[Brand] deals\'. These pages pre-populate your search UI with the query. Target 10,000+ product-specific long-tail keywords.',
+    insight:"CamelCamelCamel gets 10M+ monthly organic visits primarily from pages like 'Amazon price history for iPhone 15 Pro.' Each page ranks for its exact product query. You have the infrastructure to generate these automatically." },
+  { id:'g-6', cat:4, title:'Email list building from Day 1', priority:'CRITICAL', time:'1 day', status:'TODO',
+    desc:"Every visitor who searches should see: 'Get notified when this item drops below $X — enter your email.' Capture emails aggressively (with consent). An email list of 10,000 users is worth $10K-$50K/year in direct marketing value.",
+    insight:"The highest-converting email capture for a price comparison app is NOT 'subscribe to our newsletter' — it's a specific alert tied to something they already searched for. 'Alert me when MacBook Air M3 drops below $900' captures 15-20% of search visitors vs 1-2% for generic newsletter signup." },
+  { id:'g-7', cat:4, title:'Mobile app (PWA installable)', priority:'HIGH', time:'2 hrs', status:'TODO',
+    desc:"Your PWA manifest.json is configured. Add the 'Add to Home Screen' prompt trigger when a user visits for the second time in 7 days (or after a successful search). An installed PWA icon on the home screen means 4x more return visits vs a bookmark.",
+    insight:"PWA install prompt conversion rate: 8-15% when shown at the right moment (after a positive interaction, not on first load). The installed PWA is indistinguishable from a native app on mobile. Push notifications work from an installed PWA." },
+  { id:'g-8', cat:4, title:'Google My Business + local SEO', priority:'MEDIUM', time:'1 hr', status:'TODO',
+    desc:"Even for an online business, a Google My Business listing drives credibility and appears in 'shopping tool' search results. Register SmartScan as an online business. This helps with brand SERP and adds a trust signal.",
+    insight:"Google My Business listings appear in the knowledge panel next to your brand search. Without one, competitors or negative content can dominate the first page when users search your brand. A GMB listing controls that real estate for free." },
+  { id:'g-9', cat:4, title:'Influencer seeding program', priority:'HIGH', time:'2 weeks', status:'TODO',
+    desc:'Identify 20 personal finance / deal-finding creators with 50K-500K followers: Andrei Jikh, Rose Han, Humphrey Yang, Caleb Hammer. Offer them free SmartCast Pro + Prime Elite for life in exchange for one authentic mention.',
+    insight:"The most cost-effective influencer strategy: 'power middle' creators (100K-500K followers) in personal finance/frugal living. They have highly engaged, deal-seeking audiences and are accessible (not represented by agencies). DM them directly." },
+  { id:'g-10', cat:4, title:'Deal newsletter partnerships', priority:'MEDIUM', time:'Ongoing', status:'TODO',
+    desc:'Slickdeals, Brad\'s Deals, The Points Guy, Morning Brew, The Hustle all have deal sections. Submit SmartScan as a \'featured tool\' for their deal roundups. Many newsletters have free editorial placements for tools that genuinely help their readers.',
+    insight:"Morning Brew (4M subscribers) and The Hustle (2M subscribers) actively feature B2C tools in their newsletters. The pitch: 'SmartScan found [famous product] at [X]% below market — here's the tool.' Lead with the value, mention the tool second." },
+  { id:'g-11', cat:4, title:'RetentionX / Lifecycle email sequences', priority:'HIGH', time:'1 week', status:'TODO',
+    desc:"Build 5 email automation sequences: (1) Welcome series (3 emails over 7 days), (2) 'You haven't searched in 7 days' re-engagement, (3) Price drop alert triggered, (4) Prime upgrade nudge at 30 days for free users, (5) Annual plan upsell at 90 days.",
+    insight:"The 30-day Prime upgrade nudge is the most valuable email you can send. Users who searched 10+ times in 30 days but haven't upgraded are Prime candidates. Show them their actual savings: 'In the last 30 days, you could have saved $347 with Prime Intelligence.'" },
+  { id:'g-12', cat:4, title:'Waitlist / founding member presale', priority:'HIGH', time:'1 day', status:'TODO',
+    desc:"If you're not fully ready to launch, a presale is better than waiting. Offer 'Founding Member' pricing: Prime Elite at $5.99/mo (vs $9.99 at launch) for the first 500 users who sign up and pay now.",
+    insight:"Founding member presales generate 3 outcomes: (1) real revenue immediately, (2) proof of demand for investors, (3) a base of power users who are emotionally invested in your success. The 'Founding Member' badge in the app is a retention mechanic by itself." },
+
+  // CATEGORY 5: PRODUCT COMPLETENESS (11 items)
+  { id:'q-1', cat:5, title:'SmartCast video upload working end-to-end', priority:'CRITICAL', time:'1 day', status:'TODO',
+    desc:'The Linode bucket is created, the upload API is built, the confirmation/credibility scoring is built. Wire the SmartCast page UI to the new /api/smartcast-upload endpoint. Test: upload a 100MB MP4 → video appears in SmartCast feed → deal score shows.',
+    insight:"The presigned PUT URL approach means video goes browser → Linode CDN without touching your server. This handles files up to 5GB at no egress cost from Vercel. The main failure point: CORS on the Linode bucket. Verify the CORS config before testing with a real file." },
+  { id:'q-2', cat:5, title:'User dashboard fully populated', priority:'HIGH', time:'1 day', status:'TODO',
+    desc:"Dashboard.tsx is wired to /api/saved-searches and /api/alerts APIs. Verify: saved searches appear, price alerts show with current price vs target, order history shows. Add: 'Total saved to date' counter.",
+    insight:"'You've saved $2,847 with SmartScan this year' is the most powerful retention message possible. Build this counter prominently in the dashboard. Even if it shows $0 initially, the aspirational framing ('Start tracking your savings') motivates first purchase." },
+  { id:'q-3', cat:5, title:'Prime Intelligence working with Perplexity', priority:'CRITICAL', time:'2 hrs', status:'TODO',
+    desc:'The PERPLEXITY_API_KEY is set in Vercel. The /api/intelligence endpoint uses Sonar Pro. Test: sign in as a Prime user, search any product, the \'Prime Intelligence\' section should show AI-powered market analysis, Reddit sentiment, trend data.',
+    insight:"The Prime Intelligence panel is your #1 Prime upsell driver. It must work flawlessly. Test it with 10 different product searches before launch. Common failure: the Perplexity API returns a 429 rate limit on the free tier — upgrade to the paid API tier ($20/month for 200 requests/day)." },
+  { id:'q-4', cat:5, title:'Search filters functional', priority:'HIGH', time:'4 hrs', status:'TODO',
+    desc:"The filter buttons (Free Ship, In Stock, Used) in the search results need to actually filter results — not just change appearance. Currently they may be UI-only. Wire them to the SerpAPI query parameters: tbs=new:1 for new, tbs=p_cond:used for used, fss=1 for free shipping.",
+    insight:"SerpAPI Google Shopping parameters: 'condition=new' or 'condition=used', 'min_price=X', 'max_price=Y', 'free_shipping=1'. The filter bar should re-trigger a new search with updated parameters, not client-side filter existing results." },
+  { id:'q-5', cat:5, title:'Price history chart showing real data', priority:'HIGH', time:'1 day', status:'TODO',
+    desc:'The Vercel crons started running on May 22. By end of May, you\'ll have ~9 days of data for 8 products. But the chart currently shows 90-day SIMULATED data for most products. Update the price-history API to: use real Supabase data if available (>7 data points), fall back to simulation only if not.',
+    insight:"The 'simulated' label on the price history chart is a trust killer. Users see it and assume all your data is fake. Hide the simulation label entirely — show the chart with available data and only note 'Price history tracking started [date]' if you have fewer than 7 real data points." },
+  { id:'q-6', cat:5, title:'Mobile experience audit', priority:'CRITICAL', time:'1 day', status:'TODO',
+    desc:"70% of your users will visit on mobile. The search results two-column layout, the price history chart, the Prime Intelligence panel — run all of these on a real mobile device (not just responsive preview). Common issues: charts overflow on small screens, touch targets under 44px, text too small.",
+    insight:"Smallest acceptable touch target: 44×44px (Apple HIG) / 48×48dp (Material Design). Search bars must be full-width. Product cards must be single-column on screens under 480px. Price history chart needs a mobile-specific height (80px instead of 140px). Test on a real iPhone, not Chrome DevTools." },
+  { id:'q-7', cat:5, title:'Loading states and skeleton screens everywhere', priority:'HIGH', time:'4 hrs', status:'TODO',
+    desc:'Every data-dependent component needs a skeleton loader, not a blank space or spinning wheel. Skeleton loaders show users where content will appear, reducing perceived load time by 40%. Product cards, price history, AI insight, Prime Intelligence — all need skeleton states.',
+    insight:"Facebook research shows skeleton screens are perceived as 20% faster than spinner-based loading. The psychological reason: users can see WHERE content will appear, so they start orienting before it loads. This alone improves search-to-click rate measurably." },
+  { id:'q-8', cat:5, title:'Empty state design', priority:'MEDIUM', time:'2 hrs', status:'TODO',
+    desc:"When a search returns 0 results, when a user has no saved searches, when no price alerts are set — show helpful empty states, not blank boxes. 'No results for [query]. Try searching for [similar term]' or 'No saved searches yet. Start by searching for any product.'",
+    insight:"Empty states are the most neglected UI element and the biggest conversion leak. A user who sees a blank page leaves. A user who sees 'No results for [query] — try [alternative]' tries the alternative. This is a 3-hour fix that measurably improves retention." },
+  { id:'q-9', cat:5, title:'404 and error page design', priority:'MEDIUM', time:'1 hr', status:'TODO',
+    desc:"The current 404 page and error states are likely unstyled or generic. Design a branded 404: scan reticle animation, 'Product not found in our database. Start a new search:' with the search bar. A branded error page recovers 30% of users who would otherwise leave.",
+    insight:"The best 404 pages include the search bar directly, a few popular product suggestions, and a subtle humorous message. Example: 'Hmm, we scanned everywhere and couldn't find that product. Try a different search.' This recovers users who made typos or navigated to bad URLs." },
+  { id:'q-10', cat:5, title:'Keyboard navigation and accessibility', priority:'MEDIUM', time:'4 hrs', status:'TODO',
+    desc:'Tab through the entire search flow with keyboard only. Every interactive element must be reachable and have a visible focus indicator. This is both an accessibility requirement (ADA) and a conversion optimization — power users prefer keyboard navigation.',
+    insight:"The WCAG requirement for keyboard navigation covers: focusable elements in logical order, visible focus indicators (not removed with outline: none), no keyboard traps (modal dialogs must be escapable with Esc). Run the NVDA/VoiceOver screen reader through your checkout flow." },
+  { id:'q-11', cat:5, title:'Dark mode system preference', priority:'LOW', time:'2 hrs', status:'TODO',
+    desc:'Your app already uses a dark-first design. But add support for the prefers-color-scheme: light media query for the growing segment of users who use light mode. Even a simple light-mode version (white background, dark text, same orange CTAs) expands your addressable audience.',
+    insight:"60% of users prefer dark mode for apps, 40% prefer light. By forcing dark-only, you're creating friction for 40% of your users. A basic light mode can be added with 20 CSS variable overrides and @media (prefers-color-scheme: light) in under 2 hours." },
+
+  // CATEGORY 6: ANALYTICS & INTELLIGENCE (8 items)
+  { id:'a-1', cat:6, title:'PostHog funnel tracking live', priority:'CRITICAL', time:'2 hrs', status:'TODO',
+    desc:"PostHog POSTHOG_API_KEY is set in Vercel. The client SDK is wired but using CDN inject. Verify it's firing: go to PostHog dashboard → Live Events — do you see events when you search? Set up a funnel: Search → View Product → Click Buy Here → Complete Purchase → Upgrade to Prime.",
+    insight:"The funnel step with the highest drop-off is almost always 'View Product → Click Buy Here.' Tracking this reveals: (1) are users seeing the SmartScan Direct card? (2) is the CTA visible? (3) is the price competitive enough? This data is worth more than any A/B test." },
+  { id:'a-2', cat:6, title:'Google Search Console verified', priority:'HIGH', time:'30 mins', status:'TODO',
+    desc:'Add your custom domain to Google Search Console. This gives you: (1) which queries drive organic traffic, (2) which pages have indexing errors, (3) Core Web Vitals data from real users (not lab data), (4) manual action alerts if Google penalizes you.',
+    insight:"Search Console's Core Web Vitals report shows you REAL user LCP/INP/CLS data from Chrome users, not simulated results. This is the ground truth for performance. Your lab tests might show LCP < 2s but real users on 3G might see 6s. Only Search Console reveals this." },
+  { id:'a-3', cat:6, title:'Google Analytics 4 configured', priority:'HIGH', time:'1 hr', status:'TODO',
+    desc:'PostHog handles product analytics. GA4 handles acquisition analytics: where users come from, which channels convert, geographic distribution. Set up GA4 with your domain, add the tracking snippet, and configure conversion events: Prime_Signup, Search_Complete, Alert_Set.',
+    insight:"GA4's 'Explore' feature lets you build custom funnels and cohort analyses for free. The most valuable report to build first: acquisition → conversion by channel. This tells you whether Reddit, Product Hunt, TikTok, or organic search is sending your highest-converting users." },
+  { id:'a-4', cat:6, title:'Revenue KPI dashboard in admin portal', priority:'HIGH', time:'4 hrs', status:'TODO',
+    desc:"The admin Revenue tab currently shows a Simulate button. Connect it to Stripe's API: GET /api/stripe-stats that returns MRR, new subscribers last 7 days, churn rate, and total GMV. This is the command center data you need every morning.",
+    insight:"The 3 metrics that matter most for SmartScan's early stage: (1) Daily Active Searchers, (2) Search → Prime Upgrade Rate, (3) GMV. Track these daily. If DAU is flat, product problem. If upgrade rate is low, pricing/positioning problem. If GMV is low, take-rate problem." },
+  { id:'a-5', cat:6, title:'A/B testing framework', priority:'MEDIUM', time:'1 week', status:'TODO',
+    desc:"You can't improve conversion without testing. Implement a simple A/B framework: split users by user_id mod 2, serve variant A or B, track the conversion event. Test: (1) 'Join Prime' vs 'Unlock Smart Pricing' CTA text, (2) Deal score display format, (3) SmartScan Direct card position.",
+    insight:"The single highest-value A/B test for SmartScan: the Prime upgrade CTA placement. Testing whether showing it BEFORE or AFTER the search results (vs inline) changes conversion by 20-40% in most comparison shopping tools. PostHog has built-in A/B testing (feature flags) — use it." },
+  { id:'a-6', cat:6, title:'User feedback loop', priority:'HIGH', time:'1 day', status:'TODO',
+    desc:"Add a 'Was this helpful?' thumbs up/down button to: (1) each search result, (2) the AI Market Insight, (3) the Prime Intelligence panel. Store responses in Supabase. This feedback data tells you which results are bad (low price accuracy), which AI summaries are unhelpful.",
+    insight:"The highest-signal feedback is NOT surveys — it's micro-feedback on specific results. A 'this price is wrong' flag button on each retailer card, with a simple dropdown (price changed / out of stock / wrong product), gives you a real-time data quality monitoring system." },
+  { id:'a-7', cat:6, title:'Churn analysis setup', priority:'HIGH', time:'2 hrs', status:'TODO',
+    desc:"When a Prime user cancels, show them a 1-question exit survey: 'Why are you cancelling? (Too expensive / Not enough value / Found a better tool / Other).' Store in Supabase. This data is worth more than any market research.",
+    insight:"Stripe has a built-in cancellation survey in the Customer Portal. Enable it: Dashboard → Billing → Customer Portal → Cancellation survey. You get structured data on WHY users leave without building anything. This single feature has saved dozens of SaaS companies from the wrong pivot." },
+  { id:'a-8', cat:6, title:'Cohort retention tracking', priority:'HIGH', time:'1 day', status:'TODO',
+    desc:"Track: of users who signed up in Week 1, how many searched again in Week 2, Week 4, Week 8? This is the retention curve. A healthy commerce tool has 40%+ Week 4 retention. If your Week 4 retention is 10%, you have a product problem. If it's 40%+, you have a distribution problem.",
+    insight:"PostHog's Retention report gives you cohort retention curves with 3 clicks. It's the most important single chart in your analytics stack. Set it up on Day 1 so you have historical data when you need it. High early retention (40%+ at Week 4) is the #1 signal for investor interest." }
+];
+
+// State
+let state = {
+  items: JSON.parse(JSON.stringify(ITEMS)), // deep clone
+  filterStatus: 'ALL',
+  filterPriority: 'ALL_P',
+  filterCategory: 'ALL_CAT',
+  searchQuery: '',
+  collapsedCategories: new Set()
+};
+
+// ====================== CHART ======================
+let statusChart = null;
+
+function initChart() {
+  const ctx = document.getElementById('statusChart').getContext('2d');
+  statusChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Done', 'In Progress', 'To Do'],
+      datasets: [{
+        data: [0, 0, 84],
+        backgroundColor: [
+          'rgba(57,217,138,0.85)',
+          'rgba(157,78,221,0.85)',
+          'rgba(74,85,120,0.5)'
+        ],
+        borderColor: [
+          'rgba(57,217,138,0.3)',
+          'rgba(157,78,221,0.3)',
+          'rgba(74,85,120,0.2)'
+        ],
+        borderWidth: 1,
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '72%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: '#A0AABB',
+            font: { family: "'Inter', sans-serif", size: 11 },
+            padding: 16,
+            usePointStyle: true,
+            pointStyleWidth: 8
+          }
+        },
+        tooltip: {
+          backgroundColor: '#0D1120',
+          borderColor: 'rgba(157,78,221,0.4)',
+          borderWidth: 1,
+          titleColor: '#E8ECFF',
+          bodyColor: '#A0AABB',
+          titleFont: { family: "'Space Grotesk', sans-serif", weight: '600' },
+          bodyFont: { family: "'Inter', sans-serif" },
+          padding: 12
+        }
+      }
+    }
+  });
+}
+
+// ====================== STATE MANAGEMENT ======================
+function cycleStatus(id) {
+  const item = state.items.find(i => i.id === id);
+  if (!item) return;
+  const cycle = { 'TODO': 'IN_PROGRESS', 'IN_PROGRESS': 'DONE', 'DONE': 'TODO' };
+  item.status = cycle[item.status];
+  updateUI();
+}
+
+function bulkAction(newStatus) {
+  const visible = getVisibleItems();
+  visible.forEach(vi => {
+    const item = state.items.find(i => i.id === vi.id);
+    if (item) item.status = newStatus;
+  });
+  updateUI();
+}
+
+function toggleCategory(catId) {
+  if (state.collapsedCategories.has(catId)) {
+    state.collapsedCategories.delete(catId);
+  } else {
+    state.collapsedCategories.add(catId);
+  }
+  // Update DOM directly
+  const section = document.querySelector(`[data-cat-section="${catId}"]`);
+  if (section) {
+    section.classList.toggle('collapsed', state.collapsedCategories.has(catId));
+    const items = section.querySelector('.category-items');
+    if (items) {
+      items.style.maxHeight = state.collapsedCategories.has(catId) ? '0' : (items.scrollHeight + 200) + 'px';
+    }
+  }
+}
+
+// ====================== FILTERING ======================
+function getVisibleItems() {
+  return state.items.filter(item => {
+    const statusMatch = state.filterStatus === 'ALL' || item.status === state.filterStatus;
+    const priorityMatch = state.filterPriority === 'ALL_P' || item.priority === state.filterPriority;
+    const catMatch = state.filterCategory === 'ALL_CAT' || item.cat === parseInt(state.filterCategory);
+    const searchMatch = !state.searchQuery || 
+      item.title.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
+      item.desc.toLowerCase().includes(state.searchQuery.toLowerCase());
+    return statusMatch && priorityMatch && catMatch && searchMatch;
+  });
+}
+
+// ====================== REVENUE CALCULATION ======================
+function calcRevenue() {
+  let total = 0;
+  let doneCount = 0;
+  state.items.forEach(item => {
+    if (item.revenue && item.status === 'DONE') {
+      total += REVENUE_VALUES[item.id] || 0;
+      doneCount++;
+    }
+  });
+  return { total, doneCount };
+}
+
+// ====================== TIME CALCULATION ======================
+function calcTimeRemaining() {
+  let totalHours = 0;
+  const byCategory = {};
+  CATEGORIES.forEach(c => byCategory[c.id] = 0);
+  
+  state.items.forEach(item => {
+    if (item.status !== 'DONE') {
+      const h = parseTime(item.time);
+      totalHours += h;
+      byCategory[item.cat] = (byCategory[item.cat] || 0) + h;
+    }
+  });
+  return { totalHours, byCategory };
+}
+
+function formatHours(h) {
+  if (h === 0) return '0h';
+  if (h < 1) return Math.round(h * 60) + 'm';
+  if (h < 24) return Math.round(h) + 'h';
+  if (h < 168) return (h / 8).toFixed(1) + 'd';
+  return (h / 40).toFixed(1) + 'w';
+}
+
+// ====================== RENDER ======================
+function render() {
+  const container = document.getElementById('checklistContainer');
+  const visible = getVisibleItems();
+  
+  // Update visible count
+  document.getElementById('visibleCount').textContent = `${visible.length} item${visible.length !== 1 ? 's' : ''} visible`;
+  
+  // Group by category
+  const byCat = {};
+  CATEGORIES.forEach(c => byCat[c.id] = []);
+  visible.forEach(item => {
+    if (byCat[item.cat]) byCat[item.cat].push(item);
+  });
+  
+  let html = '';
+  let anyVisible = false;
+  
+  CATEGORIES.forEach((cat, catIdx) => {
+    const catItems = byCat[cat.id];
+    if (catItems.length === 0) return;
+    anyVisible = true;
+    
+    const allCatItems = state.items.filter(i => i.cat === cat.id);
+    const doneCount = allCatItems.filter(i => i.status === 'DONE').length;
+    const totalCount = allCatItems.length;
+    const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+    
+    const isCollapsed = state.collapsedCategories.has(cat.id);
+    const circumference = 2 * Math.PI * 18; // r=18
+    const strokeOffset = circumference - (pct / 100) * circumference;
+    
+    html += `
+    <div class="category-section ${isCollapsed ? 'collapsed' : ''}" data-cat-section="${cat.id}">
+      <div class="category-header" onclick="toggleCategory(${cat.id})">
+        <div class="category-icon ${cat.colorClass}">${cat.icon}</div>
+        <div class="category-title-block">
+          <div class="category-name">${cat.name}</div>
+          <div class="category-tagline">"${cat.tagline}"</div>
+        </div>
+        <div class="category-meta">
+          <div class="category-progress-ring">
+            <svg viewBox="0 0 48 48">
+              <circle class="cat-ring-track" cx="24" cy="24" r="18"/>
+              <circle class="cat-ring-fill" cx="24" cy="24" r="18"
+                stroke-dasharray="${circumference.toFixed(2)}"
+                stroke-dashoffset="${strokeOffset.toFixed(2)}"/>
+            </svg>
+            <div class="cat-ring-center">${pct}%</div>
+          </div>
+          <div class="category-count-badge">${doneCount}/${totalCount} done</div>
+          <div class="category-toggle">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 6l4 4 4-4"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="category-items" style="max-height: ${isCollapsed ? '0' : '9999px'}">
+        ${catItems.map((item, idx) => renderItem(item, idx)).join('')}
+      </div>
+    </div>`;
+  });
+  
+  if (!anyVisible) {
+    html = `
+    <div class="empty-state">
+      <div class="empty-state-icon">🔍</div>
+      <div class="empty-state-title">No items match your filters</div>
+      <div class="empty-state-desc">Try adjusting the status, priority, or category filters</div>
+    </div>`;
+  }
+  
+  container.innerHTML = html;
+}
+
+function renderItem(item, idx) {
+  const statusLabel = { 'TODO': 'To Do', 'IN_PROGRESS': 'In Progress', 'DONE': 'Done' };
+  return `
+  <div class="checklist-item" 
+    data-status="${item.status}" 
+    data-priority="${item.priority}"
+    data-id="${item.id}"
+    onclick="cycleStatus('${item.id}')"
+    title="Click to cycle status">
+    <div class="item-checkbox">
+      <svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 7l3.5 3.5L12 3"/>
+      </svg>
+      <div class="progress-dot"></div>
+    </div>
+    <div class="item-content">
+      <div class="item-header">
+        <div class="item-title">${item.title}</div>
+        <div class="item-badges">
+          <span class="badge badge-priority-${item.priority}">${item.priority}</span>
+          <span class="badge badge-status-${item.status}">${statusLabel[item.status]}</span>
+          <span class="badge badge-time">⏱ ${item.time}</span>
+        </div>
+      </div>
+      <div class="item-description">${item.desc}</div>
+      <div class="tooltip-container" onclick="event.stopPropagation()">
+        <div class="item-insight-trigger">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="6" cy="6" r="5"/>
+            <path d="M6 5v3M6 3.5v.5"/>
+          </svg>
+          Insider Tip
+        </div>
+        <div class="tooltip-box ${idx % 2 === 1 ? 'right' : ''}">
+          <div class="tooltip-label">Insider Tip</div>
+          ${item.insight}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ====================== UPDATE STATS ======================
+function updateStats() {
+  const done = state.items.filter(i => i.status === 'DONE').length;
+  const inProgress = state.items.filter(i => i.status === 'IN_PROGRESS').length;
+  const total = state.items.length;
+  const pct = Math.round((done / total) * 100);
+  
+  const criticalItems = state.items.filter(i => i.priority === 'CRITICAL');
+  const criticalDone = criticalItems.filter(i => i.status === 'DONE').length;
+  const criticalRemaining = criticalItems.length - criticalDone;
+  
+  const { totalHours } = calcTimeRemaining();
+  const { total: revTotal, doneCount: revDone } = calcRevenue();
+  
+  // Overall completion ring
+  const circumference = 2 * Math.PI * 68;
+  const ringFill = document.getElementById('mainRingFill');
+  if (ringFill) {
+    const offset = circumference - (pct / 100) * circumference;
+    ringFill.style.strokeDashoffset = offset;
+  }
+  document.getElementById('overallPct').textContent = pct + '%';
+  
+  // Stats bar
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-done-of').textContent = `${done} of ${total} done`;
+  document.getElementById('stat-critical-remaining').textContent = criticalRemaining;
+  document.getElementById('stat-critical-done').textContent = `${criticalDone} critical done`;
+  document.getElementById('stat-hours').textContent = formatHours(totalHours);
+  document.getElementById('stat-revenue-items').textContent = revDone;
+  document.getElementById('stat-in-progress').textContent = inProgress;
+  
+  // Days to revenue ready (based on remaining CRITICAL items time)
+  const criticalHours = state.items
+    .filter(i => i.priority === 'CRITICAL' && i.status !== 'DONE')
+    .reduce((sum, i) => sum + parseTime(i.time), 0);
+  const days = criticalHours > 0 ? Math.ceil(criticalHours / 8) : 0;
+  document.getElementById('stat-days').textContent = days > 0 ? days + 'd' : '✓';
+  
+  // Revenue meter
+  document.getElementById('revenueAmount').textContent = '$' + revTotal.toLocaleString();
+  document.getElementById('revEngineCount').textContent = `${revDone}/16`;
+  document.getElementById('revEngineBar').style.width = ((revDone / 16) * 100) + '%';
+  
+  // Revenue items list
+  const revItems = state.items.filter(i => i.revenue);
+  document.getElementById('revenueItemsList').innerHTML = revItems.map(item => `
+    <div class="revenue-item-row ${item.status === 'DONE' ? 'done' : ''}">
+      <div class="revenue-item-dot ${item.status === 'DONE' ? 'done' : 'pending'}"></div>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px">${item.title}</span>
+      <span style="color:var(--done-color);font-weight:600;font-size:11px;flex-shrink:0">${item.status === 'DONE' ? '+$' + (REVENUE_VALUES[item.id] || 0).toLocaleString() : ''}</span>
+    </div>`).join('');
+  
+  // Category progress
+  const catProgressHTML = CATEGORIES.map((cat, idx) => {
+    const catItems = state.items.filter(i => i.cat === cat.id);
+    const catDone = catItems.filter(i => i.status === 'DONE').length;
+    const catTotal = catItems.length;
+    const catPct = catTotal > 0 ? Math.round((catDone / catTotal) * 100) : 0;
+    return `
+    <div class="cat-progress-row">
+      <div class="cat-progress-meta">
+        <span class="cat-progress-name">${cat.icon} ${cat.name}</span>
+        <span class="cat-progress-pct">${catPct}%</span>
+      </div>
+      <div class="cat-progress-bg">
+        <div class="cat-progress-fill cat-fill-${idx}" style="width:${catPct}%"></div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('catProgressList').innerHTML = catProgressHTML;
+  
+  // Time breakdown
+  const { totalHours: th, byCategory } = calcTimeRemaining();
+  document.getElementById('totalTimeDisplay').textContent = formatHours(th);
+  const timeHTML = CATEGORIES.map(cat => {
+    const h = byCategory[cat.id] || 0;
+    if (h === 0) return '';
+    return `
+    <div class="time-row">
+      <span class="time-row-label">${cat.icon} ${cat.name}</span>
+      <span class="time-row-value">${formatHours(h)}</span>
+    </div>`;
+  }).filter(Boolean).join('') || '<div class="time-row"><span class="time-row-label" style="color:var(--done-color)">🎉 All done!</span></div>';
+  document.getElementById('timeBreakdown').innerHTML = timeHTML;
+  
+  // Chart
+  if (statusChart) {
+    const todo = state.items.filter(i => i.status === 'TODO').length;
+    statusChart.data.datasets[0].data = [done, inProgress, todo];
+    statusChart.update('none');
+  }
+}
+
+function updateUI() {
+  render();
+  updateStats();
+}
+
+// ====================== EVENT LISTENERS ======================
+document.addEventListener('DOMContentLoaded', () => {
+  initChart();
+  
+  // Status filters
+  document.getElementById('statusFilters').addEventListener('click', e => {
+    const btn = e.target.closest('[data-filter-type="status"]');
+    if (!btn) return;
+    state.filterStatus = btn.dataset.value;
+    document.querySelectorAll('[data-filter-type="status"]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    updateUI();
+  });
+  
+  // Priority filters
+  document.getElementById('priorityFilters').addEventListener('click', e => {
+    const btn = e.target.closest('[data-filter-type="priority"]');
+    if (!btn) return;
+    state.filterPriority = btn.dataset.value;
+    document.querySelectorAll('[data-filter-type="priority"]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    updateUI();
+  });
+  
+  // Category select
+  document.getElementById('categoryFilter').addEventListener('change', e => {
+    state.filterCategory = e.target.value;
+    updateUI();
+  });
+  
+  // Search
+  let searchTimer;
+  document.getElementById('searchInput').addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      state.searchQuery = e.target.value;
+      updateUI();
+    }, 200);
+  });
+  
+  // Initial render
+  updateUI();
+});
+
+// ====================== PARTICLES ======================
+(function initParticles() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], animId;
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function Particle() {
+    this.reset = function() {
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.r = Math.random() * 1.8 + 0.3;
+      this.speed = Math.random() * 0.4 + 0.1;
+      this.angle = Math.random() * Math.PI * 2;
+      this.drift = (Math.random() - 0.5) * 0.008;
+      this.life = 0;
+      this.maxLife = Math.random() * 300 + 200;
+      // Color: purple or blue
+      const colors = [
+        [157, 78, 221],   // violet
+        [123, 47, 190],   // deep violet
+        [96, 165, 250],   // blue
+        [199, 125, 255],  // light violet
+        [59, 130, 246],   // blue
+      ];
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+    };
+    this.reset();
+    this.y = Math.random() * H; // start scattered
+  }
+
+  function initParticles() {
+    particles = [];
+    for (let i = 0; i < 80; i++) particles.push(new Particle());
+  }
+
+  function drawConnections() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          const alpha = (1 - dist/120) * 0.12;
+          const [r, g, b] = particles[i].color;
+          ctx.strokeStyle = `rgba(${r},${g},${b},${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    
+    particles.forEach(p => {
+      p.life++;
+      p.angle += p.drift;
+      p.x += Math.cos(p.angle) * p.speed;
+      p.y += Math.sin(p.angle) * p.speed * 0.6 - 0.15; // slight upward drift
+      
+      const lifeRatio = p.life / p.maxLife;
+      const alpha = lifeRatio < 0.1 ? lifeRatio * 10 * 0.7
+                  : lifeRatio > 0.9 ? (1 - lifeRatio) * 10 * 0.7
+                  : 0.7;
+      
+      if (p.life > p.maxLife || p.y < -10 || p.x < -10 || p.x > W + 10) {
+        p.reset();
+      }
+      
+      const [r, g, b] = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+      ctx.fill();
+      
+      // Glow
+      if (p.r > 1.2) {
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
+        grad.addColorStop(0, `rgba(${r},${g},${b},${alpha * 0.3})`);
+        grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 4, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      }
+    });
+    
+    drawConnections();
+    animId = requestAnimationFrame(animate);
+  }
+
+  resize();
+  initParticles();
+  animate();
+  window.addEventListener('resize', () => { resize(); });
+})();
+</script>
+</body>
+</html>
