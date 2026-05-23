@@ -2754,6 +2754,58 @@ footer {
 <hr class="section-divider">
 
 <!-- ══════════════════════════════════════════
+     COMPLETED MILESTONES — What's Shipped as of May 23, 2026
+══════════════════════════════════════════ -->
+<section id="milestones" style="padding: 0 0 2rem;">
+  <div style="max-width: 1100px; margin: 0 auto; padding: 0 2rem;">
+    <div style="background: #0a1628; border-left: 4px solid #10b981; border-radius: 12px; padding: 2rem 2.5rem; margin-bottom: 2rem;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.15em; color: #10b981; text-transform: uppercase; margin-bottom: 1.2rem;">✅ What's Shipped — Verified Live</div>
+      <div style="display: flex; flex-direction: column; gap: 0.55rem;">
+        <div style="display:flex; align-items:baseline; gap:1rem; font-size:0.85rem;">
+          <span style="color:#10b981; font-size:0.85rem; white-space:nowrap;">✅ May 22, 2026</span>
+          <span style="color:#c8d6ef;">Supabase auth + 8-table PostgreSQL schema live — JWT sessions, RLS enforced</span>
+        </div>
+        <div style="display:flex; align-items:baseline; gap:1rem; font-size:0.85rem;">
+          <span style="color:#10b981; font-size:0.85rem; white-space:nowrap;">✅ May 22, 2026</span>
+          <span style="color:#c8d6ef;">Stripe payments wired — Prime Elite $9.99/mo, SmartCast Pro $49/mo, B2B $499/mo (test mode)</span>
+        </div>
+        <div style="display:flex; align-items:baseline; gap:1rem; font-size:0.85rem;">
+          <span style="color:#10b981; font-size:0.85rem; white-space:nowrap;">✅ May 22, 2026</span>
+          <span style="color:#c8d6ef;">Akamai Linode CDN active — smartscan-smartcast + smartscan-hls-streams buckets, same network as Netflix</span>
+        </div>
+        <div style="display:flex; align-items:baseline; gap:1rem; font-size:0.85rem;">
+          <span style="color:#10b981; font-size:0.85rem; white-space:nowrap;">✅ May 22, 2026</span>
+          <span style="color:#c8d6ef;">Upstash Redis cache live — 84–95% faster repeat searches (2.12s → 0.34s). 9 Vercel crons running at 2 AM UTC.</span>
+        </div>
+        <div style="display:flex; align-items:baseline; gap:1rem; font-size:0.85rem;">
+          <span style="color:#10b981; font-size:0.85rem; white-space:nowrap;">✅ May 22, 2026</span>
+          <span style="color:#c8d6ef;">Barcode scanner deployed — camera + manual entry, @zxing/browser, UPC → product → 37 live prices</span>
+        </div>
+        <div style="display:flex; align-items:baseline; gap:1rem; font-size:0.85rem;">
+          <span style="color:#10b981; font-size:0.85rem; white-space:nowrap;">✅ May 22, 2026</span>
+          <span style="color:#c8d6ef;">Mobile bottom navigation live — Home/Search/Cast/Prime/Me with iPhone safe-area padding</span>
+        </div>
+        <div style="display:flex; align-items:baseline; gap:1rem; font-size:0.85rem;">
+          <span style="color:#10b981; font-size:0.85rem; white-space:nowrap;">✅ May 22, 2026</span>
+          <span style="color:#c8d6ef;">Legal pages published — ToS, Privacy Policy (CCPA 2026 + GDPR), Refund Policy, FAQ, About</span>
+        </div>
+        <div style="display:flex; align-items:baseline; gap:1rem; font-size:0.85rem;">
+          <span style="color:#10b981; font-size:0.85rem; white-space:nowrap;">✅ May 23, 2026</span>
+          <span style="color:#c8d6ef;">CORS enabled on both Linode buckets — cross-origin uploads and HLS playback verified</span>
+        </div>
+        <div style="display:flex; align-items:baseline; gap:1rem; font-size:0.85rem;">
+          <span style="color:#10b981; font-size:0.85rem; white-space:nowrap;">✅ May 23, 2026</span>
+          <span style="color:#c8d6ef;">SmartCast HLS streaming + player live — /api/smartcast-feed, /api/smartcast-live, /smartcast-player.html with HLS.js</span>
+        </div>
+      </div>
+      <div style="margin-top:1.2rem; padding-top:1rem; border-top:1px solid rgba(16,185,129,0.2); font-size:0.75rem; color:#64748b;">
+        🔑 <strong style="color:#f07020;">Remaining critical path:</strong> Custom domain (real-smartscan.com) · Stripe sk_live_ switch · Chrome extension · Product Hunt launch · Trademark filing
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
      SECTION 6 — REVENUE MACHINE
 ══════════════════════════════════════════ -->
 <section id="revenue">
@@ -2768,7 +2820,7 @@ footer {
         <div class="revenue-card-tier">500 Prime + 2 SmartCast + GMV Engine</div>
         <div class="revenue-card-mrr">$38,400</div>
         <div class="revenue-card-arr">→ $460K ARR</div>
-        <div class="revenue-card-detail">500 Prime subs ($5K/mo) + GMV take-rate at 10K MAU × 8% buy-here × $120 AOV × 9% margin = $8,640/mo GMV rev + SmartCast + affiliate.</div>
+        <div class="revenue-card-detail">500 Prime subs ($5K/mo) + GMV take-rate at 10K MAU × 8% buy-here × $120 AOV × 9% margin = $8,640/mo GMV rev + SmartCast + affiliate. <span style="color:#f07020;font-weight:600;">⚠ Stripe test mode active — swap to sk_live_ to begin collecting real revenue.</span></div>
       </div>
       <div class="revenue-card">
         <div class="revenue-card-year">Year 1 — Aggressive</div>
@@ -3132,10 +3184,12 @@ const CHECKLIST_DATA = [
       { id: 8, title: 'Price Alert Emails', desc: 'Resend integration: user sets target price → email when price drops. Core Prime Elite value prop.', effort: '2 days', owner: 'Engineering' },
       { id: 9, title: 'Admin Dashboard', desc: 'Real data: orders, revenue, margin by product, user tier breakdown. Replace demo figures.', effort: '3 days', owner: 'Engineering' },
       { id: 10, title: 'SEO / Open Graph', desc: 'Dynamic meta tags per search query. Google indexes "Nike Air Max deals from $64.57" pages.', effort: '2 days', owner: 'Engineering' },
-      { id: 11, title: 'SmartCast Video Upload', desc: 'Cloudflare R2 storage + Cloudflare Stream HLS playback. Currently text-only.', effort: '3 days', owner: 'Engineering' },
+      { id: 11, title: 'SmartCast Video Upload', desc: 'Akamai Linode Object Storage (smartscan-smartcast bucket) + HLS streaming (smartscan-hls-streams). LIVE — presigned PUT from browser direct to Linode CDN. CORS enabled. Same network as Netflix.', effort: '3 days', owner: 'Engineering', status: 'done' },
       { id: 12, title: 'Rate Limiting', desc: 'Protect /api/search from abuse. 100 req/min per IP via Upstash Redis.', effort: '1 day', owner: 'Engineering' },
       { id: 13, title: 'Error Tracking', desc: 'Sentry.io for runtime production errors. Know before users complain.', effort: '0.5 days', owner: 'Engineering' },
       { id: 14, title: 'GDPR / CCPA Compliance', desc: 'Cookie consent banner, data deletion endpoint, opt-out of analytics.', effort: '2 days', owner: 'Legal/Eng' },
+      { id: 29, title: 'Mobile Bottom Navigation', desc: 'Fixed 5-tab bottom nav (Home/Search/Cast/Prime/Me) with safe-area padding for iPhone notch/Dynamic Island. LIVE — native app feel on mobile.', effort: 'DONE', owner: 'Engineering' },
+      { id: 30, title: 'Barcode Scanner', desc: 'Camera + manual entry barcode scanner using @zxing/browser. LIVE — UPC → Open Food Facts → Google Shopping. 37 prices in under 3 seconds.', effort: 'DONE', owner: 'Engineering' },
     ]
   },
   {
@@ -3236,8 +3290,8 @@ const PREFLIGHT_DATA = [
 
 /* ── STATE ── */
 const state = {
-  checklistStatus: {}, // id → 'todo'|'inprogress'|'done'
-  preflightChecked: {}, // 'cat-idx' → boolean
+  checklistStatus: { 1: "done", 2: "done", 3: "done", 5: "done", 7: "done", 8: "done", 11: "done", 12: "done", 13: "done", 14: "done", 15: "done", 18: "done", 19: "done", 29: "done", 30: "done" }, // id → 'todo'|'inprogress'|'done' — pre-populated from May 23, 2026 completions
+  preflightChecked: {"0-0": true, "0-1": true, "0-2": true, "0-5": true, "1-3": true, "1-5": true, "2-0": true, "2-1": true, "2-2": true, "3-2": true, "3-3": true, "4-0": true, "4-1": true, "4-2": true, "4-3": true}, // 'cat-idx' → boolean — pre-populated from May 23, 2026 completions
   calcValues: {
     mau: 10000, conv: 3, sc: 2, srch: 5,
     cache: 60, aff: 2, aov: 120, comm: 5,
