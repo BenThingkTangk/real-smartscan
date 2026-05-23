@@ -59,7 +59,7 @@ module.exports = async (req, res) => {
                     <p style="font-size:18px;font-weight:700">${alert.query}</p>
                     <p>Current best price: <strong style="color:#10B981;font-size:24px">$${currentBest}</strong></p>
                     <p style="color:#94A3B8">Your target was: $${alert.target_price}</p>
-                    <a href="https://real-smartscan.vercel.app/#/search?q=${encodeURIComponent(alert.query)}" 
+                    <a href="https://real-smartscan.com/#/search?q=${encodeURIComponent(alert.query)}" 
                        style="display:inline-block;background:#F97316;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;margin-top:16px">
                       View Deal Now →
                     </a>
