@@ -94,6 +94,33 @@ async function lookupBarcode(code) {
   } catch { return null; }
 }
 
+// ── FULL RESULT MAPPER — extracts ALL fields from SerpAPI ──────────
+const mapResult = (r) => ({
+  store: r.source || r.store || 'Unknown',
+  price: r.extracted_price || r.price?.extracted || 0,
+  price_string: r.price?.value || (r.extracted_price ? `$${r.extracted_price}` : null),
+  original_price: r.original_price?.extracted || r.extracted_old_price || null,
+  savings: (r.original_price?.extracted || r.extracted_old_price)
+    ? (r.original_price?.extracted || r.extracted_old_price) - (r.extracted_price || 0)
+    : null,
+  rating: r.rating || null,
+  reviews: r.reviews || null,
+  shipping: r.delivery || r.shipping || null,
+  in_stock: r.in_stock !== false,
+  condition: r.second_hand_condition || 'new',
+  title: r.title || '',
+  thumbnail: r.thumbnail || null,
+  // Use higher quality image from SerpAPI product API URL if available
+  thumbnail_hq: r.product_id
+    ? `https://encrypted-tbn0.gstatic.com/shopping?q=tbn:${r.product_id}`
+    : (r.thumbnail || null),
+  product_id: r.product_id || null,
+  link: r.link || r.product_link || null,
+  store_rating: r.store_rating || null,
+  extensions: r.extensions || [],
+  tag: r.tag || null, // e.g. "Best seller", "Sale"
+});
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -121,11 +148,29 @@ module.exports = async function handler(req, res) {
     const mockPrices = [119.99, 124.99, 129.99, 139.99, 149.99];
     const stores = ['Amazon', 'Walmart', 'Best Buy', 'Target', 'eBay'];
     let results = stores.map((store, i) => ({
-      store, price: mockPrices[i],
-      ship: i < 3 ? 'Free' : `$${5 + i * 2}`, ship_cost: i < 3 ? 0 : 5 + i * 2,
+      store,
+      price: mockPrices[i],
+      price_string: `$${mockPrices[i]}`,
+      original_price: mockPrices[i] * 1.2,
+      savings: mockPrices[i] * 0.2,
+      ship: i < 3 ? 'Free' : `$${5 + i * 2}`,
+      ship_cost: i < 3 ? 0 : 5 + i * 2,
+      shipping: i < 3 ? 'Free shipping' : `$${5 + i * 2} shipping`,
       delivered_total: mockPrices[i] + (i < 3 ? 0 : 5 + i * 2),
-      rating: (4.2 + i * 0.1).toString(), reviews: 1200 * (5 - i),
-      in_stock: true, condition: 'New', thumbnail: null, url: '#', score: 0,
+      rating: parseFloat((4.2 + i * 0.1).toFixed(1)),
+      reviews: 1200 * (5 - i),
+      in_stock: true,
+      condition: 'new',
+      thumbnail: null,
+      thumbnail_hq: null,
+      title: `${q} — ${store}`,
+      url: '#',
+      link: '#',
+      score: 0,
+      extensions: i < 2 ? ['Free returns', '2-day delivery'] : i < 3 ? ['Free returns'] : [],
+      tag: i === 0 ? 'Best seller' : null,
+      store_rating: null,
+      product_id: null,
     }));
     results = filterOutliers(results);
     const prices = results.map(r => r.price);
@@ -137,11 +182,27 @@ module.exports = async function handler(req, res) {
     const categoryRate = { Electronics: 0.06, Health: 0.09, Supplements: 0.15, Fashion: 0.08, Gaming: 0.06 };
     const takeRate = categoryRate[cat] || 0.08;
     const smartscanPrice = +(marketBest * (1 + takeRate)).toFixed(2);
+
+    const knowledgePanel = {
+      name: q,
+      description: '',
+      thumbnail: barcodeProduct?.image || null,
+      images: [],
+      rating: null,
+      reviews: null,
+      specs: [],
+      pros: [],
+      cons: [],
+      best_price: marketBest,
+      price_context: null,
+    };
+
     return res.json({
       results, query: q, source: 'demo',
       product: {
         name: q, best_price: marketBest, msrp: Math.round(marketBest * 1.3), save_pct: 23,
         thumbnail: barcodeProduct?.image || null,
+        images: [],
         brand: barcodeProduct?.brand || null,
         category: barcodeProduct?.category || cat,
         price_context: {
@@ -150,6 +211,7 @@ module.exports = async function handler(req, res) {
           price_trend: 'falling',
         }
       },
+      knowledge_panel: knowledgePanel,
       analytics: { deal_score: results[0].score, signal: 'GOOD DEAL', trend: 'stable', retailer_count: results.length, free_ship_count: 3 },
       smartscan_direct: {
         price: smartscanPrice,
@@ -191,8 +253,9 @@ module.exports = async function handler(req, res) {
       if (ip.title && ip.thumbnail) immersiveThumbMap[ip.title.slice(0, 40)] = ip.thumbnail;
     });
 
-    let results = raw.filter(r => r.extracted_price > 0).map(r => {
-      const sc = shipCost(r.delivery || '');
+    // Map results using the full field extractor
+    let results = raw.filter(r => (r.extracted_price || r.price?.extracted) > 0).map(r => {
+      const sc = shipCost(r.delivery || r.shipping || '');
       // Prefer higher-res image from immersive if title matches
       const titleKey = (r.title || '').slice(0, 40);
       const thumbnail = immersiveThumbMap[titleKey] || r.thumbnail || null;
@@ -201,22 +264,21 @@ module.exports = async function handler(req, res) {
         ? `https://encrypted-tbn0.gstatic.com/shopping?q=tbn:${r.product_id}`
         : thumbnail;
 
+      const mapped = mapResult(r);
       return {
-        store: r.source, title: r.title,
-        price: r.extracted_price,
+        ...mapped,
+        thumbnail: thumbnail || mapped.thumbnail,
+        thumbnail_hq: thumbnailHq || mapped.thumbnail_hq,
+        // Legacy fields for backward compat
+        ship: r.delivery || 'See site',
+        ship_cost: sc,
+        delivered_total: mapped.price + sc,
         old_price: r.extracted_old_price || null,
-        save_pct: r.extracted_old_price ? Math.round((1 - r.extracted_price / r.extracted_old_price) * 100) : null,
-        ship: r.delivery || 'See site', ship_cost: sc,
-        delivered_total: r.extracted_price + sc,
-        rating: r.rating || null, reviews: r.reviews || null,
-        in_stock: !((r.tag || '').toLowerCase().includes('out')),
-        condition: r.second_hand_condition ? 'Used' : 'New',
-        thumbnail: thumbnail,
-        thumbnail_hq: thumbnailHq,
-        url: r.product_link || '#',
-        product_id: r.product_id || null,
+        save_pct: r.extracted_old_price ? Math.round((1 - mapped.price / r.extracted_old_price) * 100) : null,
+        url: r.product_link || r.link || '#',
         specs: r.specs || null,
         score: 0,
+        inStock: mapped.in_stock,
       };
     });
 
@@ -247,22 +309,48 @@ module.exports = async function handler(req, res) {
     // Best product thumbnail — use highest res available
     const bestThumbnail = barcodeProduct?.image || results[0]?.thumbnail_hq || results[0]?.thumbnail || raw[0]?.thumbnail || null;
 
+    // Collect all product images for gallery
+    const allImages = [bestThumbnail, ...results.slice(0, 5).map(r => r.thumbnail_hq || r.thumbnail)].filter(Boolean);
+    const uniqueImages = [...new Set(allImages)].slice(0, 6);
+
+    // Extract Google Product Knowledge Panel data
+    const productResults = serpData.product_results || {};
+    const knowledgePanel = {
+      name: productResults.title || serpData.search_information?.query_displayed || q,
+      description: productResults.description || '',
+      thumbnail: productResults.media?.[0]?.thumbnail || bestThumbnail || null,
+      images: (productResults.media || []).map(m => m.thumbnail || m.image).filter(Boolean).slice(0, 6),
+      rating: productResults.rating || null,
+      reviews: productResults.reviews || null,
+      specs: productResults.specifications || productResults.highlights || [],
+      pros: productResults.pros || [],
+      cons: productResults.cons || [],
+      best_price: marketBest,
+      price_context: {
+        is_good_deal: marketBest < avg90day * 0.9,
+        below_avg_pct: Math.round((1 - marketBest/avg90day) * 100),
+        price_trend: priceTrend,
+      },
+    };
+
     const responseObj = {
       results, query: q, source: 'serpapi',
       product: {
         name: raw[0]?.title || q,
         thumbnail: bestThumbnail,
+        images: uniqueImages,
         brand: barcodeProduct?.brand || null,
         category: barcodeProduct?.category || cat,
         best_price: marketBest, msrp,
         save_pct: Math.round((1 - marketBest / msrp) * 100),
-        specs: raw[0]?.specs || null,
+        specs: raw[0]?.specs || productResults.specifications || null,
         price_context: {
           is_good_deal: marketBest < avg90day * 0.9,
           below_avg_pct: Math.round((1 - marketBest/avg90day) * 100),
           price_trend: priceTrend,
         }
       },
+      knowledge_panel: knowledgePanel,
       analytics: {
         deal_score: topScore, signal,
         trend: topScore > 70 ? 'falling' : 'stable',
