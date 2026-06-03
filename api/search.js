@@ -118,7 +118,8 @@ const mapResult = (r) => ({
   link: r.link || r.product_link || null,
   store_rating: r.store_rating || null,
   extensions: r.extensions || [],
-  tag: r.tag || null, // e.g. "Best seller", "Sale"
+  tag: r.extensions?.find(e => ['Best Seller','On sale','Limited time deal','Bestseller'].some(t => e.includes(t))) || r.tag || null,
+  badge: r.badge || null, // e.g. "Best seller", "Sale"
 });
 
 module.exports = async function handler(req, res) {
@@ -333,22 +334,54 @@ module.exports = async function handler(req, res) {
       },
     };
 
+    // After building knowledgePanel, enrich with additional SerpAPI fields
+    knowledgePanel.description = productResults.description ||
+      productResults.snippet ||
+      (productResults.highlights || []).join('. ') || '';
+
+    // Extract brand from title or extensions
+    knowledgePanel.brand = productResults.brand ||
+      (results[0]?.title?.split(' ')[0]) || '';
+
+    // Extract pros/cons from SerpAPI if available
+    knowledgePanel.pros = (productResults.pros || []).slice(0, 4);
+    knowledgePanel.cons = (productResults.cons || []).slice(0, 3);
+
+    // Extract key specs from highlights/specifications
+    knowledgePanel.key_specs = (productResults.specifications || [])
+      .slice(0, 6)
+      .map(s => ({ name: s.name || s[0], value: s.value || s[1] }));
+
+    // Enhanced price context
+    const allPricesForCtx = results.map(r => r.price).filter(p => p > 0);
+    const avgPriceCtx = allPricesForCtx.length ? allPricesForCtx.reduce((a,b)=>a+b,0)/allPricesForCtx.length : 0;
+    const minPriceCtx = allPricesForCtx.length ? Math.min(...allPricesForCtx) : 0;
+    const maxPriceCtx = allPricesForCtx.length ? Math.max(...allPricesForCtx) : 0;
+    knowledgePanel.price_context = {
+      is_good_deal: minPriceCtx > 0 && minPriceCtx < avgPriceCtx * 0.92,
+      below_avg_pct: avgPriceCtx > 0 ? Math.round((1 - minPriceCtx/avgPriceCtx) * 100) : 0,
+      price_trend: priceTrend,
+      avg_price: Math.round(avgPriceCtx * 100) / 100,
+      price_spread: Math.round((maxPriceCtx - minPriceCtx) * 100) / 100,
+      price_spread_pct: maxPriceCtx > 0 ? Math.round(((maxPriceCtx - minPriceCtx) / maxPriceCtx) * 100) : 0,
+    };
+
     const responseObj = {
       results, query: q, source: 'serpapi',
       product: {
         name: raw[0]?.title || q,
         thumbnail: bestThumbnail,
         images: uniqueImages,
-        brand: barcodeProduct?.brand || null,
+        brand: barcodeProduct?.brand || knowledgePanel.brand || null,
         category: barcodeProduct?.category || cat,
         best_price: marketBest, msrp,
         save_pct: Math.round((1 - marketBest / msrp) * 100),
         specs: raw[0]?.specs || productResults.specifications || null,
-        price_context: {
-          is_good_deal: marketBest < avg90day * 0.9,
-          below_avg_pct: Math.round((1 - marketBest/avg90day) * 100),
-          price_trend: priceTrend,
-        }
+        description: knowledgePanel.description || '',
+        pros: knowledgePanel.pros || [],
+        cons: knowledgePanel.cons || [],
+        key_specs: knowledgePanel.key_specs || [],
+        price_context: knowledgePanel.price_context,
       },
       knowledge_panel: knowledgePanel,
       analytics: {
