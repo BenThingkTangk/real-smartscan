@@ -95,26 +95,21 @@ async function lookupBarcode(code) {
 }
 
 
-// —— FETCH PRODUCT IMAGES from SerpAPI Google Images ——————————
-async function fetchProductImages(productName) {
-  try {
-    const imageUrl = `https://serpapi.com/search?engine=google&tbm=isch&q=${encodeURIComponent(productName)}&api_key=${SERP_API_KEY}`;
-    const response = await fetch(imageUrl);
-    const data = await response.json();
-    
-    if (!data.images_results || data.images_results.length === 0) return [];
-    
-    // Return top 6 high-quality images
-    return data.images_results.slice(0, 6).map(img => ({
-      thumbnail: img.thumbnail || null,
-      original: img.original || null,
-      source: img.source || null
-    }));
-  } catch (error) {
-    console.error('Image fetch error:', error);
-    return [];
+// —— EXTRACT IMAGES from immersive_products (no extra API call) ——————
+function extractImagesFromImmersive(immersiveProducts) {
+  if (!immersiveProducts || immersiveProducts.length === 0) return [];
+  
+  // Extract high-quality images from immersive products
+  const images = [];
+  for (const product of immersiveProducts.slice(0, 6)) {
+    if (product.image) images.push(product.image);
+    if (product.thumbnail) images.push(product.thumbnail);
   }
+  
+  // Return unique images, up to 6
+  return [...new Set(images)].slice(0, 6);
 }
+
 
 // ── FULL RESULT MAPPER — extracts ALL fields from SerpAPI ──────────
 const mapResult = (r) => ({
@@ -205,12 +200,11 @@ module.exports = async function handler(req, res) {
 
     
       // Fetch real product images from Google Images
-  const productImages = await fetchProductImages(req.query.q || '');
 const knowledgePanel = {
       name: q,
       description: '',
       thumbnail: barcodeProduct?.image || null,
-    images: productImages.map(img => img.thumbnail).filter(Boolean),      rating: null,
+    images: extractImagesFromImmersive(serpData.immersive_products || [])n),      rating: null,
       reviews: null,
       specs: [],
       pros: [],
@@ -224,7 +218,7 @@ const knowledgePanel = {
       product: {
         name: q, best_price: marketBest, msrp: Math.round(marketBest * 1.3), save_pct: 23,
         thumbnail: barcodeProduct?.image || null,
-      images: productImages.map(img => img.thumbnail).filter(Boolean),        brand: barcodeProduct?.brand || null,
+      images: extractImagesFromImmersive(serpData.immersive_products || [])an),        brand: barcodeProduct?.brand || null,
         category: barcodeProduct?.category || cat,
         price_context: {
           is_good_deal: marketBest < avg90day * 0.9,
