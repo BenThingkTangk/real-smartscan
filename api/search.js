@@ -204,7 +204,17 @@ const knowledgePanel = {
       name: q,
       description: '',
       thumbnail: barcodeProduct?.image || null,
-    images: extractImagesFromImmersive(serpData.immersive_products || [])n),      rating: null,
+        images: (() => {
+        const imgs = [];
+        if (barcodeProduct?.image) imgs.push(barcodeProduct.image);
+        const shopResults = results.slice(0, 6);
+        shopResults.forEach(r => {
+          if (r.thumbnail_hq) imgs.push(r.thumbnail_hq);
+          else if (r.thumbnail) imgs.push(r.thumbnail);
+        });
+        return [...new Set(imgs)].slice(0, 6);
+      })(),
+    
       reviews: null,
       specs: [],
       pros: [],
