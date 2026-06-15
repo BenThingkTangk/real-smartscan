@@ -94,6 +94,28 @@ async function lookupBarcode(code) {
   } catch { return null; }
 }
 
+
+// —— FETCH PRODUCT IMAGES from SerpAPI Google Images ——————————
+async function fetchProductImages(productName) {
+  try {
+    const imageUrl = `https://serpapi.com/search?engine=google&tbm=isch&q=${encodeURIComponent(productName)}&api_key=${SERP_API_KEY}`;
+    const response = await fetch(imageUrl);
+    const data = await response.json();
+    
+    if (!data.images_results || data.images_results.length === 0) return [];
+    
+    // Return top 6 high-quality images
+    return data.images_results.slice(0, 6).map(img => ({
+      thumbnail: img.thumbnail || null,
+      original: img.original || null,
+      source: img.source || null
+    }));
+  } catch (error) {
+    console.error('Image fetch error:', error);
+    return [];
+  }
+}
+
 // ── FULL RESULT MAPPER — extracts ALL fields from SerpAPI ──────────
 const mapResult = (r) => ({
   store: r.source || r.store || 'Unknown',
@@ -181,12 +203,14 @@ module.exports = async function handler(req, res) {
     const takeRate = categoryRate[cat] || 0.08;
     const smartscanPrice = +(marketBest * (1 + takeRate)).toFixed(2);
 
-    const knowledgePanel = {
+    
+      // Fetch real product images from Google Images
+  const productImages = await fetchProductImages(req.query.q || '');
+const knowledgePanel = {
       name: q,
       description: '',
       thumbnail: barcodeProduct?.image || null,
-      images: [],
-      rating: null,
+    images: productImages.map(img => img.thumbnail).filter(Boolean),      rating: null,
       reviews: null,
       specs: [],
       pros: [],
@@ -200,8 +224,7 @@ module.exports = async function handler(req, res) {
       product: {
         name: q, best_price: marketBest, msrp: Math.round(marketBest * 1.3), save_pct: 23,
         thumbnail: barcodeProduct?.image || null,
-        images: [],
-        brand: barcodeProduct?.brand || null,
+      images: productImages.map(img => img.thumbnail).filter(Boolean),        brand: barcodeProduct?.brand || null,
         category: barcodeProduct?.category || cat,
         price_context: {
           is_good_deal: marketBest < avg90day * 0.9,
