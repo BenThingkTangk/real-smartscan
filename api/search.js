@@ -109,12 +109,9 @@ const mapResult = (r) => ({
   in_stock: r.in_stock !== false,
   condition: r.second_hand_condition || 'new',
   title: r.title || '',
-  thumbnail: r.thumbnail || null,
-  // Use higher quality image from SerpAPI product API URL if available
-  thumbnail_hq: r.product_id
-    ? `https://encrypted-tbn0.gstatic.com/shopping?q=tbn:${r.product_id}`
-    : (r.thumbnail || null),
-  product_id: r.product_id || null,
+      thumbnail: r.thumbnail || null,
+      // Use standard SerpAPI thumbnail - most reliable image source
+      thumbnail_hq: r.thumbnail || null,  product_id: r.product_id || null,
   link: r.link || r.product_link || null,
   store_rating: r.store_rating || null,
   extensions: r.extensions || [],
